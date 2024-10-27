@@ -9,13 +9,14 @@ import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import team.lodestar.lodestone.LodestoneLib;
+import team.lodestar.lodestone.systems.datagen.providers.*;
 
 import java.util.concurrent.CompletableFuture;
 
 import static team.lodestar.lodestone.registry.common.tag.LodestoneItemTags.*;
 
 
-public class LodestoneItemTagDatagen extends ItemTagsProvider {
+public class LodestoneItemTagDatagen extends LodestoneItemTagsProvider {
     public LodestoneItemTagDatagen(PackOutput output, CompletableFuture<HolderLookup.Provider> provider, CompletableFuture<TagLookup<Block>> blockProvider, @Nullable ExistingFileHelper existingFileHelper) {
         super(output, provider, blockProvider, LodestoneLib.LODESTONE, existingFileHelper);
     }
