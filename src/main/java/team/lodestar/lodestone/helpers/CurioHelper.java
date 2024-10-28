@@ -18,6 +18,7 @@ import java.util.function.Predicate;
 @SuppressWarnings("unused")
 public class CurioHelper {
 
+    //TODO: we will be temporarily moving this into malum while we figure out what we wanna do with the non-rendering half of lodestone
     public static Optional<SlotResult> getEquippedCurio(LivingEntity entity, Predicate<ItemStack> predicate) {
         return CuriosApi.getCuriosInventory(entity).flatMap(iCuriosItemHandler -> iCuriosItemHandler.findFirstCurio(predicate));
     }

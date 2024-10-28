@@ -5,7 +5,6 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import team.lodestar.lodestone.handlers.ItemEventHandler;
 import team.lodestar.lodestone.handlers.LodestoneAttributeEventHandler;
@@ -15,23 +14,19 @@ import team.lodestar.lodestone.handlers.WorldEventHandler;
 public class RuntimeEvents {
 
     @SubscribeEvent
-    public static void onHurt(LivingDamageEvent.Post event) {
-        ItemEventHandler.respondToHurt(event);
+    public static void onHurt(LivingDamageEvent.Pre event) {
+        LodestoneAttributeEventHandler.processAttributes(event);
+        ItemEventHandler.triggerHurtResponses(event);
     }
 
     @SubscribeEvent
-    public static void onHurt(LivingDamageEvent.Pre event) {
-        LodestoneAttributeEventHandler.processAttributes(event);
+    public static void onDeath(LivingDeathEvent event) {
+        ItemEventHandler.triggerDeathResponses(event);
     }
 
     @SubscribeEvent
     public static void entityJoin(EntityJoinLevelEvent event) {
         WorldEventHandler.playerJoin(event);
-    }
-
-    @SubscribeEvent
-    public static void onDeath(LivingDeathEvent event) {
-        ItemEventHandler.respondToDeath(event);
     }
 
     @SubscribeEvent

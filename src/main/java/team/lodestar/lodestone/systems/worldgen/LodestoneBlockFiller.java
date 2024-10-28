@@ -5,7 +5,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.*;
-import team.lodestar.lodestone.helpers.BlockHelper;
+import team.lodestar.lodestone.helpers.block.*;
 
 import java.util.*;
 import java.util.function.*;
@@ -201,7 +201,7 @@ public class LodestoneBlockFiller extends ArrayList<LodestoneBlockFiller.Lodesto
         public void place(LevelAccessor level, BlockPos pos) {
             level.setBlock(pos, getState(), 19);
             if (level instanceof Level realLevel) {
-                BlockHelper.updateState(realLevel, pos);
+                BlockStateHelper.updateState(realLevel, pos);
             }
         }
     }

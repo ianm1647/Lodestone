@@ -9,12 +9,9 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.items.ItemStackHandler;
-import team.lodestar.lodestone.helpers.BlockHelper;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -144,7 +141,7 @@ public class LodestoneBlockEntityInventory extends ItemStackHandler {
     }
 
     public void dumpItems(Level level, BlockPos pos) {
-        dumpItems(level, BlockHelper.fromBlockPos(pos).add(0.5, 0.5, 0.5));
+        dumpItems(level, pos.getCenter());
     }
 
     public void dumpItems(Level level, Vec3 pos) {

@@ -1,30 +1,22 @@
 package team.lodestar.lodestone.helpers;
 
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.stats.Stats;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.items.wrapper.PlayerMainInvWrapper;
-import team.lodestar.lodestone.compability.CuriosCompat;
-import team.lodestar.lodestone.systems.item.IEventResponderItem;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
 @SuppressWarnings("unused")
 public class ItemHelper {
+
     public static ArrayList<ItemStack> copyWithNewCount(List<ItemStack> stacks, int newCount) {
         ArrayList<ItemStack> newStacks = new ArrayList<>();
         for (ItemStack stack : stacks) {
@@ -54,36 +46,6 @@ public class ItemHelper {
 
         }
         return resultEntity;
-    }
-
-    public static ArrayList<ItemStack> nonEmptyStackList(ArrayList<ItemStack> stacks) {
-        ArrayList<ItemStack> nonEmptyStacks = new ArrayList<>();
-        for (ItemStack stack : stacks) {
-            if (!stack.isEmpty()) {
-                nonEmptyStacks.add(stack);
-            }
-        }
-        return nonEmptyStacks;
-    }
-
-    public static ArrayList<ItemStack> getEventResponders(LivingEntity attacker) {
-        ArrayList<ItemStack> itemStacks = CuriosCompat.LOADED ? CurioHelper.getEquippedCurios(attacker, p -> p.getItem() instanceof IEventResponderItem) : new ArrayList<>();
-        ItemStack stack = attacker.getMainHandItem();
-        if (stack.getItem() instanceof IEventResponderItem) {
-            itemStacks.add(stack);
-        }
-        attacker.getArmorSlots().forEach(s -> {
-            if (s.getItem() instanceof IEventResponderItem) {
-                itemStacks.add(s);
-            }
-        });
-        return itemStacks;
-    }
-
-    public static void applyEnchantments(LivingEntity user, Entity target, DamageSource source, ItemStack stack) {
-        if (user.level() instanceof ServerLevel serverLevel) {
-            EnchantmentHelper.doPostAttackEffectsWithItemSource(serverLevel, target, source, stack);
-        }
     }
 
     public static void giveItemToEntity(LivingEntity entity, ItemStack stack) {

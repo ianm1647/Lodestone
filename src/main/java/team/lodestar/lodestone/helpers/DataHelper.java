@@ -131,45 +131,6 @@ public class DataHelper {
         return src.stream().filter(pred).collect(Collectors.toList());
     }
 
-    public static Vec3 radialOffset(Vec3 pos, float distance, float current, float total) {
-        double angle = current / total * (Math.PI * 2);
-        double dx2 = (distance * Math.cos(angle));
-        double dz2 = (distance * Math.sin(angle));
-
-        Vec3 vector = new Vec3(dx2, 0, dz2);
-        double x = vector.x * distance;
-        double z = vector.z * distance;
-        return pos.add(new Vec3(x, 0, z));
-    }
-
-    public static ArrayList<Vec3> rotatingRadialOffsets(Vec3 pos, float distance, float total, long gameTime, float time) {
-        return rotatingRadialOffsets(pos, distance, distance, total, gameTime, time);
-    }
-
-    public static ArrayList<Vec3> rotatingRadialOffsets(Vec3 pos, float distanceX, float distanceZ, float total, long gameTime, float time) {
-        ArrayList<Vec3> positions = new ArrayList<>();
-        for (int i = 0; i <= total; i++) {
-            positions.add(rotatingRadialOffset(pos, distanceX, distanceZ, i, total, gameTime, time));
-        }
-        return positions;
-    }
-
-    public static Vec3 rotatingRadialOffset(Vec3 pos, float distance, float current, float total, long gameTime, float time) {
-        return rotatingRadialOffset(pos, distance, distance, current, total, gameTime, time);
-    }
-
-    public static Vec3 rotatingRadialOffset(Vec3 pos, float distanceX, float distanceZ, float current, float total, long gameTime, float time) {
-        double angle = current / total * (Math.PI * 2);
-        angle += ((gameTime % time) / time) * (Math.PI * 2);
-        double dx2 = (distanceX * Math.cos(angle));
-        double dz2 = (distanceZ * Math.sin(angle));
-
-        Vec3 vector2f = new Vec3(dx2, 0, dz2);
-        double x = vector2f.x * distanceX;
-        double z = vector2f.z * distanceZ;
-        return pos.add(x, 0, z);
-    }
-
     public static ArrayList<Vec3> blockOutlinePositions(Level level, BlockPos pos) {
         ArrayList<Vec3> arrayList = new ArrayList<>();
         double d0 = 0.5625D;

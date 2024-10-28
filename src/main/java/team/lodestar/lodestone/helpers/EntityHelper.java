@@ -9,6 +9,7 @@ import java.util.ArrayList;
 @SuppressWarnings("unused")
 public class EntityHelper {
 
+    //TODO: make these into a cool existing effect management helper
     public static void amplifyEffect(MobEffectInstance instance, LivingEntity target, int addedAmplifier, int cap) {
         instance.amplifier = Math.max(Math.min(cap, instance.getAmplifier() + addedAmplifier), instance.getAmplifier());
         syncEffect(instance, target);

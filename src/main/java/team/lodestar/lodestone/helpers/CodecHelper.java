@@ -22,7 +22,7 @@ public class CodecHelper {
      * Overwrites the fields of the target object with the fields of the source object.
      * If the target contains fields that the source does not, they will be left unchanged.
      */
-    public static <T, B> void overwiteExisting(DynamicOps<B> source, Codec<T> codec, B value, T target) {
+    public static <T, B> void overwriteExisting(DynamicOps<B> source, Codec<T> codec, B value, T target) {
         T obj = decodeOrThrow(source, codec, value);
         ReflectionHelper.copyFields(obj, target);
     }

@@ -1,9 +1,9 @@
 package team.lodestar.lodestone.systems.multiblock;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.*;
+import net.minecraft.resources.*;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.ItemInteractionResult;
@@ -11,9 +11,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import team.lodestar.lodestone.helpers.BlockHelper;
+import team.lodestar.lodestone.helpers.*;
 import team.lodestar.lodestone.registry.common.*;
 import team.lodestar.lodestone.systems.blockentity.LodestoneBlockEntity;
 
@@ -35,14 +34,14 @@ public class MultiBlockComponentEntity extends LodestoneBlockEntity {
     @Override
     protected void saveAdditional(CompoundTag pTag, HolderLookup.Provider pRegistries) {
         if (corePos != null) {
-            BlockHelper.saveBlockPos(pTag, corePos, "core_position_");
+            pTag.put("core_position", NBTHelper.saveBlockPos(corePos));
         }
         super.saveAdditional(pTag, pRegistries);
     }
 
     @Override
     protected void loadAdditional(CompoundTag pTag, HolderLookup.Provider pRegistries) {
-        corePos = BlockHelper.loadBlockPos(pTag, "core_position_");
+        corePos = NBTHelper.readBlockPos(pTag.getCompound("core_position"));
         super.loadAdditional(pTag, pRegistries);
     }
 
