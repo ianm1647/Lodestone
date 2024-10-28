@@ -4,6 +4,7 @@ import net.minecraft.core.*;
 import net.minecraft.world.damagesource.*;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.player.*;
 import net.minecraft.world.level.*;
 import net.neoforged.neoforge.event.entity.living.*;
 import team.lodestar.lodestone.helpers.*;
@@ -26,21 +27,21 @@ public class LodestoneAttributeEventHandler {
         float amount = event.getOriginalDamage();
         var damageType = source.typeHolder();
         if (damageType.is(LodestoneDamageTypeTags.IS_MAGIC)) {
-            var magicResistance = target.getAttribute(LodestoneAttributeRegistry.MAGIC_RESISTANCE.get());
+            var magicResistance = target.getAttribute(LodestoneAttributes.MAGIC_RESISTANCE);
             if (magicResistance != null) {
                 amount /= (float) Math.max(magicResistance.getValue(), 0.01f);
             }
         }
         if (source.getEntity() instanceof LivingEntity attacker) {
             if (damageType.is(LodestoneDamageTypeTags.IS_MAGIC)) {
-                var magicProficiency = attacker.getAttribute(LodestoneAttributeRegistry.MAGIC_PROFICIENCY.get());
+                var magicProficiency = attacker.getAttribute(LodestoneAttributes.MAGIC_PROFICIENCY);
                 if (magicProficiency != null) {
                     amount *= (float) magicProficiency.getValue();
                 }
                 event.setNewDamage(amount);
             }
             else if (damageType.is(LodestoneDamageTypeTags.CAN_TRIGGER_MAGIC)) {
-                AttributeInstance magicDamage = attacker.getAttribute(LodestoneAttributeRegistry.MAGIC_DAMAGE.get());
+                AttributeInstance magicDamage = attacker.getAttribute(LodestoneAttributes.MAGIC_DAMAGE);
                 if (magicDamage != null) {
                     if (magicDamage.getValue() > 0 && !target.isDeadOrDying()) {
                         float magicDamageAmount = (float) magicDamage.getValue();
