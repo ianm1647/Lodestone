@@ -74,7 +74,7 @@ public class VecHelper {
      * A method that returns a single position on the perimeter of a circle around a given Vec3 position.
      * These positions constantly rotate around the center of the circle based on gameTime
      */
-    public static Vec3 rotatingRadialOffset(Vec3 pos, float distance, float current, float total, long gameTime, float timePerRotation) {
+    public static Vec3 rotatingRadialOffset(Vec3 pos, float distance, float current, float total, float gameTime, float timePerRotation) {
         return rotatingRadialOffset(pos, distance, distance, current, total, gameTime, timePerRotation);
     }
 
