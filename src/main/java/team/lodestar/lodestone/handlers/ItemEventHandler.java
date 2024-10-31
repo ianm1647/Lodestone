@@ -86,10 +86,15 @@ public class ItemEventHandler {
     }
 
     public record EventResponderLookupResult(EventResponderSource source, ArrayList<Pair<IEventResponderItem, ItemStack>> result) {
-        
+
         public void run(BiConsumer<IEventResponderItem, ItemStack> consumer) {
+            run(IEventResponderItem.class, consumer);
+        }
+        public <T extends IEventResponderItem> void run(Class<T> type, BiConsumer<T, ItemStack> consumer) {
             for (Pair<IEventResponderItem, ItemStack> pair : result) {
-                consumer.accept(pair.getFirst(), pair.getSecond());
+                if (type.isInstance(pair.getFirst())) {
+                    consumer.accept(type.cast(pair.getFirst()), pair.getSecond());
+                }
             }
         }
     }
