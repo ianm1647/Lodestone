@@ -40,7 +40,7 @@ public class CachedBlockEntitySoundInstance<T extends LodestoneBlockEntity> exte
         }
         else {
             ACTIVE_SOUNDS.put(blockPos, sound);
+            Minecraft.getInstance().getSoundManager().queueTickingSound(sound);
         }
-        Minecraft.getInstance().getSoundManager().queueTickingSound(sound);
     }
 }
