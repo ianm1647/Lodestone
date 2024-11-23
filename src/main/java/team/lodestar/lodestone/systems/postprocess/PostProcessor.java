@@ -40,7 +40,7 @@ public abstract class PostProcessor {
             Pair.of("upVector", u -> u.set(MC.gameRenderer.getMainCamera().getUpVector())),
             Pair.of("leftVector", u -> u.set(MC.gameRenderer.getMainCamera().getLeftVector())),
             Pair.of("invViewMat", u -> {
-                Matrix4f invertedViewMatrix = new Matrix4f(PostProcessor.viewModelStack.last().pose());
+                Matrix4f invertedViewMatrix = PostProcessor.viewModelMatrix;
                 invertedViewMatrix.invert();
                 u.set(invertedViewMatrix);
             }),
@@ -59,6 +59,7 @@ public abstract class PostProcessor {
      * Being updated every frame before calling applyPostProcess() by PostProcessHandler
      */
     public static PoseStack viewModelStack;
+    public static Matrix4f viewModelMatrix;
 
     private boolean initialized = false;
     protected PostChain postChain;
@@ -155,7 +156,7 @@ public abstract class PostProcessor {
 
                 applyDefaultUniforms();
 
-                beforeProcess(viewModelStack);
+                beforeProcess(viewModelMatrix);
                 if (!isActive) return;
                 postChain.process(MC.getTimer().getGameTimeDeltaPartialTick(false));
 
@@ -168,7 +169,7 @@ public abstract class PostProcessor {
     /**
      * Set uniforms and bind textures here
      */
-    public abstract void beforeProcess(PoseStack viewModelStack);
+    public abstract void beforeProcess(Matrix4f viewModelMatrix);
 
     /**
      * Unbind textures
