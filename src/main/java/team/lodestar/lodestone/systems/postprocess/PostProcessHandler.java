@@ -1,5 +1,6 @@
 package team.lodestar.lodestone.systems.postprocess;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -40,8 +41,8 @@ public class PostProcessHandler {
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onWorldRenderLast(RenderLevelStageEvent event) {
-        if (event.getStage().equals(RenderLevelStageEvent.Stage.AFTER_SOLID_BLOCKS)) {
-            PostProcessor.viewModelStack = event.getPoseStack(); // Copy PoseStack from LevelRenderer#renderLevel
+        if (event.getStage().equals(RenderLevelStageEvent.Stage.AFTER_PARTICLES)) {
+            PostProcessor.viewModelMatrix = RenderSystem.getModelViewMatrix(); // Copy viewModelMatrix from RenderSystem
         }
         if (event.getStage().equals(RenderLevelStageEvent.Stage.AFTER_LEVEL)) {
             copyDepthBuffer(); // copy the depth buffer if the mixin didn't trigger
