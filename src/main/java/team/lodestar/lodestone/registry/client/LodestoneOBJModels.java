@@ -12,18 +12,17 @@ import team.lodestar.lodestone.systems.model.obj.lod.LODStrategy;
 import team.lodestar.lodestone.systems.model.obj.lod.MultiLODModel;
 import team.lodestar.lodestone.systems.model.obj.ObjModel;
 import team.lodestar.lodestone.systems.model.obj.modifier.modifiers.TriangulateModifier;
-import team.lodestar.lodestone.systems.model.obj.modifier.modifiers.TriangulateSettings;
+import team.lodestar.lodestone.systems.rendering.instancing.InstancedVertexBuffer;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @EventBusSubscriber(modid = LodestoneLib.LODESTONE, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class LodestoneOBJModels {
     // TODO: Track models by ResourceLocation & cache their modification history to prevent reparsing and reapplying modifiers
     public static List<ObjModel> OBJ_MODELS = new ArrayList<>();
     public static List<MultiLODModel> LOD_MODELS = new ArrayList<>();
+    public static List<InstancedVertexBuffer> vertexBuffers = new ArrayList<>();
 
     // TODO: Get rid of this
 //    public static final MultiLODModel LOD_MODEL = register(new MultiLODModel(
@@ -69,5 +68,13 @@ public class LodestoneOBJModels {
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onClientSetup(FMLClientSetupEvent event) {
         loadModels();
+    }
+
+    public static void addInstancedVertexBuffer(InstancedVertexBuffer vertexBuffer) {
+        vertexBuffers.add(vertexBuffer);
+    }
+
+    public static void cleanup() {
+        vertexBuffers.forEach(InstancedVertexBuffer::close);
     }
 }

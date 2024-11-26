@@ -22,6 +22,7 @@ public class ObjModel extends IndexedModel {
         ObjParser parser = new ObjParser();
         parser.startParse(this);
         this.applyModifiers();
+        this.instancedVertexBuffer.uploadModel(this);
     }
 
     public static class Builder implements ModifierQueue {

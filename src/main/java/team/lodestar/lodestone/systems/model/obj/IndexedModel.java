@@ -1,16 +1,20 @@
 package team.lodestar.lodestone.systems.model.obj;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
+import team.lodestar.lodestone.handlers.InstanceRenderHandler;
 import team.lodestar.lodestone.systems.model.obj.data.*;
 import team.lodestar.lodestone.systems.model.obj.modifier.*;
+import team.lodestar.lodestone.systems.rendering.instancing.InstancedData;
+import team.lodestar.lodestone.systems.rendering.instancing.InstancedVertexBuffer;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.mojang.blaze3d.vertex.VertexFormatElement.*;
 
 public abstract class IndexedModel {
     protected List<Vertex> vertices;
@@ -18,12 +22,14 @@ public abstract class IndexedModel {
     protected List<Integer> bakedIndices;
     protected List<ModelModifier<?>> modifiers;
     protected ResourceLocation modelId;
+    protected InstancedVertexBuffer instancedVertexBuffer;
 
     public IndexedModel(ResourceLocation modelId) {
         this.modelId = modelId;
         this.vertices = new ArrayList<>();
         this.meshes = new ArrayList<>();
         this.bakedIndices = new ArrayList<>();
+        this.instancedVertexBuffer = new InstancedVertexBuffer(DefaultVertexFormat.POSITION_TEX, VertexFormat.Mode.TRIANGLES);
     }
 
     public void render(PoseStack poseStack, RenderType renderType, MultiBufferSource.BufferSource bufferSource) {
@@ -97,5 +103,74 @@ public abstract class IndexedModel {
             }
         }
 
+    }
+
+    public ByteBuffer getPositionsBuffer() {
+        ByteBuffer buffer = ByteBuffer.allocateDirect(this.vertices.size() * 3 * Float.BYTES);
+        this.vertices.forEach(vertex -> {
+            buffer.putFloat(vertex.getPosition().x);
+            buffer.putFloat(vertex.getPosition().y);
+            buffer.putFloat(vertex.getPosition().z);
+        });
+        buffer.flip();
+        return buffer;
+    }
+
+    public ByteBuffer getNormalsBuffer() {
+        ByteBuffer buffer = ByteBuffer.allocateDirect(this.vertices.size() * 3 * Float.BYTES);
+        this.vertices.forEach(vertex -> {
+            buffer.putFloat(vertex.getNormal().x);
+            buffer.putFloat(vertex.getNormal().y);
+            buffer.putFloat(vertex.getNormal().z);
+        });
+        buffer.flip();
+        return buffer;
+    }
+
+    public ByteBuffer getTextureCoordinatesBuffer() {
+        ByteBuffer buffer = ByteBuffer.allocateDirect(this.vertices.size() * 2 * Float.BYTES);
+        this.vertices.forEach(vertex -> {
+            buffer.putFloat(vertex.getUv().x);
+            buffer.putFloat(vertex.getUv().y);
+        });
+        buffer.flip();
+        return buffer;
+    }
+
+    public ByteBuffer getColorBuffer() {
+        ByteBuffer buffer = ByteBuffer.allocateDirect(this.vertices.size() * 4 * Float.BYTES);
+        this.vertices.forEach(vertex -> {
+            buffer.putFloat(vertex.getColor().x());
+            buffer.putFloat(vertex.getColor().y());
+            buffer.putFloat(vertex.getColor().z());
+            buffer.putFloat(vertex.getColor().w());
+        });
+        buffer.flip();
+        return buffer;
+    }
+
+    public ByteBuffer getAttribute(VertexFormatElement element) {
+        if (element.equals(POSITION)) {
+            return getPositionsBuffer();
+        } else if (element.equals(NORMAL)) {
+            return getNormalsBuffer();
+        } else if (element.equals(UV)) {
+            return getTextureCoordinatesBuffer();
+        } else if (element.equals(COLOR)) {
+            return getColorBuffer();
+        } else {
+            return null;
+        }
+    }
+
+    public ByteBuffer getIndicesBuffer() {
+        ByteBuffer buffer = ByteBuffer.allocateDirect(this.bakedIndices.size() * Integer.BYTES);
+        this.bakedIndices.forEach(buffer::putInt);
+        buffer.flip();
+        return buffer;
+    }
+
+    public void addInstance(InstancedData data) {
+        InstanceRenderHandler.addInstance(this, data);
     }
 }
