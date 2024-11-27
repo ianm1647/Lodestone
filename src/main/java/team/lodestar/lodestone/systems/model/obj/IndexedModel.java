@@ -1,14 +1,18 @@
 package team.lodestar.lodestone.systems.model.obj;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.resources.ResourceLocation;
 import team.lodestar.lodestone.handlers.InstanceRenderHandler;
 import team.lodestar.lodestone.systems.model.obj.data.*;
 import team.lodestar.lodestone.systems.model.obj.modifier.*;
+import team.lodestar.lodestone.systems.rendering.LodestoneRenderType;
 import team.lodestar.lodestone.systems.rendering.instancing.InstancedData;
 import team.lodestar.lodestone.systems.rendering.instancing.InstancedVertexBuffer;
+import team.lodestar.lodestone.systems.rendering.instancing.TransformInstanceData;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -45,6 +49,15 @@ public abstract class IndexedModel {
                 }
             }
         }
+    }
+
+    public void renderInstanced(RenderType renderType, PoseStack poseStack) {
+        this.instancedVertexBuffer.bind();
+        renderType.setupRenderState();
+        ShaderInstance shaderinstance = RenderSystem.getShader();
+        this.instancedVertexBuffer.drawWithShader(this, poseStack.last().pose(), RenderSystem.getProjectionMatrix(), shaderinstance);
+        renderType.clearRenderState();
+        this.instancedVertexBuffer.unbind();
     }
 
     public abstract void loadModel();
@@ -170,7 +183,11 @@ public abstract class IndexedModel {
         return buffer;
     }
 
-    public void addInstance(InstancedData data) {
+    public void addInstance(TransformInstanceData data) {
         InstanceRenderHandler.addInstance(this, data);
+    }
+
+    public InstancedVertexBuffer getInstancedVertexBuffer() {
+        return this.instancedVertexBuffer;
     }
 }

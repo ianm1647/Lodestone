@@ -4,15 +4,21 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormatElement;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.ShaderInstance;
+import org.joml.Matrix4f;
 import team.lodestar.lodestone.LodestoneLib;
+import team.lodestar.lodestone.handlers.InstanceRenderHandler;
+import team.lodestar.lodestone.registry.client.LodestoneInstancedDataTypes;
 import team.lodestar.lodestone.registry.client.LodestoneOBJModels;
 import team.lodestar.lodestone.systems.model.obj.IndexedModel;
+import team.lodestar.lodestone.systems.rendering.LodestoneRenderSystem;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.lwjgl.opengl.GL30.*;
+import static org.lwjgl.opengl.GL31.*;
 
 public class InstancedVertexBuffer implements AutoCloseable {
     private List<Integer> vbos = new ArrayList<>();
@@ -20,6 +26,7 @@ public class InstancedVertexBuffer implements AutoCloseable {
     private int vertexArrayObject = -1;
     private VertexFormat format;
     private VertexFormat.Mode mode;
+    private int nextAttributeIndex;
 
     public InstancedVertexBuffer(VertexFormat format, VertexFormat.Mode mode) {
         this.format = format;
@@ -28,15 +35,10 @@ public class InstancedVertexBuffer implements AutoCloseable {
     }
 
     public void uploadModel(IndexedModel model) {
-        if (!RenderSystem.isOnRenderThread()) {
-            RenderSystem.recordRenderCall(() -> {
-                LodestoneLib.LOGGER.info("Uploading model on render thread: " + model);
-                _uploadModel(model);
-            });
-        } else {
-            LodestoneLib.LOGGER.info("Uploading model on render thread2: " + model);
+        LodestoneRenderSystem.wrap(() -> {
+            LodestoneLib.LOGGER.info("Uploading model on render thread: " + model);
             _uploadModel(model);
-        }
+        });
     }
 
     private void _uploadModel(IndexedModel model) {
@@ -61,6 +63,7 @@ public class InstancedVertexBuffer implements AutoCloseable {
         for (int j = 0; j < this.format.getElements().size(); j++) {
             VertexFormatElement element = this.format.getElements().get(j);
             storeVertexAttribute(element, model.getAttribute(element), j, stride);
+            this.nextAttributeIndex++;
         }
     }
 
@@ -73,12 +76,47 @@ public class InstancedVertexBuffer implements AutoCloseable {
         GlStateManager._enableVertexAttribArray(0);
     }
 
+    private void addInstancedMatrix(ByteBuffer byteBuffer) {
+
+    }
+
     public void bind() {
         GlStateManager._glBindVertexArray(this.vertexArrayObject);
     }
 
     public void unbind() {
         GlStateManager._glBindVertexArray(0);
+    }
+
+    public void drawInstanced(IndexedModel model) {
+        drawInstanced(model.getBakedIndices().size(), InstanceRenderHandler.instancedData.get(model).size());
+    }
+
+    public void drawInstanced(IndexedModel model, int instanceCount) {
+        drawInstanced(model.getBakedIndices().size(), instanceCount);
+    }
+
+    public void drawInstanced(int indexCount, int instanceCount) {
+        LodestoneRenderSystem.wrap(() -> _drawInstanced(indexCount, instanceCount));
+    }
+
+    private void _drawInstanced(int indexCount, int instanceCount) {
+        glDrawElementsInstanced(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0, instanceCount);
+    }
+
+    public void drawWithShader(IndexedModel model, Matrix4f modelViewMatrix, Matrix4f projectionMatrix, ShaderInstance shader) {
+        LodestoneRenderSystem.wrap(() -> this._drawWithShader(model, new Matrix4f(modelViewMatrix), new Matrix4f(projectionMatrix), shader));
+    }
+
+    private void _drawWithShader(IndexedModel model, Matrix4f modelViewMatrix, Matrix4f projectionMatrix, ShaderInstance shader) {
+        shader.setDefaultUniforms(this.mode, modelViewMatrix, projectionMatrix, Minecraft.getInstance().getWindow());
+        shader.apply();
+        this.drawInstanced(model);
+        shader.clear();
+    }
+
+    public int getNextIndex() {
+        return this.nextAttributeIndex;
     }
 
     @Override

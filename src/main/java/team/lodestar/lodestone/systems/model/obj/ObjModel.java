@@ -1,9 +1,12 @@
 package team.lodestar.lodestone.systems.model.obj;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.resources.ResourceLocation;
+import team.lodestar.lodestone.LodestoneLib;
 import team.lodestar.lodestone.systems.model.obj.modifier.ModelModifier;
 import team.lodestar.lodestone.systems.model.obj.modifier.ModifierQueue;
+import team.lodestar.lodestone.systems.rendering.instancing.TransformInstanceData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +26,18 @@ public class ObjModel extends IndexedModel {
         parser.startParse(this);
         this.applyModifiers();
         this.instancedVertexBuffer.uploadModel(this);
+        LodestoneLib.LOGGER.info(this.instancedVertexBuffer.toString());
+        PoseStack poseStack = new PoseStack();
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < 10; j++) {
+                for (int k = 0; k < 10; k++) {
+                    poseStack.pushPose();
+                    poseStack.translate(i, j, k);
+                    this.addInstance(new TransformInstanceData(poseStack));
+                    poseStack.popPose();
+                }
+            }
+        }
     }
 
     public static class Builder implements ModifierQueue {
