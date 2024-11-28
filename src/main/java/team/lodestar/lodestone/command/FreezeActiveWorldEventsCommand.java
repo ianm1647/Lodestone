@@ -28,7 +28,7 @@ public class FreezeActiveWorldEventsCommand {
                         .executes(ctx -> {
                             CommandSourceStack source = ctx.getSource();
                             ServerLevel level = source.getLevel();
-                            WorldEventAttachment data = level.getData(LodestoneAttachmentTypes.WORLD_EVENT_DATA);
+                            WorldEventAttachment data = level.getAttachedOrCreate(LodestoneAttachmentTypes.WORLD_EVENT_DATA);
                             List<WorldEventInstance> activeWorldEvents = data.activeWorldEvents;
                             List<WorldEventInstance> notCurrentlyFrozen = activeWorldEvents.stream().filter(event -> !event.isFrozen()).toList();
                             if (notCurrentlyFrozen.isEmpty()) {
@@ -60,7 +60,7 @@ public class FreezeActiveWorldEventsCommand {
                                 .then(Commands.argument("type", WorldEventTypeArgument.worldEventType())
                                         .executes(ctx -> {
                                             WorldEventType type = WorldEventTypeArgument.getEventType(ctx, "type");
-                                            WorldEventAttachment data = ctx.getSource().getLevel().getData(LodestoneAttachmentTypes.WORLD_EVENT_DATA);
+                                            WorldEventAttachment data = ctx.getSource().getLevel().getAttachedOrCreate(LodestoneAttachmentTypes.WORLD_EVENT_DATA);
                                             List<WorldEventInstance> activeWorldEvents = data.activeWorldEvents.stream().filter(instance -> instance.type == type).toList();
                                             List<WorldEventInstance> notCurrentlyFrozen = activeWorldEvents.stream().filter(event -> !event.isFrozen()).toList();
                                             if (notCurrentlyFrozen.isEmpty()) {

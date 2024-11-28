@@ -20,8 +20,11 @@ public class ThrowawayBlockDataHandler {
     }
 
     public static void setRenderLayers() {
+        /* TODO setRenderLayer
         DataHelper.getAll(BuiltInRegistries.BLOCK.stream().toList(),
                         b -> b.properties() instanceof LodestoneBlockProperties blockProperties && blockProperties.getThrowawayData().hasCustomRenderType())
                 .forEach(b -> ItemBlockRenderTypes.setRenderLayer(b, ((LodestoneBlockProperties) b.properties()).getThrowawayData().getRenderType().get().get()));
+
+         */
     }
 }

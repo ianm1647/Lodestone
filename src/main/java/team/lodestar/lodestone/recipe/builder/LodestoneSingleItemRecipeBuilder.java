@@ -13,7 +13,7 @@ public class LodestoneSingleItemRecipeBuilder extends SingleItemRecipeBuilder im
     public LodestoneSingleItemRecipeBuilder(SingleItemRecipeBuilder parent) {
         super(
                 parent.category, parent.factory,
-                parent.ingredient, parent.result,
+                parent.ingredient, parent.getResult(),
                 parent.count
         );
         ReflectionHelper.copyFields(parent, this);
@@ -23,7 +23,7 @@ public class LodestoneSingleItemRecipeBuilder extends SingleItemRecipeBuilder im
     public SingleItemRecipe build(ResourceLocation id) {
         return this.factory.create(
                 Objects.requireNonNullElse(this.group, ""),
-                this.ingredient, new ItemStack(this.result, this.count)
+                this.ingredient, new ItemStack(this.getResult(), this.count)
         );
     }
 

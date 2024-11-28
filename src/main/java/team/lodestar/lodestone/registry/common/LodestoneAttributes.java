@@ -32,12 +32,4 @@ public class LodestoneAttributes {
         UUIDS.put(registryObject, UUID.randomUUID());
         return registryObject;
     }
-
-    public static void modifyEntityAttributes(EntityAttributeModificationEvent event) {
-        event.getTypes().forEach(e -> {
-            event.add(e, MAGIC_RESISTANCE);
-            event.add(e, MAGIC_PROFICIENCY);
-            event.add(e, MAGIC_DAMAGE);
-        });
-    }
 }

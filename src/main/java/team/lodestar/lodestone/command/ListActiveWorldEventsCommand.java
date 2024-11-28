@@ -69,14 +69,14 @@ public class ListActiveWorldEventsCommand {
         private List<WorldEventInstance> activeWorldEvents;
 
         protected ActiveWorldEventReport(ServerLevel level) {
-            WorldEventAttachment data = level.getData(LodestoneAttachmentTypes.WORLD_EVENT_DATA);
+            WorldEventAttachment data = level.getAttachedOrCreate(LodestoneAttachmentTypes.WORLD_EVENT_DATA);
             instanceCount = data.activeWorldEvents.size();
             frozenCount = (int) data.activeWorldEvents.stream().filter(WorldEventInstance::isFrozen).count();
             activeWorldEvents = data.activeWorldEvents;
         }
 
         protected ActiveWorldEventReport(ServerLevel level, WorldEventType worldEventType) {
-            WorldEventAttachment data = level.getData(LodestoneAttachmentTypes.WORLD_EVENT_DATA);
+            WorldEventAttachment data = level.getAttachedOrCreate(LodestoneAttachmentTypes.WORLD_EVENT_DATA);
             instanceCount = (int) data.activeWorldEvents.stream().filter(worldEventInstance -> worldEventInstance.type.equals(worldEventType)).count();
             frozenCount = (int) data.activeWorldEvents.stream().filter(worldEventInstance -> worldEventInstance.type.equals(worldEventType) && worldEventInstance.isFrozen()).count();
             activeWorldEvents = data.activeWorldEvents;

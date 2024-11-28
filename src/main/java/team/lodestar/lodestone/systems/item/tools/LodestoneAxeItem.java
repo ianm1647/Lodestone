@@ -15,6 +15,7 @@ import net.minecraft.world.item.component.ItemAttributeModifiers;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class LodestoneAxeItem extends AxeItem {
     private Multimap<Attribute, AttributeModifier> attributes;
 
@@ -22,10 +23,9 @@ public class LodestoneAxeItem extends AxeItem {
         super(material, properties.durability(material.getUses()).attributes(createAttributes(material, damage + 6, speed - 3.2f)));
     }
 
-
     @Override
-    public ItemAttributeModifiers getDefaultAttributeModifiers(ItemStack stack) {
-        ItemAttributeModifiers modifiers = super.getDefaultAttributeModifiers(stack);
+    public ItemAttributeModifiers getDefaultAttributeModifiers() {
+        ItemAttributeModifiers modifiers = super.getDefaultAttributeModifiers();
         ItemAttributeModifiers.Builder builder = ItemAttributeModifiers.builder();
 
         List<ItemAttributeModifiers.Entry> entries = modifiers.modifiers();
@@ -45,5 +45,7 @@ public class LodestoneAxeItem extends AxeItem {
         return new ArrayList<>();
     }
 }
+
+
 
 

@@ -1,5 +1,8 @@
 package team.lodestar.lodestone.systems.datagen.providers;
 
+import io.github.fabricators_of_create.porting_lib.data.ExistingFileHelper;
+import io.github.fabricators_of_create.porting_lib.util.DeferredHolder;
+import io.github.fabricators_of_create.porting_lib.util.DeferredRegister;
 import net.minecraft.core.*;
 import net.minecraft.core.registries.*;
 import net.minecraft.data.*;
@@ -8,8 +11,6 @@ import net.minecraft.resources.*;
 import net.minecraft.tags.*;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.block.*;
-import net.neoforged.neoforge.common.data.*;
-import net.neoforged.neoforge.registries.*;
 import org.jetbrains.annotations.*;
 import team.lodestar.lodestone.systems.block.*;
 import team.lodestar.lodestone.systems.datagen.*;
@@ -19,8 +20,8 @@ import java.util.concurrent.*;
 
 public abstract class LodestoneItemTagsProvider extends ItemTagsProvider {
 
-    public LodestoneItemTagsProvider(PackOutput pOutput, CompletableFuture<HolderLookup.Provider> pLookupProvider, CompletableFuture<TagLookup<Block>> pBlockTags, String modId, @Nullable ExistingFileHelper existingFileHelper) {
-        super(pOutput, pLookupProvider, pBlockTags, modId, existingFileHelper);
+    public LodestoneItemTagsProvider(PackOutput pOutput, CompletableFuture<HolderLookup.Provider> pLookupProvider, CompletableFuture<TagLookup<Block>> pBlockTags) {
+        super(pOutput, pLookupProvider, pBlockTags);
     }
 
     @Override

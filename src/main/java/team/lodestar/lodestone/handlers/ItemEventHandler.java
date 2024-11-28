@@ -74,8 +74,8 @@ public class ItemEventHandler {
      */
     public interface IEventResponderItem {
 
-        default void modifyAttributesEvent(ItemAttributeModifierEvent event) {
-        }
+        //TODO default void modifyAttributesEvent(ItemAttributeModifierEvent event) {
+        //}
 
         default void incomingDamageEvent(LivingHurtEvent event, LivingEntity attacker, LivingEntity target, ItemStack stack) {
         }

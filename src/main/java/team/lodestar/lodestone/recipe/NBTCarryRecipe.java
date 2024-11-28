@@ -10,10 +10,9 @@ import net.minecraft.network.codec.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
+import org.jetbrains.annotations.NotNull;
 import team.lodestar.lodestone.recipe.builder.LodestoneShapedRecipeBuilder;
 import team.lodestar.lodestone.registry.common.LodestoneRecipeSerializers;
-
-import javax.annotation.Nonnull;
 
 public class NBTCarryRecipe extends ShapedRecipe {
     public static final String NAME = "nbt_carry";
@@ -25,6 +24,13 @@ public class NBTCarryRecipe extends ShapedRecipe {
         this.copyFrom = copyFrom;
     }
 
+    private <T> void copyComponent(ItemStack out, TypedDataComponent<T> component, ItemStack stack) {
+        T value = stack.get(component.type());
+        if (value != null) {
+            out.set(component.type(), value);
+        }
+    }
+
     @Override
     public ItemStack assemble(CraftingInput pInput, HolderLookup.Provider pRegistries) {
         ItemStack out = super.assemble(pInput, pRegistries);
@@ -32,7 +38,7 @@ public class NBTCarryRecipe extends ShapedRecipe {
             ItemStack stack = pInput.getItem(i);
             if (!stack.isEmpty() && copyFrom.test(stack) && !stack.getComponents().isEmpty()) {
                 for (TypedDataComponent<?> component : stack.getComponents()) {
-                    out.copyFrom(stack, component.type());
+                    copyComponent(out, component, stack);
                 }
                 break;
             }
@@ -40,7 +46,7 @@ public class NBTCarryRecipe extends ShapedRecipe {
         return out;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public RecipeSerializer<?> getSerializer() {
         return LodestoneRecipeSerializers.NBT_CARRY_RECIPE_SERIALIZER.get();
@@ -72,7 +78,7 @@ public class NBTCarryRecipe extends ShapedRecipe {
             return new NBTCarryRecipe(recipe, copyFrom);
         }
 
-        public static void toNetwork(RegistryFriendlyByteBuf byteBuf, @Nonnull NBTCarryRecipe recipe) {
+        public static void toNetwork(RegistryFriendlyByteBuf byteBuf, @NotNull NBTCarryRecipe recipe) {
             ShapedRecipe.Serializer.STREAM_CODEC.encode(byteBuf, recipe);
             Ingredient.CONTENTS_STREAM_CODEC.encode(byteBuf, recipe.copyFrom);
         }

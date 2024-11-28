@@ -3,11 +3,14 @@ package team.lodestar.lodestone.network.screenshake;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.buffer.ByteBuf;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
+import team.lodestar.lodestone.LodestoneLib;
 import team.lodestar.lodestone.handlers.ScreenshakeHandler;
 import team.lodestar.lodestone.helpers.ReflectionHelper;
 import team.lodestar.lodestone.systems.easing.Easing;
@@ -19,6 +22,9 @@ public class PositionedScreenshakePayload extends ScreenshakePayload {
     public float falloffDistance;
     public float maxDistance;
     public Easing falloffEasing;
+
+    public static CustomPacketPayload.Type<PositionedScreenshakePayload> ID = new CustomPacketPayload.Type<>(LodestoneLib.lodestonePath("positioned_screenshake"));
+    public static final StreamCodec<? super RegistryFriendlyByteBuf, PositionedScreenshakePayload> PAYLOAD_STREAM_CODEC = CustomPacketPayload.codec(PositionedScreenshakePayload::write, PositionedScreenshakePayload::new);
 
     public static final Codec<PositionedScreenshakePayload> CODEC = RecordCodecBuilder.create(obj -> obj.group(
             ScreenshakePayload.CODEC.fieldOf("parent").forGetter(p -> p),
@@ -51,14 +57,17 @@ public class PositionedScreenshakePayload extends ScreenshakePayload {
         this.falloffEasing = falloffEasing;
     }
 
-
     @Override
-    public void handle(IPayloadContext context) {
+    public <T extends CustomPacketPayload> void handle(T payload, ClientPlayNetworking.Context context) {
         ScreenshakeHandler.addScreenshake(new PositionedScreenshakeInstance(duration, position, falloffDistance, maxDistance, falloffEasing).setIntensity(intensity1, intensity2, intensity3).setEasing(intensityCurveStartEasing, intensityCurveEndEasing));
     }
 
     @Override
-    public void serialize(FriendlyByteBuf byteBuf) {
-        STREAM_CODEC.encode(byteBuf, this);
+    public Type<? extends CustomPacketPayload> type() {
+        return ID;
+    }
+
+    private void write(RegistryFriendlyByteBuf registryFriendlyByteBuf) {
+        STREAM_CODEC.encode(registryFriendlyByteBuf, this);
     }
 }

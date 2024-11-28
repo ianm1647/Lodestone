@@ -11,7 +11,7 @@ import java.util.Objects;
 
 public class LodestoneShapedRecipeBuilder extends ShapedRecipeBuilder implements LodestoneRecipeBuilder<ShapedRecipe> {
     public LodestoneShapedRecipeBuilder(ShapedRecipeBuilder parent) {
-        super(parent.category, parent.resultStack);
+        super(parent.category, parent.getResult(), parent.count);
         ReflectionHelper.copyFields(parent, this);
     }
 
@@ -20,7 +20,7 @@ public class LodestoneShapedRecipeBuilder extends ShapedRecipeBuilder implements
                 Objects.requireNonNullElse(this.group, ""),
                 RecipeBuilder.determineBookCategory(this.category),
                 this.ensureValid(id),
-                this.resultStack,
+                this.getResult(),
                 this.showNotification
         );
     }

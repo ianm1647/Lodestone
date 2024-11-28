@@ -1,32 +1,33 @@
 package team.lodestar.lodestone.network;
 
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.*;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
-import team.lodestar.lodestone.systems.network.LodestoneNetworkPayloadData;
-import team.lodestar.lodestone.systems.network.OneSidedPayloadData;
+import team.lodestar.lodestone.LodestoneLib;
+import team.lodestar.lodestone.systems.network.LodestonePayload;
 
-public class TotemOfUndyingPayload extends OneSidedPayloadData {
+public class TotemOfUndyingPayload implements CustomPacketPayload, LodestonePayload {
 
+    public static CustomPacketPayload.Type<TotemOfUndyingPayload> ID = new CustomPacketPayload.Type<>(LodestoneLib.lodestonePath("totem_of_undying"));
+    public static final StreamCodec<? super RegistryFriendlyByteBuf, TotemOfUndyingPayload> STREAM_CODEC = CustomPacketPayload.codec(TotemOfUndyingPayload::write, TotemOfUndyingPayload::new);
     private final int entityId;
     private ItemStack stack;
 
-    public TotemOfUndyingPayload(FriendlyByteBuf byteBuf) {
+    public TotemOfUndyingPayload(RegistryFriendlyByteBuf byteBuf) {
         entityId = byteBuf.readInt();
+        stack = ItemStack.parseOptional(byteBuf.registryAccess(), byteBuf.readNbt());
     }
 
-    @OnlyIn(Dist.CLIENT)
     @Override
-    public void handle(IPayloadContext context) {
+    public <T extends CustomPacketPayload> void handle(T payload, ClientPlayNetworking.Context context) {
+
         Minecraft minecraft = Minecraft.getInstance();
         Entity entity = minecraft.level.getEntity(entityId);
         if (entity instanceof LivingEntity livingEntity) {
@@ -38,12 +39,13 @@ public class TotemOfUndyingPayload extends OneSidedPayloadData {
         }
     }
 
-    @Override
-    public void serialize(FriendlyByteBuf byteBuf) {
-        byteBuf.writeInt(entityId);
-
-        //TODO: saving the stack requires registry access, need to figure out the whole RegistryFriendlyByteBuf thing
-//        stack.save()
+    private void write(RegistryFriendlyByteBuf buf) {
+        buf.writeInt(entityId);
+        buf.writeNbt(stack.save(buf.registryAccess()));
     }
 
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return ID;
+    }
 }

@@ -7,6 +7,9 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import io.github.fabricators_of_create.porting_lib.core.util.ServerLifecycleHooks;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.core.registries.Registries;
@@ -14,9 +17,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.Level;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import team.lodestar.lodestone.attachment.WorldEventAttachment;
 import team.lodestar.lodestone.registry.common.LodestoneAttachmentTypes;
 import team.lodestar.lodestone.systems.worldevent.WorldEventInstance;
@@ -61,7 +61,7 @@ public class WorldEventInstanceArgument implements ArgumentType<WorldEventInstan
                     if (levelResourceKey == null) return;
                     Level level = server.getLevel(levelResourceKey);
                     if (level == null) return;
-                    WorldEventAttachment data = level.getData(LodestoneAttachmentTypes.WORLD_EVENT_DATA);
+                    WorldEventAttachment data = level.getAttachedOrCreate(LodestoneAttachmentTypes.WORLD_EVENT_DATA);
                     data.activeWorldEvents.stream()
                             .filter(worldEventInstance -> worldEventInstance.uuid.equals(uuid))
                             .findFirst()
@@ -80,7 +80,7 @@ public class WorldEventInstanceArgument implements ArgumentType<WorldEventInstan
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
         S s = context.getSource();
         if (s instanceof SharedSuggestionProvider sharedsuggestionprovider) {
@@ -88,7 +88,7 @@ public class WorldEventInstanceArgument implements ArgumentType<WorldEventInstan
                 if (levelResourceKey == null) return;
                 Level level = Minecraft.getInstance().level;
                 if (level == null) return;
-                WorldEventAttachment data = level.getData(LodestoneAttachmentTypes.WORLD_EVENT_DATA);
+                WorldEventAttachment data = level.getAttachedOrCreate(LodestoneAttachmentTypes.WORLD_EVENT_DATA);
                 data.activeWorldEvents.forEach(worldEventInstance -> {
                     builder.suggest(worldEventInstance.uuid.toString());
                 });

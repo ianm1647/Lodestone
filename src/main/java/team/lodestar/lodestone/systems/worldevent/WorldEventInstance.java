@@ -3,6 +3,7 @@ package team.lodestar.lodestone.systems.worldevent;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.buffer.Unpooled;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.FriendlyByteBuf;
@@ -11,6 +12,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.*;
 import team.lodestar.lodestone.network.worldevent.SyncWorldEventPayload;
+import team.lodestar.lodestone.registry.common.LodestoneNetworkPayloads;
 import team.lodestar.lodestone.registry.common.LodestoneWorldEventTypes;
 
 import java.util.UUID;
@@ -120,9 +122,9 @@ public abstract class WorldEventInstance {
 
     public static <T extends WorldEventInstance> void sync(T instance, @Nullable ServerPlayer player) {
         if (player != null) {
-            PacketDistributor.sendToPlayer(player, new SyncWorldEventPayload(instance, false));
+            ServerPlayNetworking.send(player, new SyncWorldEventPayload(instance, false));
             return;
         }
-        PacketDistributor.sendToAllPlayers(new SyncWorldEventPayload(instance, false));
+        LodestoneNetworkPayloads.sendToPlayers(instance.level, new SyncWorldEventPayload(instance, false));
     }
 }

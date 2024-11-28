@@ -8,6 +8,7 @@ import net.minecraft.resources.*;
 import net.minecraft.util.*;
 import org.apache.logging.log4j.*;
 import team.lodestar.lodestone.events.RuntimeEvents;
+import team.lodestar.lodestone.events.SetupEvents;
 import team.lodestar.lodestone.handlers.LodestoneAttributeEventHandler;
 import team.lodestar.lodestone.registry.common.LodestoneAttachmentTypes;
 import team.lodestar.lodestone.compability.*;
@@ -30,11 +31,14 @@ public class LodestoneLib implements ModInitializer {
         LodestoneAttachmentTypes.register();
         LodestonePlacementFillers.MODIFIERS.register();
         LodestoneWorldEventTypes.WORLD_EVENT_TYPES.register();
-        LodestoneCommandArgumentTypes.registerArgumentTypes();
+        SetupEvents.registerCommon();
+
         CuriosCompat.init();
 
         RuntimeEvents.onDeath();
         RuntimeEvents.onHurt();
+
+        SetupEvents.lateSetup();
     }
 
     public static ResourceLocation lodestonePath(String path) {

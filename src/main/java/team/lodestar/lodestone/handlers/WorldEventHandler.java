@@ -1,6 +1,7 @@
 package team.lodestar.lodestone.handlers;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import io.github.fabricators_of_create.porting_lib.entity.events.EntityJoinLevelEvent;
 import io.netty.buffer.Unpooled;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
@@ -8,14 +9,11 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
-import net.neoforged.neoforge.event.tick.LevelTickEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
 import team.lodestar.lodestone.events.types.worldevent.*;
 import team.lodestar.lodestone.network.worldevent.UpdateWorldEventPayload;
 import team.lodestar.lodestone.registry.client.LodestoneWorldEventRenderers;
 import team.lodestar.lodestone.registry.common.LodestoneAttachmentTypes;
+import team.lodestar.lodestone.registry.common.LodestoneNetworkPayloads;
 import team.lodestar.lodestone.systems.worldevent.WorldEventInstance;
 import team.lodestar.lodestone.systems.worldevent.WorldEventRenderer;
 
@@ -48,9 +46,9 @@ public class WorldEventHandler {
     }
 
     public static <T extends WorldEventInstance> T addWorldEvent(Level level, boolean shouldStart, T instance) {
-        NeoForge.EVENT_BUS.post(new WorldEventCreationEvent(instance, level));
+        WorldEventCreationEvent.EVENT.invoker().post(new WorldEventCreationEvent(instance, level));
 
-        var worldData = level.getData(LodestoneAttachmentTypes.WORLD_EVENT_DATA);
+        var worldData = level.getAttachedOrCreate(LodestoneAttachmentTypes.WORLD_EVENT_DATA);
 
         worldData.inboundWorldEvents.add(instance);
         if (shouldStart) {
@@ -65,7 +63,7 @@ public class WorldEventHandler {
         if (event.getEntity() instanceof Player player) {
             if (player.level() instanceof ServerLevel level) {
 
-                var worldData = level.getData(LodestoneAttachmentTypes.WORLD_EVENT_DATA);
+                var worldData = level.getAttachedOrCreate(LodestoneAttachmentTypes.WORLD_EVENT_DATA);
 
                 if (player instanceof ServerPlayer serverPlayer) {
                     for (WorldEventInstance instance : worldData.activeWorldEvents) {
@@ -78,10 +76,8 @@ public class WorldEventHandler {
         }
     }
 
-    public static void worldTick(LevelTickEvent.Post event) {
-        if (!event.getLevel().isClientSide) {
-            tick(event.getLevel());
-        }
+    public static void worldTick(ServerLevel serverLevel) {
+        tick(serverLevel);
     }
 
     /**
@@ -92,7 +88,7 @@ public class WorldEventHandler {
      * See {@link WorldEventInstance#tick(Level)}
      */
     public static void tick(Level level) {
-        var c = level.getData(LodestoneAttachmentTypes.WORLD_EVENT_DATA);
+        var c = level.getAttachedOrCreate(LodestoneAttachmentTypes.WORLD_EVENT_DATA);
         c.activeWorldEvents.addAll(c.inboundWorldEvents);
         c.inboundWorldEvents.clear();
 
@@ -100,15 +96,15 @@ public class WorldEventHandler {
         while (iterator.hasNext()) {
             WorldEventInstance instance = iterator.next();
             if (instance.discarded) {
-                NeoForge.EVENT_BUS.post(new WorldEventDiscardEvent(instance, level));
+                WorldEventDiscardEvent.EVENT.invoker().post(new WorldEventDiscardEvent(instance, level));
                 iterator.remove();
             } else {
                 if (!instance.isFrozen()) {
-                    NeoForge.EVENT_BUS.post(new WorldEventTickEvent(instance, level));
+                    WorldEventTickEvent.EVENT.invoker().post(new WorldEventTickEvent(instance, level));
                     instance.tick(level);
                 }
                 if (instance.dirty) {
-                    PacketDistributor.sendToAllPlayers(new UpdateWorldEventPayload(instance));
+                    LodestoneNetworkPayloads.sendToPlayers(level, new UpdateWorldEventPayload(instance));
                     instance.dirty = false;
                 }
             }

@@ -3,23 +3,27 @@ package team.lodestar.lodestone.network.screenshake;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.buffer.ByteBuf;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import team.lodestar.lodestone.LodestoneLib;
 import team.lodestar.lodestone.handlers.ScreenshakeHandler;
 import team.lodestar.lodestone.helpers.ReflectionHelper;
+import team.lodestar.lodestone.network.worldevent.UpdateWorldEventPayload;
 import team.lodestar.lodestone.systems.easing.Easing;
-import team.lodestar.lodestone.systems.network.OneSidedPayloadData;
+import team.lodestar.lodestone.systems.network.LodestonePayload;
 import team.lodestar.lodestone.systems.screenshake.ScreenshakeInstance;
 
-public class ScreenshakePayload extends OneSidedPayloadData {
+public class ScreenshakePayload implements CustomPacketPayload, LodestonePayload {
 
     public int duration;
     public float intensity1, intensity2, intensity3;
     public Easing intensityCurveStartEasing, intensityCurveEndEasing;
+    public static CustomPacketPayload.Type<ScreenshakePayload> ID = new CustomPacketPayload.Type<>(LodestoneLib.lodestonePath("screenshake"));
+    public static final StreamCodec<? super RegistryFriendlyByteBuf, ScreenshakePayload> PAYLOAD_STREAM_CODEC = CustomPacketPayload.codec(ScreenshakePayload::write, ScreenshakePayload::new);
 
     public static final Codec<ScreenshakePayload> CODEC = RecordCodecBuilder.create(obj -> obj.group(
             Codec.INT.fieldOf("duration").forGetter(p -> p.duration),
@@ -45,14 +49,19 @@ public class ScreenshakePayload extends OneSidedPayloadData {
         this.intensityCurveEndEasing = intensityCurveEndEasing;
     }
 
-    @OnlyIn(Dist.CLIENT)
-    @Override
-    public void handle(IPayloadContext context) {
-        ScreenshakeHandler.addScreenshake(new ScreenshakeInstance(duration).setIntensity(intensity1, intensity2, intensity3).setEasing(intensityCurveStartEasing, intensityCurveEndEasing));
+    private void write(RegistryFriendlyByteBuf registryFriendlyByteBuf) {
+        STREAM_CODEC.encode(registryFriendlyByteBuf, this);
     }
 
     @Override
-    public void serialize(FriendlyByteBuf byteBuf) {
-        STREAM_CODEC.encode(byteBuf, this);
+    public Type<? extends CustomPacketPayload> type() {
+        return ID;
+    }
+
+    @Override
+    public <T extends CustomPacketPayload> void handle(T payload, ClientPlayNetworking.Context context) {
+        context.client().execute(()-> {
+            ScreenshakeHandler.addScreenshake(new ScreenshakeInstance(duration).setIntensity(intensity1, intensity2, intensity3).setEasing(intensityCurveStartEasing, intensityCurveEndEasing));
+        });
     }
 }

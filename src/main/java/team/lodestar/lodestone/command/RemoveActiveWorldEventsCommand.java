@@ -8,12 +8,12 @@ import net.minecraft.commands.Commands;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.network.PacketDistributor;
 import team.lodestar.lodestone.attachment.WorldEventAttachment;
 import team.lodestar.lodestone.command.arguments.WorldEventInstanceArgument;
 import team.lodestar.lodestone.command.arguments.WorldEventTypeArgument;
 import team.lodestar.lodestone.network.worldevent.UpdateWorldEventPayload;
 import team.lodestar.lodestone.registry.common.LodestoneAttachmentTypes;
+import team.lodestar.lodestone.registry.common.LodestoneNetworkPayloads;
 import team.lodestar.lodestone.systems.worldevent.WorldEventInstance;
 import team.lodestar.lodestone.systems.worldevent.WorldEventType;
 
@@ -31,7 +31,7 @@ public class RemoveActiveWorldEventsCommand {
                         .executes(ctx -> {
                             CommandSourceStack source = ctx.getSource();
                             Level level = source.getLevel();
-                            WorldEventAttachment worldEventAttachment = level.getData(LodestoneAttachmentTypes.WORLD_EVENT_DATA);
+                            WorldEventAttachment worldEventAttachment = level.getAttachedOrCreate(LodestoneAttachmentTypes.WORLD_EVENT_DATA);
                             int count = worldEventAttachment.activeWorldEvents.size();
                             worldEventAttachment.activeWorldEvents.forEach(instance -> endAndUpdate(instance, level));
                             if (count > 0) {
@@ -60,7 +60,7 @@ public class RemoveActiveWorldEventsCommand {
                                     CommandSourceStack source = ctx.getSource();
                                     Level level = source.getLevel();
                                     WorldEventType type = WorldEventTypeArgument.getEventType(ctx, "type");
-                                    WorldEventAttachment worldEventAttachment = level.getData(LodestoneAttachmentTypes.WORLD_EVENT_DATA);
+                                    WorldEventAttachment worldEventAttachment = level.getAttachedOrCreate(LodestoneAttachmentTypes.WORLD_EVENT_DATA);
                                     int count;
                                     List<WorldEventInstance> activeWorldEvents = worldEventAttachment.activeWorldEvents.stream().filter(instance -> instance.type == type).toList();
                                     count = activeWorldEvents.size();
@@ -79,7 +79,7 @@ public class RemoveActiveWorldEventsCommand {
 
     private static void endAndUpdate(WorldEventInstance instance, Level level) {
         instance.end(level);
-        PacketDistributor.sendToAllPlayers(new UpdateWorldEventPayload(instance));
+        LodestoneNetworkPayloads.sendToPlayers(level, new UpdateWorldEventPayload(instance));
         instance.dirty = false;
     }
 }

@@ -6,6 +6,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.levelgen.*;
 import net.minecraft.world.level.levelgen.synth.*;
 import team.lodestar.lodestone.config.ClientConfig;
+import team.lodestar.lodestone.events.LodestoneCameraEvent;
 import team.lodestar.lodestone.systems.screenshake.ScreenshakeInstance;
 
 import java.util.*;
@@ -16,13 +17,15 @@ public class ScreenshakeHandler {
 
     private static float intensity;
 
-    public static void cameraSetup(Camera camera) {
+    public static LodestoneCameraEvent.Data cameraSetup(Camera camera, double v, float v1, float v2) {
         if (intensity >= 0.1) {
             var random = Minecraft.getInstance().level.getRandom();
             float yawOffset = randomizeOffset(random);
             float pitchOffset = randomizeOffset(random);
             camera.setRotation(camera.getYRot() + yawOffset, camera.getXRot() + pitchOffset);
         }
+
+        return new LodestoneCameraEvent.Data(camera, v, v1, v2);
     }
 
     public static void clientTick(Camera camera) {
@@ -40,4 +43,6 @@ public class ScreenshakeHandler {
     public static float randomizeOffset(RandomSource random) {
         return Mth.nextFloat(random, -intensity * 2, intensity * 2);
     }
+
+
 }

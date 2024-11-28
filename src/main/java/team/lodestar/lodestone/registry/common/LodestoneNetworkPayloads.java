@@ -1,5 +1,10 @@
 package team.lodestar.lodestone.registry.common;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -14,59 +19,76 @@ import team.lodestar.lodestone.network.screenshake.PositionedScreenshakePayload;
 import team.lodestar.lodestone.network.screenshake.ScreenshakePayload;
 import team.lodestar.lodestone.network.worldevent.SyncWorldEventPayload;
 import team.lodestar.lodestone.network.worldevent.UpdateWorldEventPayload;
+import team.lodestar.lodestone.systems.network.LodestonePayload;
+
+import java.util.function.BiConsumer;
 
 public class LodestoneNetworkPayloads {
 
     public static void register() {
-
-
-        LODESTONE_CHANNEL.playToClient(registrar, "totem_of_undying", TotemOfUndyingPayload.class, TotemOfUndyingPayload::new);
-        LODESTONE_CHANNEL.playToClient(registrar, "sync_world_event", SyncWorldEventPayload.class, SyncWorldEventPayload::new);
-        LODESTONE_CHANNEL.playToClient(registrar, "update_world_event", UpdateWorldEventPayload.class, UpdateWorldEventPayload::new);
-        LODESTONE_CHANNEL.playToClient(registrar, "screenshake", ScreenshakePayload.class, ScreenshakePayload::new);
-        LODESTONE_CHANNEL.playToClient(registrar, "positioned_screenshake", PositionedScreenshakePayload.class, PositionedScreenshakePayload::new);
+        registerS2C(
+                PositionedScreenshakePayload.ID,
+                PositionedScreenshakePayload.PAYLOAD_STREAM_CODEC,
+                (payload, context) -> payload.handle(payload, context)
+        );
+        registerS2C(
+                ScreenshakePayload.ID,
+                ScreenshakePayload.PAYLOAD_STREAM_CODEC,
+                (payload, context) -> payload.handle(payload, context)
+        );
+        registerS2C(
+                UpdateWorldEventPayload.ID,
+                UpdateWorldEventPayload.STREAM_CODEC,
+                (payload, context) -> payload.handle(payload, context)
+        );
+        registerS2C(
+                SyncWorldEventPayload.ID,
+                SyncWorldEventPayload.STREAM_CODEC,
+                (payload, context) -> payload.handle(payload, context)
+        );
+        registerS2C(
+                TotemOfUndyingPayload.ID,
+                TotemOfUndyingPayload.STREAM_CODEC,
+                (payload, context) -> payload.handle(payload, context)
+        );
     }
 
-    private <T extends CustomPacketPayload> void registerC2S(
+    private static <T extends CustomPacketPayload> void registerS2C(
             CustomPacketPayload.Type<T> type,
             StreamCodec<? super RegistryFriendlyByteBuf, T> codec,
-            NetworkManager.NetworkReceiver<T> receiver
+            BiConsumer<T, ClientPlayNetworking.Context> handler
     ) {
-        NetworkManager.registerReceiver(NetworkManager.c2s(), type, codec, receiver);
-    }
-
-    private <T extends CustomPacketPayload> void registerS2C(
-            CustomPacketPayload.Type<T> type,
-            StreamCodec<? super RegistryFriendlyByteBuf, T> codec,
-            NetworkManager.NetworkReceiver<T> receiver
-    ) {
-        if (Platform.getEnvironment() == Env.CLIENT) {
-            NetworkManager.registerReceiver(NetworkManager.s2c(), type, codec, receiver);
+        if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
+            ClientPlayNetworking.registerGlobalReceiver(type, (payload, context) -> {
+                context.client().execute(() -> {
+                    handler.accept(payload, context);
+                });
+            });
         } else {
-            NetworkManager.registerS2CPayloadType(type, codec);
+            PayloadTypeRegistry.playS2C().register(type, codec);
         }
     }
 
-    public <T extends CustomPacketPayload> void sendToPlayers(Level level, T payload) {
+    public static <T extends CustomPacketPayload> void sendToPlayers(Level level, T payload) {
         if (level instanceof ServerLevel serverLevel) {
             for (ServerLevel currentLevel : serverLevel.getServer().getAllLevels()) {
-                for (Player player : currentLevel.players()) {
-                    NetworkManager.sendToPlayer((ServerPlayer) player, payload);
+                for (ServerPlayer player : currentLevel.players()) {
+                    ServerPlayNetworking.send(player, payload);
                 }
             }
         }
     }
 
-    public <T extends CustomPacketPayload> void sendToPlayers(Level level, BlockPos pos, T payload) {
+    public static <T extends CustomPacketPayload> void sendToPlayers(Level level, BlockPos pos, T payload) {
         if (level instanceof ServerLevel serverLevel) {
             sendToPlayers(serverLevel, pos, payload);
         }
     }
 
-    public <T extends CustomPacketPayload> void sendToPlayers(ServerLevel level, BlockPos pos, T payload) {
+    public static <T extends CustomPacketPayload> void sendToPlayers(ServerLevel level, BlockPos pos, T payload) {
         var players = level.getChunkSource().chunkMap.getPlayers(new ChunkPos(pos), false);
         for (ServerPlayer player : players) {
-            NetworkManager.sendToPlayer(player, payload);
+            ServerPlayNetworking.send(player, payload);
         }
     }
 }

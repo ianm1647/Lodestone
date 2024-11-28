@@ -26,8 +26,8 @@ public class ClientRuntimeEvents {
         }
     }
 
-    public static void cameraSetup(ViewportEvent.ComputeCameraAngles event) {
-        ScreenshakeHandler.cameraSetup(event.getCamera());
+    public static void cameraSetup() {
+        LodestoneCameraEvent.EVENT.register(ScreenshakeHandler::cameraSetup);
 
     }
 

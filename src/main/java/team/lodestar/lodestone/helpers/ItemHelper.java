@@ -1,5 +1,6 @@
 package team.lodestar.lodestone.helpers;
 
+import io.github.fabricators_of_create.porting_lib.transfer.item.ItemHandlerHelper;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -54,15 +55,13 @@ public class ItemHelper {
     }
 
     public static void quietlyGiveItemToPlayer(Player player, ItemStack stack) {
-        if (stack.isEmpty()) return;
-        IItemHandler inventory = new PlayerMainInvWrapper(player.getInventory());
+        if (stack.isEmpty()) {
+            return;
+        }
         Level level = player.level();
         ItemStack remainder = stack;
         if (!remainder.isEmpty()) {
-            remainder = ItemHandlerHelper.insertItemStacked(inventory, remainder, false);
-        }
-        if (!remainder.isEmpty() && !level.isClientSide) {
-            spawnItemOnEntity(player, stack);
+            ItemHandlerHelper.giveItemToPlayer(player, remainder);
         }
     }
 

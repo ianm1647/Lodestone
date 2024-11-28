@@ -1,10 +1,10 @@
 package team.lodestar.lodestone.events.types.worldevent;
 
+import io.github.fabricators_of_create.porting_lib.core.event.BaseEvent;
 import net.minecraft.world.level.Level;
-import net.neoforged.bus.api.Event;
 import team.lodestar.lodestone.systems.worldevent.WorldEventInstance;
 
-public class WorldEventInstanceEvent extends Event {
+public class WorldEventInstanceEvent extends BaseEvent {
     private WorldEventInstance worldEvent;
     private Level level;
 
@@ -21,4 +21,8 @@ public class WorldEventInstanceEvent extends Event {
         return level;
     }
 
+    @Override
+    public void sendEvent() {
+
+    }
 }
