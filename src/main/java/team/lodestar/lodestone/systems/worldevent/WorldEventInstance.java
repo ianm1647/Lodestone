@@ -1,12 +1,14 @@
 package team.lodestar.lodestone.systems.worldevent;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.buffer.Unpooled;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.*;
 import team.lodestar.lodestone.network.worldevent.SyncWorldEventPayload;
 import team.lodestar.lodestone.registry.common.LodestoneWorldEventTypes;
@@ -32,38 +34,51 @@ public abstract class WorldEventInstance {
         this.type = type;
     }
 
+    /**
+     * Abstract method for ticking.
+     */
     public abstract void tick(Level level);
 
     /**
-     * Adds additional data during serialization.
-     * This method should be overridden to save custom fields.
-     *
-     * @param tag the CompoundTag to add the additional data to
+     * Codec for base fields. Subclasses must add their own fields.
      */
-    protected abstract void addAdditionalSaveData(CompoundTag tag);
+    public static final Codec<UUID> UUID_CODEC = Codec.STRING.xmap(java.util.UUID::fromString, java.util.UUID::toString);
+
+    public static final Codec<WorldEventInstance> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            UUID_CODEC.fieldOf("uuid").forGetter(event -> event.uuid),
+            WorldEventType.CODEC.fieldOf("type").forGetter(event -> event.type),
+            CompoundTag.CODEC.optionalFieldOf("data").forGetter(event -> {
+                // Handle serialization of additional fields
+                CompoundTag tag = new CompoundTag();
+
+                return java.util.Optional.of(tag);
+            }),
+            Codec.BOOL.fieldOf("discarded").forGetter(event -> event.discarded),
+            Codec.BOOL.fieldOf("frozen").forGetter(event -> event.frozen)
+    ).apply(instance, (uuid, type, data, discarded, frozen) -> {
+        // Deserialize additional data
+        WorldEventInstance event = type.createInstance(data.orElse(new CompoundTag()));
+        event.uuid = uuid;
+        event.discarded = discarded;
+        event.frozen = frozen;
+        return event;
+    }));
+    /**
+     * Subclasses must implement this to extend serialization.
+     */
+    protected abstract Codec<? extends WorldEventInstance> getCodec();
 
     /**
-     * Reads additional data during deserialization.
-     * This method should be overridden to load custom fields.
-     *
-     * @param tag the CompoundTag to read the additional data from
+     * Syncing and management methods remain unchanged.
      */
-    protected abstract void readAdditionalSaveData(CompoundTag tag);
-
     public void end(Level level) {
         discarded = true;
     }
 
-    /**
-     * If the event is dirty, it will be synchronized to the client then set to not dirty.
-     */
     public void setDirty() {
         dirty = true;
     }
 
-    /**
-     * If the event is frozen, it will not be ticked in {@link #tick(Level)}
-     */
     public boolean isFrozen() {
         return frozen;
     }
@@ -72,53 +87,37 @@ public abstract class WorldEventInstance {
         return level;
     }
 
-    @ApiStatus.Internal
-    public final CompoundTag serializeNBT() {
-        CompoundTag tag = new CompoundTag();
-        tag.putUUID("uuid", uuid);
-        tag.putString("type", type.id.toString());
-        tag.putBoolean("discarded", discarded);
-        tag.putBoolean("frozen", frozen);
-        this.addAdditionalSaveData(tag);
-        return tag;
-    }
-
-    @ApiStatus.Internal
-    public final WorldEventInstance deserializeNBT(CompoundTag tag) {
-        uuid = tag.getUUID("uuid");
-        type = LodestoneWorldEventTypes.WORLD_EVENT_TYPE_REGISTRY.get(ResourceLocation.parse(tag.getString("type")));
-        discarded = tag.getBoolean("discarded");
-        frozen = tag.getBoolean("frozen");
-        this.readAdditionalSaveData(tag);
-        return this;
-    }
-
-    @ApiStatus.Internal
     public void sync(Level level) {
         if (!level.isClientSide && type.isClientSynced()) {
             sync(this);
         }
     }
 
-    @ApiStatus.Internal
     public void start(Level level) {
         this.level = level;
     }
 
-    // Update World Event Data Server -> Client
-    @ApiStatus.Internal
     public CompoundTag synchronizeNBT() {
         return serializeNBT();
     }
 
-    //Duplicate World Event to Client, Only Call once per world event instance
-    @ApiStatus.Internal
+    public CompoundTag serializeNBT() {
+        return CODEC.encodeStart(NbtOps.INSTANCE, this)
+                .resultOrPartial(System.err::println)
+                .map(tag -> (CompoundTag) tag)
+                .orElse(new CompoundTag());
+    }
+
+    public static WorldEventInstance deserializeNBT(CompoundTag tag) {
+        return CODEC.parse(NbtOps.INSTANCE, tag)
+                .result()
+                .orElseThrow(() -> new IllegalStateException("Failed to deserialize WorldEventInstance!"));
+    }
+
     public static <T extends WorldEventInstance> void sync(T instance) {
         sync(instance, null);
     }
 
-    //Duplicate World Event to Client, Only Call once per world event instance
-    @ApiStatus.Internal
     public static <T extends WorldEventInstance> void sync(T instance, @Nullable ServerPlayer player) {
         if (player != null) {
             PacketDistributor.sendToPlayer(player, new SyncWorldEventPayload(instance, false));

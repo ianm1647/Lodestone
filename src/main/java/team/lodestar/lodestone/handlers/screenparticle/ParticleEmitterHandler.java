@@ -4,7 +4,6 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import team.lodestar.lodestone.helpers.DataHelper;
 import team.lodestar.lodestone.systems.particle.screen.ScreenParticleHolder;
 
@@ -13,7 +12,7 @@ import java.util.*;
 public class ParticleEmitterHandler {
     public static final Map<Item, List<ItemParticleSupplier>> EMITTERS = new HashMap<>();
 
-    public static void registerParticleEmitters(FMLClientSetupEvent event) {
+    public static void registerParticleEmitters() {
         DataHelper.getAll(BuiltInRegistries.ITEM.stream().toList(), i -> i instanceof ItemParticleSupplier).forEach(i -> {
                     ItemParticleSupplier emitter = (ItemParticleSupplier) i;
                     registerItemParticleEmitter(i, emitter);

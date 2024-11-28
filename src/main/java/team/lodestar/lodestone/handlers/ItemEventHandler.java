@@ -1,12 +1,15 @@
 package team.lodestar.lodestone.handlers;
 
 import com.mojang.datafixers.util.*;
+import io.github.fabricators_of_create.porting_lib.entity.events.living.LivingDamageEvent;
+import io.github.fabricators_of_create.porting_lib.entity.events.living.LivingDeathEvent;
+import io.github.fabricators_of_create.porting_lib.entity.events.living.LivingHurtEvent;
 import net.minecraft.resources.*;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.item.*;
-import net.neoforged.neoforge.event.*;
-import net.neoforged.neoforge.event.entity.living.*;
 import team.lodestar.lodestone.*;
+import team.lodestar.lodestone.helpers.ItemHelper;
 
 import java.util.*;
 import java.util.function.*;
@@ -42,8 +45,10 @@ public class ItemEventHandler {
         }
     }
 
-    public static void triggerHurtResponses(LivingDamageEvent.Pre event) {
-        if (event.getNewDamage() <= 0) return;
+    public static void triggerHurtResponses(LivingHurtEvent event) {
+        if (event.isCanceled() || event.getAmount() <= 0) {
+            return;
+        }
         var source = event.getSource();
         var target = event.getEntity();
         var attacker = source.getEntity() instanceof LivingEntity livingAttacker ? livingAttacker : target.getLastAttacker();
@@ -72,10 +77,10 @@ public class ItemEventHandler {
         default void modifyAttributesEvent(ItemAttributeModifierEvent event) {
         }
 
-        default void incomingDamageEvent(LivingDamageEvent.Pre event, LivingEntity attacker, LivingEntity target, ItemStack stack) {
+        default void incomingDamageEvent(LivingHurtEvent event, LivingEntity attacker, LivingEntity target, ItemStack stack) {
         }
 
-        default void outgoingDamageEvent(LivingDamageEvent.Pre event, LivingEntity attacker, LivingEntity target, ItemStack stack) {
+        default void outgoingDamageEvent(LivingHurtEvent event, LivingEntity attacker, LivingEntity target, ItemStack stack) {
         }
 
         default void incomingDeathEvent(LivingDeathEvent event, LivingEntity attacker, LivingEntity target, ItemStack stack) {

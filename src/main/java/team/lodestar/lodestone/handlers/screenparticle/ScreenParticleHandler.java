@@ -5,7 +5,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.client.event.RenderFrameEvent;
 import org.joml.*;
 import team.lodestar.lodestone.config.ClientConfig;
 import team.lodestar.lodestone.systems.particle.screen.ScreenParticleOptions;
@@ -54,7 +53,7 @@ public class ScreenParticleHandler {
         canSpawnParticles = true;
     }
 
-    public static void renderTick(RenderFrameEvent.Pre event) {
+    public static void renderTick() {
         canSpawnParticles = false;
     }
 
@@ -83,8 +82,8 @@ public class ScreenParticleHandler {
                         currentItemY += yOffsetf;
                     }
                     else if (!renderingHotbar && minecraft.screen instanceof AbstractContainerScreen<?> containerScreen) {
-                        currentItemX += containerScreen.getGuiLeft();
-                        currentItemY += containerScreen.getGuiTop();
+                        //currentItemX += containerScreen.getGuiLeft();
+                        //currentItemY += containerScreen.getGuiTop();
                     }
                     for (ParticleEmitterHandler.ItemParticleSupplier emitter : emitters) {
                         renderParticles(spawnAndPullParticles(minecraft.level, emitter, stack, false));

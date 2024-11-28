@@ -1,45 +1,22 @@
 package team.lodestar.lodestone.attachment;
 
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.common.util.INBTSerializable;
-import org.jetbrains.annotations.UnknownNullability;
-import team.lodestar.lodestone.registry.common.LodestoneWorldEventTypes;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import team.lodestar.lodestone.systems.worldevent.WorldEventInstance;
-import team.lodestar.lodestone.systems.worldevent.WorldEventType;
 
 import java.util.ArrayList;
 
-public class WorldEventAttachment implements INBTSerializable<CompoundTag> {
-
+public class WorldEventAttachment {
     public final ArrayList<WorldEventInstance> activeWorldEvents = new ArrayList<>();
     public final ArrayList<WorldEventInstance> inboundWorldEvents = new ArrayList<>();
 
-    @Override
-    public @UnknownNullability CompoundTag serializeNBT(HolderLookup.Provider provider) {
-        CompoundTag tag = new CompoundTag();
-        CompoundTag worldTag = new CompoundTag();
-        worldTag.putInt("worldEventCount", activeWorldEvents.size());
-        for (int i = 0; i < activeWorldEvents.size(); i++) {
-            WorldEventInstance instance = activeWorldEvents.get(i);
-            CompoundTag instanceTag = instance.serializeNBT();
-            worldTag.put("worldEvent_" + i, instanceTag);
-        }
-        tag.put("worldEventData", worldTag);
-        return tag;
-    }
-
-    @Override
-    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag tag) {
-        activeWorldEvents.clear();
-        CompoundTag worldTag = tag.getCompound("worldEventData");
-        int worldEventCount = worldTag.getInt("worldEventCount");
-        for (int i = 0; i < worldEventCount; i++) {
-            CompoundTag instanceTag = worldTag.getCompound("worldEvent_" + i);
-            WorldEventType type = LodestoneWorldEventTypes.WORLD_EVENT_TYPE_REGISTRY.get(ResourceLocation.parse(instanceTag.getString("type")));
-            WorldEventInstance eventInstance = type.createInstance(instanceTag);
-            activeWorldEvents.add(eventInstance);
-        }
-    }
+    public static final Codec<WorldEventAttachment> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            WorldEventInstance.CODEC.listOf().fieldOf("activeWorldEvents").forGetter(attachment -> attachment.activeWorldEvents),
+            WorldEventInstance.CODEC.listOf().fieldOf("inboundWorldEvents").forGetter(attachment -> attachment.inboundWorldEvents)
+    ).apply(instance, (active, inbound) -> {
+        WorldEventAttachment attachment = new WorldEventAttachment();
+        attachment.activeWorldEvents.addAll(active);
+        attachment.inboundWorldEvents.addAll(inbound);
+        return attachment;
+    }));
 }

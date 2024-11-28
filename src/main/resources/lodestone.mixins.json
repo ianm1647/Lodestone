@@ -13,12 +13,13 @@
     "client.AbstractContainerScreenMixin",
     "client.CreativeModeInventoryScreenMixin",
     "client.EffectProgramMixin",
+    "client.FogRendererMixin",
     "client.GameRendererMixin",
     "client.GuiGraphicsMixin",
     "client.GuiMixin",
     "client.LevelRendererMixin",
-    "client.MultiPlayerGameModeMixin",
-    "client.GuiGraphicsMixin"
+    "client.MinecraftMixin",
+    "client.MultiPlayerGameModeMixin"
   ],
   "injectors": {
     "defaultRequire": 1

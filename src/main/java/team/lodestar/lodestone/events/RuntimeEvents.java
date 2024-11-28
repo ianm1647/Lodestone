@@ -1,35 +1,27 @@
 package team.lodestar.lodestone.events;
 
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
-import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
-import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
-import net.neoforged.neoforge.event.tick.LevelTickEvent;
+import io.github.fabricators_of_create.porting_lib.entity.events.living.LivingDeathEvent;
+import io.github.fabricators_of_create.porting_lib.entity.events.living.LivingHurtEvent;
+import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import team.lodestar.lodestone.handlers.ItemEventHandler;
 import team.lodestar.lodestone.handlers.LodestoneAttributeEventHandler;
 import team.lodestar.lodestone.handlers.WorldEventHandler;
 
-@EventBusSubscriber
 public class RuntimeEvents {
 
-    @SubscribeEvent
-    public static void onHurt(LivingDamageEvent.Pre event) {
-        LodestoneAttributeEventHandler.processAttributes(event);
-        ItemEventHandler.triggerHurtResponses(event);
+    public static void onHurt() {
+        LivingHurtEvent.EVENT.register(LodestoneAttributeEventHandler::processAttributes);
+        LivingHurtEvent.EVENT.register(ItemEventHandler::triggerHurtResponses);
     }
 
-    @SubscribeEvent
-    public static void onDeath(LivingDeathEvent event) {
-        ItemEventHandler.triggerDeathResponses(event);
+    public static void onDeath() {
+        ServerLivingEntityEvents.ALLOW_DEATH.register(ItemEventHandler::triggerDeathResponses);
     }
 
-    @SubscribeEvent
     public static void entityJoin(EntityJoinLevelEvent event) {
         WorldEventHandler.playerJoin(event);
     }
 
-    @SubscribeEvent
     public static void worldTick(LevelTickEvent.Post event) {
         WorldEventHandler.worldTick(event);
     }

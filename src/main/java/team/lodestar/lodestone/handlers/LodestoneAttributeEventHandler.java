@@ -1,30 +1,31 @@
 package team.lodestar.lodestone.handlers;
 
+import io.github.fabricators_of_create.porting_lib.entity.events.living.LivingHurtEvent;
 import net.minecraft.core.*;
 import net.minecraft.world.damagesource.*;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.player.*;
 import net.minecraft.world.level.*;
-import net.neoforged.neoforge.event.entity.living.*;
 import team.lodestar.lodestone.helpers.*;
 import team.lodestar.lodestone.registry.common.*;
 import team.lodestar.lodestone.registry.common.tag.*;
 
-import javax.annotation.*;
 
 /**
  * A handler for common attributes I use in my mods.
  */
 public class LodestoneAttributeEventHandler {
-    public static void processAttributes(LivingDamageEvent.Pre event) {
-        if (event.getOriginalDamage() <= 0) {
+
+
+    public static void processAttributes(LivingHurtEvent event) {
+        if (event.isCanceled() || event.getAmount() <= 0) {
             return;
         }
         var source = event.getSource();
         var target = event.getEntity();
 
-        float amount = event.getOriginalDamage();
+        float amount = event.getAmount();
         var damageType = source.typeHolder();
         if (damageType.is(LodestoneDamageTypeTags.IS_MAGIC)) {
             var magicResistance = target.getAttribute(LodestoneAttributes.MAGIC_RESISTANCE);
@@ -38,7 +39,7 @@ public class LodestoneAttributeEventHandler {
                 if (magicProficiency != null) {
                     amount *= (float) magicProficiency.getValue();
                 }
-                event.setNewDamage(amount);
+                event.setAmount(amount);
             }
             else if (damageType.is(LodestoneDamageTypeTags.CAN_TRIGGER_MAGIC)) {
                 AttributeInstance magicDamage = attacker.getAttribute(LodestoneAttributes.MAGIC_DAMAGE);
@@ -56,4 +57,7 @@ public class LodestoneAttributeEventHandler {
             }
         }
     }
+
+
+
 }

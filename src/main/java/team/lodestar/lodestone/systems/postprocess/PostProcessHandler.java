@@ -1,11 +1,10 @@
 package team.lodestar.lodestone.systems.postprocess;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.EventPriority;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
+import net.minecraft.client.renderer.RenderType;
+import team.lodestar.lodestone.events.Stage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +13,6 @@ import java.util.List;
  * Handles world-space post-processing.
  * Based on vanilla {@link net.minecraft.client.renderer.PostChain} system, but allows the shader to access the world depth buffer.
  */
-@EventBusSubscriber(value = Dist.CLIENT, bus = EventBusSubscriber.Bus.GAME)
 public class PostProcessHandler {
     private static final List<PostProcessor> instances = new ArrayList<>();
 
@@ -39,17 +37,15 @@ public class PostProcessHandler {
         instances.forEach(i -> i.resize(width, height));
     }
 
-    @SubscribeEvent(priority = EventPriority.LOWEST)
-    public static void onWorldRenderLast(RenderLevelStageEvent event) {
-        if (event.getStage().equals(RenderLevelStageEvent.Stage.AFTER_PARTICLES)) {
-            PostProcessor.viewModelMatrix = RenderSystem.getModelViewMatrix(); // Copy viewModelMatrix from RenderSystem
-        }
-        if (event.getStage().equals(RenderLevelStageEvent.Stage.AFTER_LEVEL)) {
-            copyDepthBuffer(); // copy the depth buffer if the mixin didn't trigger
+    public static void onWorldRenderLast(WorldRenderContext worldRenderContext) {
+        copyDepthBuffer(); // copy the depth buffer if the mixin didn't trigger
 
-            instances.forEach(PostProcessor::applyPostProcess);
+        instances.forEach(PostProcessor::applyPostProcess);
 
-            didCopyDepth = false; // reset for next frame
-        }
+        didCopyDepth = false; // reset for next frame
+    }
+
+    public static void onAfterSolidBlocks(RenderType renderType, PoseStack poseStack, Stage stage) {
+        PostProcessor.viewModelMatrix = RenderSystem.getModelViewMatrix(); // Copy viewModelMatrix from RenderSystem
     }
 }

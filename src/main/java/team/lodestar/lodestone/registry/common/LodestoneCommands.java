@@ -2,21 +2,16 @@ package team.lodestar.lodestone.registry.common;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.tree.LiteralCommandNode;
+import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import team.lodestar.lodestone.command.*;
 
 import static team.lodestar.lodestone.LodestoneLib.LODESTONE;
 
-@EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME)
 public class LodestoneCommands {
 
-    @SubscribeEvent
-    public static void registerCommands(RegisterCommandsEvent event) {
-        CommandDispatcher<CommandSourceStack> dispatcher = event.getDispatcher();
+    public static void registerCommands(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext context, Commands.CommandSelection selection) {
         LiteralCommandNode<CommandSourceStack> cmd = dispatcher.register(Commands.literal("lode")
                         .then(DevWorldSetupCommand.register())
                         .then(Commands.literal("worldevent")

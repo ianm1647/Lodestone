@@ -11,11 +11,11 @@ import net.minecraft.network.*;
 import net.minecraft.network.codec.*;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.block.*;
+import org.jetbrains.annotations.Nullable;
 import team.lodestar.lodestone.systems.particle.world.options.*;
 import team.lodestar.lodestone.systems.particle.world.LodestoneTerrainParticle;
 import team.lodestar.lodestone.systems.particle.world.behaviors.*;
 
-import javax.annotation.Nullable;
 
 public class LodestoneTerrainParticleType extends AbstractLodestoneParticleType<LodestoneTerrainParticleOptions> {
 
