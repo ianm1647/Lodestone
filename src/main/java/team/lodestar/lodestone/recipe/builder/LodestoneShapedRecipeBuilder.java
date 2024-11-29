@@ -27,7 +27,7 @@ public class LodestoneShapedRecipeBuilder extends ShapedRecipeBuilder implements
     }
 
     @Override
-    public void save(RecipeOutput recipeOutput, ResourceLocation id) {
+    public void saveRecipe(RecipeOutput recipeOutput, ResourceLocation id) {
         defaultSaveFunc(recipeOutput, id);
     }
 }

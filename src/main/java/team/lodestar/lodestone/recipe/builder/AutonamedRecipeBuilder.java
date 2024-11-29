@@ -11,7 +11,7 @@ public interface AutonamedRecipeBuilder<R extends Recipe<?>> extends LodestoneRe
     Item getResult();
 
     default void save(RecipeOutput recipeOutput) {
-        this.save(recipeOutput, getDefaultRecipeId(this.getResult()));
+        this.saveRecipe(recipeOutput, getDefaultRecipeId(this.getResult()));
     }
 
     default void save(RecipeOutput recipeOutput, String id) {
@@ -20,7 +20,7 @@ public interface AutonamedRecipeBuilder<R extends Recipe<?>> extends LodestoneRe
         if (providedId.equals(defaultId)) {
             throw new IllegalStateException("Recipe " + id + " should remove its 'save' argument as it is equal to default one");
         } else {
-            this.save(recipeOutput, providedId);
+            this.saveRecipe(recipeOutput, providedId);
         }
     }
 

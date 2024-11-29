@@ -20,7 +20,7 @@ public class LodestoneSmithingTrimRecipeBuilder extends SmithingTrimRecipeBuilde
     }
 
     @Override
-    public void save(RecipeOutput recipeOutput, ResourceLocation recipeId) {
+    public void saveRecipe(RecipeOutput recipeOutput, ResourceLocation recipeId) {
         this.ensureValid(recipeId);
         defaultSaveFunc(recipeOutput, recipeId);
     }

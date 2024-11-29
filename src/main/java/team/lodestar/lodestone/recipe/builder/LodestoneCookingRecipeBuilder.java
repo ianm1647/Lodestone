@@ -30,7 +30,7 @@ public class LodestoneCookingRecipeBuilder extends SimpleCookingRecipeBuilder im
     }
 
     @Override
-    public void save(RecipeOutput recipeOutput, ResourceLocation id) {
+    public void saveRecipe(RecipeOutput recipeOutput, ResourceLocation id) {
         defaultSaveFunc(recipeOutput, id);
     }
 }

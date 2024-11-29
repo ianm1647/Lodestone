@@ -26,7 +26,7 @@ public class LodestoneShapelessRecipeBuilder extends ShapelessRecipeBuilder impl
     }
 
     @Override
-    public void save(RecipeOutput recipeOutput, ResourceLocation id) {
+    public void saveRecipe(RecipeOutput recipeOutput, ResourceLocation id) {
         this.ensureValid(id);
         defaultSaveFunc(recipeOutput, id);
     }

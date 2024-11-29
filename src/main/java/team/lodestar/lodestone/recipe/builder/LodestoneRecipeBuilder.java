@@ -15,7 +15,7 @@ import java.util.Optional;
 
 public interface LodestoneRecipeBuilder<R extends Recipe<?>> {
 
-    void save(RecipeOutput recipeOutput, ResourceLocation id);
+    void saveRecipe(RecipeOutput recipeOutput, ResourceLocation id);
 
     default void tweakAdvancement(Advancement.Builder advancement) {
     }
