@@ -29,7 +29,8 @@ final class ParticleEngineMixin {
                         LodestoneWorldParticleRenderType.ADDITIVE,
                         LodestoneWorldParticleRenderType.TRANSPARENT,
                         LodestoneWorldParticleRenderType.LUMITRANSPARENT,
-                        LodestoneWorldParticleRenderType.TERRAIN_SHEET
+                        LodestoneWorldParticleRenderType.TERRAIN_SHEET,
+                        LodestoneWorldParticleRenderType.ADDITIVE_TERRAIN_SHEET
                 )
                 .build();
     }

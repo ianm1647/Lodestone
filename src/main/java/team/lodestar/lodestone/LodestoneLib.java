@@ -4,16 +4,19 @@ import io.github.fabricators_of_create.porting_lib.entity.events.living.LivingHu
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
+import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.resources.*;
 import net.minecraft.util.*;
 import org.apache.logging.log4j.*;
 import team.lodestar.lodestone.events.RuntimeEvents;
 import team.lodestar.lodestone.events.SetupEvents;
 import team.lodestar.lodestone.handlers.LodestoneAttributeEventHandler;
+import team.lodestar.lodestone.helpers.ShadersHelper;
 import team.lodestar.lodestone.registry.common.LodestoneAttachmentTypes;
 import team.lodestar.lodestone.compability.*;
 import team.lodestar.lodestone.registry.common.*;
 import team.lodestar.lodestone.registry.common.particle.*;
+import team.lodestar.lodestone.systems.item.LodestoneItemProperties;
 
 public class LodestoneLib implements ModInitializer {
     public static final Logger LOGGER = LogManager.getLogger();
@@ -37,6 +40,8 @@ public class LodestoneLib implements ModInitializer {
 
         RuntimeEvents.onDeath();
         RuntimeEvents.onHurt();
+        ShadersHelper.init();
+        ItemGroupEvents.MODIFY_ENTRIES_ALL.register(LodestoneItemProperties::populateItemGroups);
 
         SetupEvents.lateSetup();
     }

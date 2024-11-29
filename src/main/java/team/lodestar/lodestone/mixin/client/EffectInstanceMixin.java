@@ -19,7 +19,7 @@ import team.lodestar.lodestone.systems.rendering.shader.ExtendedShaderInstance;
 @Mixin(EffectInstance.class)
 public class EffectInstanceMixin {
 
-    @ModifyReturnValue(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/resources/ResourceLocation;withDefaultNamespace(Ljava/lang/String;)Lnet/minecraft/resources/ResourceLocation;"))
+    @WrapOperation(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/resources/ResourceLocation;withDefaultNamespace(Ljava/lang/String;)Lnet/minecraft/resources/ResourceLocation;"))
     private ResourceLocation lodestone$modifyNameSpace(String arg, Operation<ResourceLocation> original, @Local String id) {
         if (!id.contains(":")) {
             return original.call(arg);

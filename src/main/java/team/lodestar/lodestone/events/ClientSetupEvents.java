@@ -14,31 +14,9 @@ import static team.lodestar.lodestone.registry.common.particle.LodestoneParticle
 
 public class ClientSetupEvents {
 
-    public static void registerParticleFactory() {
-        registerParticleProviders();
-        //LodestoneScreenParticleTypes.registerParticleFactory();
-    }
-
     public static void clientSetup() {
         RenderHandler.onClientSetup();
         ParticleEmitterHandler.registerParticleEmitters();
         ThrowawayBlockDataHandler.setRenderLayers();
-    }
-
-    private static void registerParticleProviders() {
-        ParticleFactoryRegistry.getInstance().register(WISP_PARTICLE.get(), LodestoneWorldParticleType.Factory::new);
-        ParticleFactoryRegistry.getInstance().register(SMOKE_PARTICLE.get(), LodestoneWorldParticleType.Factory::new);
-        ParticleFactoryRegistry.getInstance().register(SPARKLE_PARTICLE.get(), LodestoneWorldParticleType.Factory::new);
-        ParticleFactoryRegistry.getInstance().register(TWINKLE_PARTICLE.get(), LodestoneWorldParticleType.Factory::new);
-        ParticleFactoryRegistry.getInstance().register(STAR_PARTICLE.get(), LodestoneWorldParticleType.Factory::new);
-
-        ParticleFactoryRegistry.getInstance().register(SPARK_PARTICLE.get(), LodestoneWorldParticleType.Factory::new);
-
-
-        ParticleFactoryRegistry.getInstance().register(LodestoneParticleTypes.EXTRUDING_SPARK_PARTICLE.get(), LodestoneWorldParticleType.Factory::new);
-        ParticleFactoryRegistry.getInstance().register(LodestoneParticleTypes.THIN_EXTRUDING_SPARK_PARTICLE.get(), LodestoneWorldParticleType.Factory::new);
-
-        ParticleFactoryRegistry.getInstance().register(TERRAIN_PARTICLE.get(), s -> new team.lodestar.lodestone.systems.particle.world.type.LodestoneTerrainParticleType.Factory());
-        ParticleFactoryRegistry.getInstance().register(ITEM_PARTICLE.get(), s -> new LodestoneItemCrumbsParticleType.Factory());
     }
 }
