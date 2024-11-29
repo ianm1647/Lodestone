@@ -1,16 +1,14 @@
 package team.lodestar.lodestone;
 
-import io.github.fabricators_of_create.porting_lib.entity.events.living.LivingHurtEvent;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
-import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.resources.*;
 import net.minecraft.util.*;
-import org.apache.logging.log4j.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import team.lodestar.lodestone.events.RuntimeEvents;
 import team.lodestar.lodestone.events.SetupEvents;
-import team.lodestar.lodestone.handlers.LodestoneAttributeEventHandler;
 import team.lodestar.lodestone.helpers.ShadersHelper;
 import team.lodestar.lodestone.registry.common.LodestoneAttachmentTypes;
 import team.lodestar.lodestone.compability.*;
@@ -35,6 +33,8 @@ public class LodestoneLib implements ModInitializer {
         LodestonePlacementFillers.MODIFIERS.register();
         LodestoneWorldEventTypes.WORLD_EVENT_TYPES.register();
         SetupEvents.registerCommon();
+        RuntimeEvents.entityJoin();
+        RuntimeEvents.worldTick();
 
         CuriosCompat.init();
 
@@ -49,4 +49,142 @@ public class LodestoneLib implements ModInitializer {
     public static ResourceLocation lodestonePath(String path) {
         return ResourceLocation.fromNamespaceAndPath(LODESTONE, path);
     }
+
+    /* Independent test code
+     public static class DemoBlockitem extends BlockItem implements ParticleEmitterHandler.ItemParticleSupplier {
+
+        public DemoBlockitem(Block block, Properties properties) {
+            super(block, properties);
+        }
+
+        @Override
+        public void spawnLateParticles(ScreenParticleHolder target, Level level, float partialTick, ItemStack stack, float x, float y) {
+            var rand = Minecraft.getInstance().level.getRandom();
+            var color = Color.BLUE;
+            var endColor = Color.green;
+            ScreenParticleBuilder.create(LodestoneScreenParticleTypes.SPARKLE, target)
+                    .setTransparencyData(GenericParticleData.create(0.04f, 0f).setEasing(Easing.SINE_IN_OUT).build())
+                    .setScaleData(GenericParticleData.create(0.8f + rand.nextFloat() * 0.1f, 0).setEasing(Easing.SINE_IN_OUT, Easing.BOUNCE_IN_OUT).build())
+                    .setColorData(ColorParticleData.create(color, endColor).setCoefficient(2f).build())
+                    .setLifetime(10 + rand.nextInt(10))
+                    .setRandomOffset(0.05f)
+                    .setRandomMotion(0.05f, 0.05f)
+                    .spawnOnStack(0, 0);
+
+            ScreenParticleBuilder.create(LodestoneScreenParticleTypes.WISP, target)
+                    .setTransparencyData(GenericParticleData.create(0.03f, 0f).setEasing(Easing.SINE_IN_OUT).build())
+                    .setSpinData(SpinParticleData.create(nextFloat(rand, 0.2f, 0.4f)).setEasing(Easing.EXPO_OUT).build())
+                    .setScaleData(GenericParticleData.create(0.6f + rand.nextFloat() * 0.4f, 0).setEasing(Easing.EXPO_OUT).build())
+                    .setColorData(ColorParticleData.create(color, endColor).setCoefficient(1.25f).build())
+                    .setLifetime(20 + rand.nextInt(8))
+                    .setRandomOffset(0.1f)
+                    .setRandomMotion(0.4f, 0.4f)
+                    .spawnOnStack(0, 0);
+        }
+    }
+
+    public static DemoBlock register(DemoBlock block, String name, boolean shouldRegisterItem) {
+        ResourceLocation id = ResourceLocation.fromNamespaceAndPath(LODESTONE, name);
+
+        if (shouldRegisterItem) {
+            DemoBlockitem blockItem = new DemoBlockitem(block, new Item.Properties());
+            Registry.register(BuiltInRegistries.ITEM, id, blockItem);
+        }
+
+        return Registry.register(BuiltInRegistries.BLOCK, id, block);
+    }
+
+    public static <T extends BlockEntityType<?>> T register(String path, T blockEntityType) {
+        return Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE, ResourceLocation.fromNamespaceAndPath(LODESTONE, path), blockEntityType);
+    }
+
+    public static class DemoBlock extends BaseEntityBlock {
+        public DemoBlock(Properties settings) {
+            super(settings);
+        }
+
+        @Nullable
+        @Override
+        public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
+            return (currentLevel, pos, currentState, blockEntity) -> {
+                if (blockEntity instanceof DemoBlockEntity cradleBlockEntity) {
+                    cradleBlockEntity.tick();
+                }
+            };
+        }
+
+        @Override
+        protected MapCodec<? extends BaseEntityBlock> codec() {
+            return codec();
+        }
+
+        @Nullable
+        @Override
+        public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+            return new DemoBlockEntity(pos, state);
+        }
+
+        @Override
+        protected RenderShape getRenderShape(BlockState state) {
+            return RenderShape.INVISIBLE;
+        }
+    }
+
+    public static class DemoBlockEntity extends BlockEntity {
+        public DemoBlockEntity(BlockPos pos, BlockState state) {
+            super(DEMO_BLOCK, pos, state);
+        }
+
+        public static Color firstColor = Color.BLUE;
+        public static Color secondColor = Color.RED;
+
+
+
+        public void tick() {
+            if (level.isClientSide) {
+                System.out.println("tick");
+                final RandomSource random = level.random;
+                Block block = getBlockState().getBlock();
+                Color firstColor = ColorHelper.darker(this.firstColor, 1);
+                Color secondColor = this.secondColor == null ? firstColor : ColorHelper.brighter(this.secondColor, 1);
+                double x = worldPosition.getX() + 0.5f;
+                double y = worldPosition.getY() + 0.5f;
+                double z = worldPosition.getZ() + 0.5f;
+
+
+                if (level.getGameTime() % 4L == 0) {
+                    final long gameTime = level.getGameTime();
+                    float scale = RandomHelper.randomBetween(random, 0.6f, 0.75f);
+                    float velocity = RandomHelper.randomBetween(random, 0f, 0.02f);
+                    float angle = ((gameTime % 24) / 24f) * (float) Math.PI * 2f;
+                    Vec3 offset = new Vec3(Math.sin(angle), 0, Math.cos(angle)).normalize();
+                    Vec3 offsetPosition = new Vec3(x + offset.x * 0.075f, y-0.05f, z + offset.z * 0.075f);
+                    WorldParticleBuilder.create(LodestoneParticleTypes.TWINKLE_PARTICLE)
+                            .setRenderTarget(RenderHandler.LATE_DELAYED_RENDER)
+                            .setScaleData(GenericParticleData.create(scale * 0.75f, scale, 0).build())
+                            .setColorData(ColorParticleData.create(firstColor, secondColor).setEasing(Easing.CIRC_IN_OUT).setCoefficient(2.5f).build())
+                            .setTransparencyData(GenericParticleData.create(0f, 1f, 0).setEasing(Easing.SINE_IN, Easing.QUAD_IN).setCoefficient(3.5f).build())
+                            .addMotion(0, velocity, 0)
+                            .addTickActor(p -> p.setParticleSpeed(p.getParticleSpeed().scale(1f - random.nextFloat() * 0f)))
+                            .enableNoClip()
+                            .setDiscardFunction(SimpleParticleOptions.ParticleDiscardFunctionType.ENDING_CURVE_INVISIBLE)
+                            .spawn(level, offsetPosition.x, offsetPosition.y, offsetPosition.z);
+                }
+            }
+        }
+    }
+
+
+    public static final DemoBlock CONDENSED_DIRT = register(
+            new DemoBlock(BlockBehaviour.Properties.of()),
+            "condensed_dirt",
+            true
+    );
+
+
+    public static final BlockEntityType<DemoBlockEntity> DEMO_BLOCK = register(
+            "demo_block",
+            BlockEntityType.Builder.of(DemoBlockEntity::new, CONDENSED_DIRT).build()
+    );
+     */
 }

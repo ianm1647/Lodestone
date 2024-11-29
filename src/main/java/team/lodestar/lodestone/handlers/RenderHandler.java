@@ -5,6 +5,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.shaders.FogShape;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.*;
 import net.minecraft.client.renderer.*;
 import org.joml.Matrix4f;
@@ -29,6 +30,8 @@ public class RenderHandler {
     public static final SequencedMap<RenderType, ByteBufferBuilder> LATE_PARTICLE_BUFFERS = new LinkedHashMap<>();
     public static final HashMap<RenderType, ShaderUniformHandler> UNIFORM_HANDLERS = new HashMap<>();
     public static final Collection<RenderType> TRANSPARENT_RENDER_TYPES = new ArrayList<>();
+
+    public static boolean LARGER_BUFFER_SOURCES = FabricLoader.getInstance().isModLoaded("sodium");
 
     public static RenderTarget LODESTONE_DEPTH_CACHE;
     public static LodestoneRenderLayer DELAYED_RENDER = new LodestoneRenderLayer(BUFFERS, PARTICLE_BUFFERS);
@@ -162,8 +165,8 @@ public class RenderHandler {
         final boolean isParticle = renderType.name.contains("particle");
         SequencedMap<RenderType, ByteBufferBuilder> buffers = isParticle ? PARTICLE_BUFFERS : BUFFERS;
         SequencedMap<RenderType, ByteBufferBuilder> lateBuffers = isParticle ? LATE_PARTICLE_BUFFERS : LATE_BUFFERS;
-        buffers.put(renderType, new ByteBufferBuilder(786432));
-        lateBuffers.put(renderType, new ByteBufferBuilder(786432));
+        buffers.put(renderType, new ByteBufferBuilder(LARGER_BUFFER_SOURCES ? 2097152 : renderType.bufferSize()));
+        lateBuffers.put(renderType, new ByteBufferBuilder(LARGER_BUFFER_SOURCES ? 2097152 : renderType.bufferSize()));
         if (NORMAL_TRANSPARENCY.equals(RenderHelper.getTransparencyShard(renderType))) {
             TRANSPARENT_RENDER_TYPES.add(renderType);
         }
@@ -201,8 +204,8 @@ public class RenderHandler {
         public LodestoneRenderLayer(SequencedMap<RenderType, ByteBufferBuilder> buffers, SequencedMap<RenderType, ByteBufferBuilder> particleBuffers) {
             this.buffers = buffers;
             this.particleBuffers = particleBuffers;
-            this.target = MultiBufferSource.immediateWithBuffers(buffers, new ByteBufferBuilder(786432));
-            this.particleTarget = MultiBufferSource.immediateWithBuffers(particleBuffers, new ByteBufferBuilder(786432));
+            this.target = MultiBufferSource.immediateWithBuffers(buffers, new ByteBufferBuilder(LARGER_BUFFER_SOURCES ? 2097152 : 256));
+            this.particleTarget = MultiBufferSource.immediateWithBuffers(particleBuffers, new ByteBufferBuilder(LARGER_BUFFER_SOURCES ? 2097152 : 256));
         }
 
         public SequencedMap<RenderType, ByteBufferBuilder> getBuffers() {
