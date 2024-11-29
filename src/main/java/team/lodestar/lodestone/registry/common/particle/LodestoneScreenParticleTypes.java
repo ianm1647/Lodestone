@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.resources.ResourceLocation;
 import team.lodestar.lodestone.LodestoneLib;
+import team.lodestar.lodestone.mixin.client.FabricSpriteProviderImplAccessor;
 import team.lodestar.lodestone.systems.particle.screen.ScreenParticleOptions;
 import team.lodestar.lodestone.systems.particle.screen.ScreenParticleType;
 import team.lodestar.lodestone.systems.particle.screen.LodestoneScreenParticleType;
@@ -37,6 +38,7 @@ public class LodestoneScreenParticleTypes {
     }
 
     public static SpriteSet getSpriteSet(ResourceLocation resourceLocation) {
-        return Minecraft.getInstance().particleEngine.spriteSets.get(resourceLocation);
+        Minecraft minecraft = Minecraft.getInstance();
+        return FabricSpriteProviderImplAccessor.FabricSpriteProviderImpl(minecraft.particleEngine, minecraft.particleEngine.spriteSets.get(resourceLocation));
     }
 }

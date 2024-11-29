@@ -1,25 +1,12 @@
 package team.lodestar.lodestone.registry.client;
 
-import net.minecraft.client.GraphicsStatus;
-import net.minecraft.resources.ResourceLocation;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.EventPriority;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import team.lodestar.lodestone.LodestoneLib;
-import team.lodestar.lodestone.systems.model.obj.lod.LODStrategy;
 import team.lodestar.lodestone.systems.model.obj.lod.MultiLODModel;
 import team.lodestar.lodestone.systems.model.obj.ObjModel;
-import team.lodestar.lodestone.systems.model.obj.modifier.modifiers.TriangulateModifier;
-import team.lodestar.lodestone.systems.model.obj.modifier.modifiers.TriangulateSettings;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-@EventBusSubscriber(modid = LodestoneLib.LODESTONE, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class LodestoneOBJModels {
     // TODO: Track models by ResourceLocation & cache their modification history to prevent reparsing and reapplying modifiers
     public static List<ObjModel> OBJ_MODELS = new ArrayList<>();
@@ -66,8 +53,7 @@ public class LodestoneOBJModels {
         LOD_MODELS.forEach(MultiLODModel::loadModel);
     }
 
-    @SubscribeEvent(priority = EventPriority.LOWEST)
-    public static void onClientSetup(FMLClientSetupEvent event) {
+    public static void onClientSetup() {
         loadModels();
     }
 }

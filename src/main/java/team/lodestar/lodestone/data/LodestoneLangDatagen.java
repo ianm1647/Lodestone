@@ -20,12 +20,11 @@ public class LodestoneLangDatagen extends FabricLanguageProvider {
 
     @Override
     public void generateTranslations(HolderLookup.Provider registryLookup, TranslationBuilder translationBuilder) {
-        var attributes = new HashSet<>(LodestoneAttributes.ATTRIBUTES.getEntries());
 
-        attributes.forEach(a -> {
-            String name = DataHelper.toTitleCase(a.getId().getPath(), "_");
-            translationBuilder.add("attribute.name.lodestone." + a.getId().getPath(), name);
-        });
+        translationBuilder.add("attribute.name.lodestone.magic_resistance", "Magic Resistance");
+        translationBuilder.add("attribute.name.lodestone.magic_proficiency", "Magic Proficiency");
+        translationBuilder.add("attribute.name.lodestone.magic_damage", "Magic Damage");
+
         addOption(translationBuilder, "screenshake_intensity", "Screenshake Intensity");
         addOptionTooltip(translationBuilder, "screenshake_intensity", "Controls how much screenshake is applied to your screen.");
 

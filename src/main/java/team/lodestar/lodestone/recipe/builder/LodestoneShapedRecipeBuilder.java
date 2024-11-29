@@ -4,6 +4,7 @@ import net.minecraft.data.recipes.RecipeBuilder;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import team.lodestar.lodestone.helpers.ReflectionHelper;
 
@@ -20,7 +21,7 @@ public class LodestoneShapedRecipeBuilder extends ShapedRecipeBuilder implements
                 Objects.requireNonNullElse(this.group, ""),
                 RecipeBuilder.determineBookCategory(this.category),
                 this.ensureValid(id),
-                this.getResult(),
+                new ItemStack(this.getResult()),
                 this.showNotification
         );
     }

@@ -26,7 +26,7 @@ public class LodestoneLib implements ModInitializer {
 
         LodestoneBlockEntities.BLOCK_ENTITY_TYPES.register();
         LodestoneParticleTypes.PARTICLES.register();
-        LodestoneAttributes.ATTRIBUTES.register();
+        LodestoneAttributes.init();
         LodestoneRecipeSerializers.RECIPE_SERIALIZERS.register();
         LodestoneAttachmentTypes.register();
         LodestonePlacementFillers.MODIFIERS.register();

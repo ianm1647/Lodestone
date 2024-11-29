@@ -130,3 +130,6 @@ accessible field net/minecraft/data/recipes/ShapedRecipeBuilder showNotification
 accessible field net/minecraft/data/recipes/ShapelessRecipeBuilder group Ljava/lang/String;
 accessible field net/minecraft/data/recipes/ShapedRecipeBuilder count I
 accessible field net/minecraft/data/recipes/ShapedRecipeBuilder group Ljava/lang/String;
+accessible method net/minecraft/data/recipes/SimpleCookingRecipeBuilder <init> (Lnet/minecraft/data/recipes/RecipeCategory;Lnet/minecraft/world/item/crafting/CookingBookCategory;Lnet/minecraft/world/level/ItemLike;Lnet/minecraft/world/item/crafting/Ingredient;FILnet/minecraft/world/item/crafting/AbstractCookingRecipe$Factory;)V
+accessible field net/minecraft/data/recipes/ShapelessRecipeBuilder count I
+extendable class net/fabricmc/fabric/impl/client/rendering/FabricShaderProgram

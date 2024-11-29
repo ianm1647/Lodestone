@@ -2,6 +2,7 @@ package team.lodestar.lodestone.registry.client;
 
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.datafixers.util.Pair;
+import net.fabricmc.fabric.api.client.rendering.v1.CoreShaderRegistrationCallback;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.server.packs.resources.ResourceProvider;
 import team.lodestar.lodestone.LodestoneLib;
@@ -34,6 +35,7 @@ public class LodestoneShaders {
 
     public static void init() {
         LodestoneShaderRegistrationEvent.EVENT.register((provider, shaderList1) -> {
+
             shaderList1.add(Pair.of(LODESTONE_TEXTURE.createInstance(provider), getConsumer()));
             shaderList1.add(Pair.of(LODESTONE_TEXT.createInstance(provider), getConsumer()));
             shaderList1.add(Pair.of(PARTICLE.createInstance(provider), getConsumer()));
@@ -47,10 +49,16 @@ public class LodestoneShaders {
             shaderList1.add(Pair.of(ROUNDED_TRIANGLE_TEXTURE.createInstance(provider), getConsumer()));
             shaderList1.add(Pair.of(SCROLLING_TEXTURE.createInstance(provider), getConsumer()));
             shaderList1.add(Pair.of(SCROLLING_TRIANGLE_TEXTURE.createInstance(provider), getConsumer()));
+
+
         });
     }
 
     public static Consumer<ShaderInstance> getConsumer() {
         return (shader) -> ((ExtendedShaderInstance) shader).getShaderHolder();
+    }
+
+    public static void register(CoreShaderRegistrationCallback.RegistrationContext ctx) throws IOException {
+
     }
 }

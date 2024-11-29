@@ -5,8 +5,8 @@ import net.minecraft.resources.*;
 import net.minecraft.world.damagesource.*;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.level.*;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.*;
 
 public class DamageTypeHelper {
 

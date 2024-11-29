@@ -1,11 +1,11 @@
 package team.lodestar.lodestone.systems.datagen.providers;
 
+import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
+import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
-import net.neoforged.neoforge.common.data.BlockTagsProvider;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import org.jetbrains.annotations.Nullable;
 import team.lodestar.lodestone.systems.block.LodestoneBlockProperties;
 import team.lodestar.lodestone.systems.datagen.LodestoneDatagenBlockData;
@@ -13,10 +13,11 @@ import team.lodestar.lodestone.systems.datagen.LodestoneDatagenBlockData;
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 
-public abstract class LodestoneBlockTagsProvider extends BlockTagsProvider {
+public abstract class LodestoneBlockTagsProvider extends FabricTagProvider.BlockTagProvider {
 
-    public LodestoneBlockTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, String modId, @Nullable ExistingFileHelper existingFileHelper) {
-        super(output, lookupProvider, modId, existingFileHelper);
+
+    public LodestoneBlockTagsProvider(FabricDataOutput output, CompletableFuture<HolderLookup.Provider> registriesFuture) {
+        super(output, registriesFuture);
     }
 
     public void addTagsFromBlockProperties(Collection<Block> blocks) {
@@ -24,7 +25,7 @@ public abstract class LodestoneBlockTagsProvider extends BlockTagsProvider {
             LodestoneBlockProperties properties = (LodestoneBlockProperties) block.properties();
             LodestoneDatagenBlockData data = properties.getDatagenData();
             for (TagKey<Block> tag : data.getTags()) {
-                tag(tag).add(block);
+                getOrCreateTagBuilder(tag).add(block);
             }
         }
     }

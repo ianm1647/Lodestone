@@ -4,6 +4,7 @@ import net.minecraft.data.recipes.RecipeBuilder;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.ShapelessRecipeBuilder;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.ShapelessRecipe;
 import team.lodestar.lodestone.helpers.ReflectionHelper;
 
@@ -11,7 +12,7 @@ import java.util.Objects;
 
 public class LodestoneShapelessRecipeBuilder extends ShapelessRecipeBuilder implements LodestoneRecipeBuilder<ShapelessRecipe> {
     public LodestoneShapelessRecipeBuilder(ShapelessRecipeBuilder parent) {
-        super(parent.category, parent.resultStack);
+        super(parent.category, parent.getResult(), parent.count);
         ReflectionHelper.copyFields(parent, this);
     }
 
@@ -20,7 +21,7 @@ public class LodestoneShapelessRecipeBuilder extends ShapelessRecipeBuilder impl
         return new ShapelessRecipe(
                 Objects.requireNonNullElse(this.group, ""),
                 RecipeBuilder.determineBookCategory(this.category),
-                this.resultStack, this.ingredients
+                new ItemStack(this.getResult()), this.ingredients
         );
     }
 

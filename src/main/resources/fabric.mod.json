@@ -20,12 +20,6 @@
     "client": [
       "team.lodestar.lodestone.LodestoneLibClient"
     ],
-    "cardinal-components-entity": [
-      "team.lodestar.lodestone.component.LodestoneComponents"
-    ],
-    "cardinal-components-world": [
-      "team.lodestar.lodestone.component.LodestoneComponents"
-    ],
     "fabric-datagen": [
       "team.lodestar.lodestone.data.LodestoneDatagen"
     ]
@@ -38,16 +32,9 @@
     "fabricloader": ">=${loader_version}",
     "fabric-api": "*",
     "minecraft": "~${minecraft_version}",
-    "java": ">=17",
+    "java": ">=21",
     "cardinal-components-base": "*",
     "porting_lib_base": "*"
-  },
-  "custom": {
-    "cardinal-components": [
-      "lodestone:player",
-      "lodestone:entity",
-      "lodestone:world_event"
-    ]
   },
   "suggests": {
     "another-mod": "*"

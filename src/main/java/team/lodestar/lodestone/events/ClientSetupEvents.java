@@ -16,7 +16,7 @@ public class ClientSetupEvents {
 
     public static void registerParticleFactory() {
         registerParticleProviders();
-        LodestoneScreenParticleTypes.registerParticleFactory();
+        //LodestoneScreenParticleTypes.registerParticleFactory();
     }
 
     public static void clientSetup() {

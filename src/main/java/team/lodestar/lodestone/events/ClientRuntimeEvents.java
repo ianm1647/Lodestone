@@ -46,6 +46,9 @@ public class ClientRuntimeEvents {
         Minecraft minecraft = Minecraft.getInstance();
         Camera camera = minecraft.gameRenderer.getMainCamera();
         Vec3 cameraPos = camera.getPosition();
+        if (poseStack == null) {
+            poseStack = new PoseStack();
+        }
         poseStack.pushPose();
         poseStack.translate(-cameraPos.x(), -cameraPos.y(), -cameraPos.z());
 
