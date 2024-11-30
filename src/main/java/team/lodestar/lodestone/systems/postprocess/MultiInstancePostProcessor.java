@@ -2,6 +2,7 @@ package team.lodestar.lodestone.systems.postprocess;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.EffectInstance;
+import org.joml.Matrix4f;
 import team.lodestar.lodestone.LodestoneLib;
 
 import javax.annotation.Nullable;
@@ -51,7 +52,7 @@ public abstract class MultiInstancePostProcessor<I extends DynamicShaderFxInstan
     }
 
     @Override
-    public void beforeProcess(PoseStack viewModelStack) {
+    public void beforeProcess(Matrix4f viewModelMatrix) {
         for (int i = instances.size() - 1; i >= 0; i--) {
             DynamicShaderFxInstance instance = instances.get(i);
             instance.update(MC.getTimer().getGameTimeDeltaPartialTick(false));
