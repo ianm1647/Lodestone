@@ -12,6 +12,6 @@ public class LodestoneDamageTypeTags {
     public static final TagKey<DamageType> IGNORES_MAGIC_ATTACK_COOLDOWN_SCALAR = forgeTag("ignores_magic_attack_cooldown_scalar");
 
     public static TagKey<DamageType> forgeTag(String path) {
-        return TagKey.create(Registries.DAMAGE_TYPE, ResourceLocation.fromNamespaceAndPath("forge", path));
+        return TagKey.create(Registries.DAMAGE_TYPE, ResourceLocation.fromNamespaceAndPath("c", path));
     }
 }
