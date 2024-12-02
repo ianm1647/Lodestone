@@ -54,7 +54,7 @@ public class ScreenParticleHandler {
         canSpawnParticles = true;
     }
 
-    public static void renderTick(RenderFrameEvent.Pre event) {
+    public static void renderTick(RenderFrameEvent.Post event) {
         canSpawnParticles = false;
     }
 
@@ -83,8 +83,8 @@ public class ScreenParticleHandler {
                         currentItemY += yOffsetf;
                     }
                     else if (!renderingHotbar && minecraft.screen instanceof AbstractContainerScreen<?> containerScreen) {
-                        currentItemX += containerScreen.getGuiLeft();
-                        currentItemY += containerScreen.getGuiTop();
+                        //currentItemX += containerScreen.getGuiLeft();
+                        //currentItemY += containerScreen.getGuiTop();
                     }
                     for (ParticleEmitterHandler.ItemParticleSupplier emitter : emitters) {
                         renderParticles(spawnAndPullParticles(minecraft.level, emitter, stack, false));
