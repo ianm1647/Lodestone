@@ -1,6 +1,8 @@
 package team.lodestar.lodestone.events.types.worldevent;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.fabricmc.fabric.api.event.Event;
+import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.client.renderer.MultiBufferSource;
 import team.lodestar.lodestone.systems.worldevent.WorldEventInstance;
 import team.lodestar.lodestone.systems.worldevent.WorldEventRenderer;
@@ -32,5 +34,14 @@ public class WorldEventRenderEvent extends WorldEventInstanceEvent {
 
     public float getPartialTicks() {
         return partialTicks;
+    }
+
+    public static final Event<Render> EVENT = EventFactory.createArrayBacked(Render.class, callbacks -> event -> {
+        for (final Render callback : callbacks)
+            callback.post(event);
+    });
+
+    public interface Render {
+        void post(WorldEventRenderEvent event);
     }
 }

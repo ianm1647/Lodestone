@@ -51,16 +51,13 @@ public class UpdateWorldEventPayload implements CustomPacketPayload, LodestonePa
         context.client().execute(() -> {
             ClientLevel level = Minecraft.getInstance().level;
             if (level != null) {
-                /*TODO level attachment dont exist clientside on fabric
-                var worldData = level.getData(LodestoneAttachmentTypes.WORLD_EVENT_DATA);
+                var worldData = level.getAttachedOrCreate(LodestoneAttachmentTypes.WORLD_EVENT_DATA);
                 for (WorldEventInstance instance : worldData.activeWorldEvents) {
                     if (instance.uuid.equals(uuid)) {
                         instance.deserializeNBT(eventData);
                         break;
                     }
                 }
-
-                 */
             }
         });
     }
