@@ -1,20 +1,55 @@
 package team.lodestar.lodestone;
 
+import com.mojang.serialization.MapCodec;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
+import net.minecraft.client.Minecraft;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.*;
 import net.minecraft.util.*;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 import team.lodestar.lodestone.events.RuntimeEvents;
 import team.lodestar.lodestone.events.SetupEvents;
+import team.lodestar.lodestone.handlers.RenderHandler;
+import team.lodestar.lodestone.handlers.screenparticle.ParticleEmitterHandler;
+import team.lodestar.lodestone.helpers.ColorHelper;
+import team.lodestar.lodestone.helpers.RandomHelper;
 import team.lodestar.lodestone.helpers.ShadersHelper;
 import team.lodestar.lodestone.registry.common.LodestoneAttachmentTypes;
 import team.lodestar.lodestone.compability.*;
 import team.lodestar.lodestone.registry.common.*;
 import team.lodestar.lodestone.registry.common.particle.*;
+import team.lodestar.lodestone.systems.easing.Easing;
 import team.lodestar.lodestone.systems.item.LodestoneItemProperties;
+import team.lodestar.lodestone.systems.particle.SimpleParticleOptions;
+import team.lodestar.lodestone.systems.particle.builder.ScreenParticleBuilder;
+import team.lodestar.lodestone.systems.particle.builder.WorldParticleBuilder;
+import team.lodestar.lodestone.systems.particle.data.GenericParticleData;
+import team.lodestar.lodestone.systems.particle.data.color.ColorParticleData;
+import team.lodestar.lodestone.systems.particle.data.spin.SpinParticleData;
+import team.lodestar.lodestone.systems.particle.screen.ScreenParticleHolder;
+
+import java.awt.*;
+
+import static net.minecraft.util.Mth.nextFloat;
 
 public class LodestoneLib implements ModInitializer {
     public static final Logger LOGGER = LogManager.getLogger();
@@ -50,7 +85,6 @@ public class LodestoneLib implements ModInitializer {
         return ResourceLocation.fromNamespaceAndPath(LODESTONE, path);
     }
 
-    /* Independent test code
      public static class DemoBlockitem extends BlockItem implements ParticleEmitterHandler.ItemParticleSupplier {
 
         public DemoBlockitem(Block block, Properties properties) {
@@ -186,5 +220,5 @@ public class LodestoneLib implements ModInitializer {
             "demo_block",
             BlockEntityType.Builder.of(DemoBlockEntity::new, CONDENSED_DIRT).build()
     );
-     */
+
 }

@@ -33,7 +33,6 @@
     "fabric-api": "*",
     "minecraft": "~${minecraft_version}",
     "java": ">=21",
-    "cardinal-components-base": "*",
     "porting_lib_base": "*"
   },
   "suggests": {
