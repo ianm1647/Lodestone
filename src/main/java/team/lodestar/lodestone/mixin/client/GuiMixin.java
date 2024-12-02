@@ -11,6 +11,7 @@ import team.lodestar.lodestone.handlers.screenparticle.ScreenParticleHandler;
 
 @Mixin(Gui.class)
 public class GuiMixin {
+
     @Inject(at = @At("HEAD"), method = "renderHotbarAndDecorations")
     private void lodestone$RenderHotbarStart(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
         ScreenParticleHandler.renderingHotbar = true;

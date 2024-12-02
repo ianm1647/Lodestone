@@ -84,7 +84,7 @@ public class LodestoneLib implements ModInitializer {
     public static ResourceLocation lodestonePath(String path) {
         return ResourceLocation.fromNamespaceAndPath(LODESTONE, path);
     }
-
+/*
      public static class DemoBlockitem extends BlockItem implements ParticleEmitterHandler.ItemParticleSupplier {
 
         public DemoBlockitem(Block block, Properties properties) {
@@ -92,7 +92,7 @@ public class LodestoneLib implements ModInitializer {
         }
 
         @Override
-        public void spawnLateParticles(ScreenParticleHolder target, Level level, float partialTick, ItemStack stack, float x, float y) {
+        public void spawnEarlyParticles(ScreenParticleHolder target, Level level, float partialTick, ItemStack stack, float x, float y) {
             var rand = Minecraft.getInstance().level.getRandom();
             var color = Color.BLUE;
             var endColor = Color.green;
@@ -221,4 +221,6 @@ public class LodestoneLib implements ModInitializer {
             BlockEntityType.Builder.of(DemoBlockEntity::new, CONDENSED_DIRT).build()
     );
 
+
+ */
 }
