@@ -21,6 +21,9 @@ import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+
+import java.util.List;
+
 /**
  * A simple copy of a sword, without actually being a sword.
  * Minecraft has some hardcoded instanceof SwordItem checks, which we use this to avoid.
@@ -39,25 +42,27 @@ public class ModCombatItem extends TieredItem implements ItemStackExtensions {
 
     @Override
     public ItemAttributeModifiers getDefaultAttributeModifiers() {
-        if (attributes == null) {
-            return ItemAttributeModifiers.builder().add(
-                            Attributes.ATTACK_DAMAGE,
-                            new AttributeModifier(BASE_ATTACK_DAMAGE_ID, (double)attackDamage, AttributeModifier.Operation.ADD_VALUE),
-                            EquipmentSlotGroup.MAINHAND
-                    )
-                    .add(
-                            Attributes.ATTACK_SPEED,
-                            new AttributeModifier(BASE_ATTACK_SPEED_ID, (double)attackSpeed, AttributeModifier.Operation.ADD_VALUE),
-                            EquipmentSlotGroup.MAINHAND
-                    )
-                    .build();
-        }
+        ItemAttributeModifiers.Builder builder = ItemAttributeModifiers.builder()
+                .add(
+                        Attributes.ATTACK_DAMAGE,
+                        new AttributeModifier(BASE_ATTACK_DAMAGE_ID, attackDamage, AttributeModifier.Operation.ADD_VALUE),
+                        EquipmentSlotGroup.MAINHAND
+                )
+                .add(
+                        Attributes.ATTACK_SPEED,
+                        new AttributeModifier(BASE_ATTACK_SPEED_ID, attackSpeed, AttributeModifier.Operation.ADD_VALUE),
+                        EquipmentSlotGroup.MAINHAND
+                );
 
-        return super.getDefaultAttributeModifiers();
+        createExtraAttributes().forEach((entry) -> {
+            builder.add(entry.attribute(), entry.modifier(), entry.slot());
+        });
+
+        return builder.build();
     }
 
-    public ImmutableMultimap.Builder<Attribute, AttributeModifier> createExtraAttributes() {
-        return new ImmutableMultimap.Builder<>();
+    public List<ItemAttributeModifiers.Entry> createExtraAttributes() {
+        return List.of();
     }
 
     public float getDamage() {
