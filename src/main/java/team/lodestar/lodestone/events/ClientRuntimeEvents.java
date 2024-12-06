@@ -15,9 +15,11 @@ import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.client.event.ViewportEvent;
 import net.neoforged.neoforge.event.GameShuttingDownEvent;
 import org.joml.Matrix4f;
+import team.lodestar.lodestone.LodestoneLib;
 import team.lodestar.lodestone.handlers.*;
 import team.lodestar.lodestone.handlers.screenparticle.ScreenParticleHandler;
 import team.lodestar.lodestone.registry.client.LodestoneOBJModels;
+import team.lodestar.lodestone.systems.rendering.LodestoneRenderSystem;
 
 
 @EventBusSubscriber(value = Dist.CLIENT, bus = EventBusSubscriber.Bus.GAME)
@@ -90,8 +92,10 @@ public class ClientRuntimeEvents {
 
     @SubscribeEvent
     public static void shutdownEvent(GameShuttingDownEvent event) {
-        if (RenderSystem.isOnRenderThread()) {
+        LodestoneRenderSystem.wrap(() -> {
             LodestoneOBJModels.cleanup();
-        }
+            LodestoneRenderSystem.destroyBufferObjects();
+            LodestoneLib.LOGGER.info("Shutting down Lodestone");
+        });
     }
 }
