@@ -27,7 +27,9 @@
     "client.MultiPlayerGameModeMixin",
     "client.ParticleEngineMixin",
     "client.ScreenEffectRendererMixin",
-    "client.ShaderInstanceMixin"
+    "client.ShaderInstanceMixin",
+    "client.GuiGraphicsMixin",
+    "client.VertexBufferMixin"
   ],
   "injectors": {
     "defaultRequire": 1

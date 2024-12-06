@@ -1,8 +1,11 @@
 package team.lodestar.lodestone.registry.client;
 
 import team.lodestar.lodestone.LodestoneLib;
+import team.lodestar.lodestone.systems.model.obj.IndexedModel;
+import team.lodestar.lodestone.systems.model.obj.lod.LODStrategy;
 import team.lodestar.lodestone.systems.model.obj.lod.MultiLODModel;
 import team.lodestar.lodestone.systems.model.obj.ObjModel;
+import team.lodestar.lodestone.systems.model.obj.modifier.modifiers.TriangulateModifier;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,5 +58,10 @@ public class LodestoneOBJModels {
 
     public static void onClientSetup() {
         loadModels();
+    }
+
+    public static void cleanup() {
+        OBJ_MODELS.forEach(IndexedModel::cleanup);
+        LOD_MODELS.forEach(IndexedModel::cleanup);
     }
 }
