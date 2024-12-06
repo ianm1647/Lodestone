@@ -4,7 +4,6 @@ import com.mojang.blaze3d.shaders.ProgramManager;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceProvider;
-import net.neoforged.neoforge.client.event.RegisterShadersEvent;
 import org.apache.commons.io.IOUtils;
 import team.lodestar.lodestone.LodestoneLib;
 import team.lodestar.lodestone.systems.rendering.IBufferObject;
@@ -25,10 +24,10 @@ public class ComputeProgram implements IBufferObject {
         this.registerBufferObject();
     }
 
-    public void register(RegisterShadersEvent event) {
-        ResourceProvider provider = event.getResourceProvider();
-        LodestoneLib.LOGGER.info("Registering compute shader: " + this.shaderLocation);
-        loadShader(provider);
+    public void register() {
+        //TODO ResourceProvider provider = event.getResourceProvider();
+        //LodestoneLib.LOGGER.info("Registering compute shader: " + this.shaderLocation);
+        //loadShader(provider);
     }
 
     private void loadShader(ResourceProvider provider) {
