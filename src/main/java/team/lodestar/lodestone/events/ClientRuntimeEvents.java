@@ -7,9 +7,12 @@ import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
+import team.lodestar.lodestone.LodestoneLib;
 import team.lodestar.lodestone.handlers.*;
 import team.lodestar.lodestone.handlers.screenparticle.ScreenParticleHandler;
 import team.lodestar.lodestone.helpers.ShadersHelper;
+import team.lodestar.lodestone.registry.client.LodestoneOBJModels;
+import team.lodestar.lodestone.systems.rendering.LodestoneRenderSystem;
 
 
 public class ClientRuntimeEvents {
@@ -75,5 +78,13 @@ public class ClientRuntimeEvents {
 
     public static void renderFrameEvent() {
         ScreenParticleHandler.renderTick();
+    }
+
+    public static void shutdownEvent() {
+        LodestoneRenderSystem.wrap(() -> {
+            LodestoneOBJModels.cleanup();
+            LodestoneRenderSystem.destroyBufferObjects();
+            LodestoneLib.LOGGER.info("Shutting down Lodestone");
+        });
     }
 }
