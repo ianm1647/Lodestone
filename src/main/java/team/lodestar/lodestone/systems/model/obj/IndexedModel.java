@@ -1,11 +1,11 @@
 package team.lodestar.lodestone.systems.model.obj;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
+import team.lodestar.lodestone.ducks.IVertexBuffer;
 import team.lodestar.lodestone.systems.model.obj.data.*;
 import team.lodestar.lodestone.systems.model.obj.modifier.*;
 
@@ -18,6 +18,8 @@ public abstract class IndexedModel {
     protected List<Integer> bakedIndices;
     protected List<ModelModifier<?>> modifiers;
     protected ResourceLocation modelId;
+    protected VertexBuffer modelBuffer;
+    protected MeshData meshData;
 
     public IndexedModel(ResourceLocation modelId) {
         this.modelId = modelId;
@@ -39,6 +41,15 @@ public abstract class IndexedModel {
                 }
             }
         }
+    }
+
+    public void renderInstanced(PoseStack poseStack, RenderType renderType, int instances) {
+        this.createMeshBuffer(poseStack);
+        this.modelBuffer.bind();
+        renderType.setupRenderState();
+        ((IVertexBuffer) (Object) this.modelBuffer).drawWithShaderInstanced(poseStack.last().pose(), RenderSystem.getProjectionMatrix(), RenderSystem.getShader(), instances);
+        renderType.clearRenderState();
+        VertexBuffer.unbind();
     }
 
     public abstract void loadModel();
@@ -96,6 +107,33 @@ public abstract class IndexedModel {
                 this.bakedIndices.addAll(mesh.indices);
             }
         }
+    }
 
+    public void createMeshBuffer(PoseStack poseStack) {
+        if (this.modelBuffer != null) {
+            return;
+        }
+
+        this.modelBuffer = new VertexBuffer(VertexBuffer.Usage.STATIC);
+        this.modelBuffer.bind();
+        MeshData meshData = this.drawMesh(poseStack, Tesselator.getInstance());
+        this.modelBuffer.upload(meshData);
+        VertexBuffer.unbind();
+    }
+
+    public MeshData drawMesh(PoseStack poseStack, Tesselator tesselator) {
+        BufferBuilder bufferBuilder = tesselator.begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION);
+        for (IndexedMesh mesh : this.meshes) {
+            for (Vertex vertex : mesh.getVertices(this)) {
+                vertex.supplyVertexData(bufferBuilder, DefaultVertexFormat.POSITION, poseStack);
+            }
+        }
+        return bufferBuilder.buildOrThrow();
+    }
+
+    public void cleanup() {
+        if (this.modelBuffer != null) {
+            this.modelBuffer.close();
+        }
     }
 }

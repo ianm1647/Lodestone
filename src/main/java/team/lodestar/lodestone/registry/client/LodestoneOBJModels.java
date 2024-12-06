@@ -8,16 +8,14 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import team.lodestar.lodestone.LodestoneLib;
+import team.lodestar.lodestone.systems.model.obj.IndexedModel;
 import team.lodestar.lodestone.systems.model.obj.lod.LODStrategy;
 import team.lodestar.lodestone.systems.model.obj.lod.MultiLODModel;
 import team.lodestar.lodestone.systems.model.obj.ObjModel;
 import team.lodestar.lodestone.systems.model.obj.modifier.modifiers.TriangulateModifier;
-import team.lodestar.lodestone.systems.model.obj.modifier.modifiers.TriangulateSettings;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @EventBusSubscriber(modid = LodestoneLib.LODESTONE, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class LodestoneOBJModels {
@@ -69,5 +67,10 @@ public class LodestoneOBJModels {
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onClientSetup(FMLClientSetupEvent event) {
         loadModels();
+    }
+
+    public static void cleanup() {
+        OBJ_MODELS.forEach(IndexedModel::cleanup);
+        LOD_MODELS.forEach(IndexedModel::cleanup);
     }
 }

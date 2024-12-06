@@ -13,9 +13,11 @@ import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RenderFrameEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.client.event.ViewportEvent;
+import net.neoforged.neoforge.event.GameShuttingDownEvent;
 import org.joml.Matrix4f;
 import team.lodestar.lodestone.handlers.*;
 import team.lodestar.lodestone.handlers.screenparticle.ScreenParticleHandler;
+import team.lodestar.lodestone.registry.client.LodestoneOBJModels;
 
 
 @EventBusSubscriber(value = Dist.CLIENT, bus = EventBusSubscriber.Bus.GAME)
@@ -83,6 +85,13 @@ public class ClientRuntimeEvents {
     public static void renderFrameEvent(RenderFrameEvent.Post event) {
         if (event != null) {
             ScreenParticleHandler.renderTick(event);
+        }
+    }
+
+    @SubscribeEvent
+    public static void shutdownEvent(GameShuttingDownEvent event) {
+        if (RenderSystem.isOnRenderThread()) {
+            LodestoneOBJModels.cleanup();
         }
     }
 }
