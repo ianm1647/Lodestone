@@ -8,11 +8,11 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import team.lodestar.lodestone.LodestoneLib;
+import team.lodestar.lodestone.systems.model.obj.IndexedModel;
 import team.lodestar.lodestone.systems.model.obj.lod.LODStrategy;
 import team.lodestar.lodestone.systems.model.obj.lod.MultiLODModel;
 import team.lodestar.lodestone.systems.model.obj.ObjModel;
 import team.lodestar.lodestone.systems.model.obj.modifier.modifiers.TriangulateModifier;
-import team.lodestar.lodestone.systems.rendering.instancing.InstancedVertexBuffer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +22,6 @@ public class LodestoneOBJModels {
     // TODO: Track models by ResourceLocation & cache their modification history to prevent reparsing and reapplying modifiers
     public static List<ObjModel> OBJ_MODELS = new ArrayList<>();
     public static List<MultiLODModel> LOD_MODELS = new ArrayList<>();
-    public static List<InstancedVertexBuffer> vertexBuffers = new ArrayList<>();
 
     // TODO: Get rid of this
 //    public static final MultiLODModel LOD_MODEL = register(new MultiLODModel(
@@ -70,11 +69,8 @@ public class LodestoneOBJModels {
         loadModels();
     }
 
-    public static void addInstancedVertexBuffer(InstancedVertexBuffer vertexBuffer) {
-        vertexBuffers.add(vertexBuffer);
-    }
-
     public static void cleanup() {
-        vertexBuffers.forEach(InstancedVertexBuffer::close);
+        OBJ_MODELS.forEach(IndexedModel::cleanup);
+        LOD_MODELS.forEach(IndexedModel::cleanup);
     }
 }

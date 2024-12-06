@@ -4,21 +4,13 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.resources.ResourceLocation;
-import team.lodestar.lodestone.handlers.InstanceRenderHandler;
+import team.lodestar.lodestone.ducks.IVertexBuffer;
 import team.lodestar.lodestone.systems.model.obj.data.*;
 import team.lodestar.lodestone.systems.model.obj.modifier.*;
-import team.lodestar.lodestone.systems.rendering.LodestoneRenderType;
-import team.lodestar.lodestone.systems.rendering.instancing.InstancedData;
-import team.lodestar.lodestone.systems.rendering.instancing.InstancedVertexBuffer;
-import team.lodestar.lodestone.systems.rendering.instancing.TransformInstanceData;
 
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.mojang.blaze3d.vertex.VertexFormatElement.*;
 
 public abstract class IndexedModel {
     protected List<Vertex> vertices;
@@ -26,14 +18,14 @@ public abstract class IndexedModel {
     protected List<Integer> bakedIndices;
     protected List<ModelModifier<?>> modifiers;
     protected ResourceLocation modelId;
-    protected InstancedVertexBuffer instancedVertexBuffer;
+    protected VertexBuffer modelBuffer;
+    protected MeshData meshData;
 
     public IndexedModel(ResourceLocation modelId) {
         this.modelId = modelId;
         this.vertices = new ArrayList<>();
         this.meshes = new ArrayList<>();
         this.bakedIndices = new ArrayList<>();
-        this.instancedVertexBuffer = new InstancedVertexBuffer(DefaultVertexFormat.POSITION_TEX, VertexFormat.Mode.TRIANGLES);
     }
 
     public void render(PoseStack poseStack, RenderType renderType, MultiBufferSource.BufferSource bufferSource) {
@@ -51,13 +43,13 @@ public abstract class IndexedModel {
         }
     }
 
-    public void renderInstanced(RenderType renderType, PoseStack poseStack) {
-        this.instancedVertexBuffer.bind();
+    public void renderInstanced(PoseStack poseStack, RenderType renderType, int instances) {
+        this.createMeshBuffer(poseStack);
+        this.modelBuffer.bind();
         renderType.setupRenderState();
-        ShaderInstance shaderinstance = RenderSystem.getShader();
-        this.instancedVertexBuffer.drawWithShader(this, poseStack.last().pose(), RenderSystem.getProjectionMatrix(), shaderinstance);
+        ((IVertexBuffer) (Object) this.modelBuffer).drawWithShaderInstanced(poseStack.last().pose(), RenderSystem.getProjectionMatrix(), RenderSystem.getShader(), instances);
         renderType.clearRenderState();
-        this.instancedVertexBuffer.unbind();
+        VertexBuffer.unbind();
     }
 
     public abstract void loadModel();
@@ -115,79 +107,33 @@ public abstract class IndexedModel {
                 this.bakedIndices.addAll(mesh.indices);
             }
         }
-
     }
 
-    public ByteBuffer getPositionsBuffer() {
-        ByteBuffer buffer = ByteBuffer.allocateDirect(this.vertices.size() * 3 * Float.BYTES);
-        this.vertices.forEach(vertex -> {
-            buffer.putFloat(vertex.getPosition().x);
-            buffer.putFloat(vertex.getPosition().y);
-            buffer.putFloat(vertex.getPosition().z);
-        });
-        buffer.flip();
-        return buffer;
-    }
-
-    public ByteBuffer getNormalsBuffer() {
-        ByteBuffer buffer = ByteBuffer.allocateDirect(this.vertices.size() * 3 * Float.BYTES);
-        this.vertices.forEach(vertex -> {
-            buffer.putFloat(vertex.getNormal().x);
-            buffer.putFloat(vertex.getNormal().y);
-            buffer.putFloat(vertex.getNormal().z);
-        });
-        buffer.flip();
-        return buffer;
-    }
-
-    public ByteBuffer getTextureCoordinatesBuffer() {
-        ByteBuffer buffer = ByteBuffer.allocateDirect(this.vertices.size() * 2 * Float.BYTES);
-        this.vertices.forEach(vertex -> {
-            buffer.putFloat(vertex.getUv().x);
-            buffer.putFloat(vertex.getUv().y);
-        });
-        buffer.flip();
-        return buffer;
-    }
-
-    public ByteBuffer getColorBuffer() {
-        ByteBuffer buffer = ByteBuffer.allocateDirect(this.vertices.size() * 4 * Float.BYTES);
-        this.vertices.forEach(vertex -> {
-            buffer.putFloat(vertex.getColor().x());
-            buffer.putFloat(vertex.getColor().y());
-            buffer.putFloat(vertex.getColor().z());
-            buffer.putFloat(vertex.getColor().w());
-        });
-        buffer.flip();
-        return buffer;
-    }
-
-    public ByteBuffer getAttribute(VertexFormatElement element) {
-        if (element.equals(POSITION)) {
-            return getPositionsBuffer();
-        } else if (element.equals(NORMAL)) {
-            return getNormalsBuffer();
-        } else if (element.equals(UV)) {
-            return getTextureCoordinatesBuffer();
-        } else if (element.equals(COLOR)) {
-            return getColorBuffer();
-        } else {
-            return null;
+    public void createMeshBuffer(PoseStack poseStack) {
+        if (this.modelBuffer != null) {
+            return;
         }
+
+        this.modelBuffer = new VertexBuffer(VertexBuffer.Usage.STATIC);
+        this.modelBuffer.bind();
+        MeshData meshData = this.drawMesh(poseStack, Tesselator.getInstance());
+        this.modelBuffer.upload(meshData);
+        VertexBuffer.unbind();
     }
 
-    public ByteBuffer getIndicesBuffer() {
-        ByteBuffer buffer = ByteBuffer.allocateDirect(this.bakedIndices.size() * Integer.BYTES);
-        this.bakedIndices.forEach(buffer::putInt);
-        buffer.flip();
-        return buffer;
+    public MeshData drawMesh(PoseStack poseStack, Tesselator tesselator) {
+        BufferBuilder bufferBuilder = tesselator.begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION);
+        for (IndexedMesh mesh : this.meshes) {
+            for (Vertex vertex : mesh.getVertices(this)) {
+                vertex.supplyVertexData(bufferBuilder, DefaultVertexFormat.POSITION, poseStack);
+            }
+        }
+        return bufferBuilder.buildOrThrow();
     }
 
-    public void addInstance(TransformInstanceData data) {
-        InstanceRenderHandler.addInstance(this, data);
-    }
-
-    public InstancedVertexBuffer getInstancedVertexBuffer() {
-        return this.instancedVertexBuffer;
+    public void cleanup() {
+        if (this.modelBuffer != null) {
+            this.modelBuffer.close();
+        }
     }
 }

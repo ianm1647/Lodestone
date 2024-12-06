@@ -111,7 +111,7 @@ public class Vertex implements VertexConsumer {
 
     public void supplyPosition(VertexConsumer vertexConsumer, PoseStack poseStack) {
         Vector3f position = this.getPosition();
-        vertexConsumer.addVertex(poseStack.last().pose(), position.x(), position.y(), position.z());
+        vertexConsumer.addVertex(position.x(), position.y(), position.z());
     }
 
     public void supplyColor(VertexConsumer vertexConsumer) {

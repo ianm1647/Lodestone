@@ -18,7 +18,8 @@
     "client.GuiMixin",
     "client.LevelRendererMixin",
     "client.MultiPlayerGameModeMixin",
-    "client.GuiGraphicsMixin"
+    "client.GuiGraphicsMixin",
+    "client.VertexBufferMixin"
   ],
   "injectors": {
     "defaultRequire": 1
