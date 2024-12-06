@@ -7,6 +7,7 @@ import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curios.api.SlotResult;
+import top.theillusivec4.curios.api.type.capability.ICuriosItemHandler;
 import top.theillusivec4.curios.api.type.inventory.ICurioStacksHandler;
 import top.theillusivec4.curios.api.type.inventory.IDynamicStackHandler;
 
@@ -32,7 +33,7 @@ public class CurioHelper {
     }
 
     public static ArrayList<ItemStack> getEquippedCurios(LivingEntity entity) {
-        Optional<IItemHandlerModifiable> optional = CuriosApi.getCuriosInventory(entity).map(iCuriosItemHandler -> (IItemHandlerModifiable) iCuriosItemHandler);
+        Optional<IItemHandlerModifiable> optional = CuriosApi.getCuriosInventory(entity).map(ICuriosItemHandler::getEquippedCurios);
         ArrayList<ItemStack> stacks = new ArrayList<>();
         if (optional.isPresent()) {
             IItemHandlerModifiable handler = optional.get();
@@ -44,7 +45,7 @@ public class CurioHelper {
     }
 
     public static ArrayList<ItemStack> getEquippedCurios(LivingEntity entity, Predicate<ItemStack> predicate) {
-        Optional<IItemHandlerModifiable> optional = CuriosApi.getCuriosInventory(entity).map(iCuriosItemHandler -> (IItemHandlerModifiable) iCuriosItemHandler);
+        Optional<IItemHandlerModifiable> optional = CuriosApi.getCuriosInventory(entity).map(ICuriosItemHandler::getEquippedCurios);
         ArrayList<ItemStack> stacks = new ArrayList<>();
         if (optional.isPresent()) {
             IItemHandlerModifiable handler = optional.get();
