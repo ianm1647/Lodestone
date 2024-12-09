@@ -98,11 +98,6 @@ public class VFXBuilders {
             return this;
         }
 
-        public ScreenVFXBuilder overrideBufferBuilder(BufferBuilder builder) {
-            this.bufferbuilder = builder;
-            return this;
-        }
-
         public ScreenVFXBuilder setLight(int light) {
             this.light = light;
             return this;
@@ -199,34 +194,27 @@ public class VFXBuilders {
             supplier.placeVertex(bufferbuilder, last, x1, y1, u1, v1);
             supplier.placeVertex(bufferbuilder, last, x1, y0, u1, v0);
             supplier.placeVertex(bufferbuilder, last, x0, y0, u0, v0);
-            return this;
-        }
-
-        public ScreenVFXBuilder draw(PoseStack stack) {
-            begin();
-            blit(stack);
-            end();
-            return this;
-        }
-
-        public ScreenVFXBuilder endAndProceed() {
-            return end().begin();
-        }
-
-        public ScreenVFXBuilder begin() {
-            if (bufferbuilder != null && bufferbuilder.building) {
-                bufferbuilder.buildOrThrow();
-            }
-            bufferbuilder = tesselator.begin(VertexFormat.Mode.QUADS, format);
-            return this;
-        }
-
-        public ScreenVFXBuilder end() {
             BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
             return this;
         }
 
-        private interface ScreenVertexPlacementSupplier {
+        @Deprecated
+        public ScreenVFXBuilder draw(PoseStack stack) {
+            blit(stack);
+            return this;
+        }
+
+        @Deprecated
+        public ScreenVFXBuilder begin() {
+            return this;
+        }
+
+        @Deprecated
+        public ScreenVFXBuilder end() {
+            return this;
+        }
+
+        public interface ScreenVertexPlacementSupplier {
             void placeVertex(BufferBuilder bufferBuilder, Matrix4f last, float x, float y, float u, float v);
         }
     }
