@@ -41,28 +41,19 @@ public class ModCombatItem extends TieredItem implements ItemStackExtensions {
     }
 
     @Override
-    public ItemAttributeModifiers getDefaultAttributeModifiers() {
-        ItemAttributeModifiers.Builder builder = ItemAttributeModifiers.builder()
-                .add(
-                        Attributes.ATTACK_DAMAGE,
-                        new AttributeModifier(BASE_ATTACK_DAMAGE_ID, attackDamage, AttributeModifier.Operation.ADD_VALUE),
-                        EquipmentSlotGroup.MAINHAND
-                )
-                .add(
-                        Attributes.ATTACK_SPEED,
-                        new AttributeModifier(BASE_ATTACK_SPEED_ID, attackSpeed, AttributeModifier.Operation.ADD_VALUE),
-                        EquipmentSlotGroup.MAINHAND
-                );
+    public ItemAttributeModifiers getDefaultAttributeModifiers(ItemStack stack) {
+        if (attributes == null) {
+            return createExtraAttributes()
+                    .add(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_ID, attackDamage, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
+                    .add(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_ID, attackSpeed, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
+                    .build();
+        }
 
-        createExtraAttributes().forEach((entry) -> {
-            builder.add(entry.attribute(), entry.modifier(), entry.slot());
-        });
-
-        return builder.build();
+        return super.getDefaultAttributeModifiers(stack);
     }
 
-    public List<ItemAttributeModifiers.Entry> createExtraAttributes() {
-        return List.of();
+    public ItemAttributeModifiers.Builder createExtraAttributes() {
+        return ItemAttributeModifiers.builder();
     }
 
     public float getDamage() {
