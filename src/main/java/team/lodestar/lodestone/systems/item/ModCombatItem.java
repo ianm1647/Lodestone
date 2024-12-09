@@ -2,7 +2,7 @@ package team.lodestar.lodestone.systems.item;
 
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
-import net.minecraft.core.BlockPos;
+import net.minecraft.core.*;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.EquipmentSlotGroup;
@@ -20,6 +20,8 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.common.ItemAbility;
+
+import java.util.*;
 
 /**
  * A simple copy of a sword, without actually being a sword.
@@ -40,24 +42,17 @@ public class ModCombatItem extends TieredItem {
     @Override
     public ItemAttributeModifiers getDefaultAttributeModifiers(ItemStack stack) {
         if (attributes == null) {
-            return ItemAttributeModifiers.builder().add(
-                            Attributes.ATTACK_DAMAGE,
-                            new AttributeModifier(BASE_ATTACK_DAMAGE_ID, (double)attackDamage, AttributeModifier.Operation.ADD_VALUE),
-                            EquipmentSlotGroup.MAINHAND
-                    )
-                    .add(
-                            Attributes.ATTACK_SPEED,
-                            new AttributeModifier(BASE_ATTACK_SPEED_ID, (double)attackSpeed, AttributeModifier.Operation.ADD_VALUE),
-                            EquipmentSlotGroup.MAINHAND
-                    )
+            return createExtraAttributes()
+                    .add(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_ID, attackDamage, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
+                    .add(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_ID, attackSpeed, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
                     .build();
         }
 
         return super.getDefaultAttributeModifiers(stack);
     }
 
-    public ImmutableMultimap.Builder<Attribute, AttributeModifier> createExtraAttributes() {
-        return new ImmutableMultimap.Builder<>();
+    public ItemAttributeModifiers.Builder createExtraAttributes() {
+        return ItemAttributeModifiers.builder();
     }
 
     public float getDamage() {
