@@ -189,12 +189,12 @@ public class VFXBuilders {
             if (texture != null) {
                 RenderSystem.setShaderTexture(0, texture);
             }
-            var bufferbuilder = tesselator.begin(mode, format);
-            supplier.placeVertex(bufferbuilder, last, x0, y1, u0, v1);
-            supplier.placeVertex(bufferbuilder, last, x1, y1, u1, v1);
-            supplier.placeVertex(bufferbuilder, last, x1, y0, u1, v0);
-            supplier.placeVertex(bufferbuilder, last, x0, y0, u0, v0);
-            BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
+            var bufferBuilder = tesselator.begin(mode, format);
+            supplier.placeVertex(bufferBuilder, last, x0, y1, u0, v1);
+            supplier.placeVertex(bufferBuilder, last, x1, y1, u1, v1);
+            supplier.placeVertex(bufferBuilder, last, x1, y0, u1, v0);
+            supplier.placeVertex(bufferBuilder, last, x0, y0, u0, v0);
+            BufferUploader.drawWithShader(bufferBuilder.buildOrThrow());
             return this;
         }
 
