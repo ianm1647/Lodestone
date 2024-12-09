@@ -40,7 +40,18 @@ public class LodestoneAttributeEventHandler {
                 }
                 event.setNewDamage(amount);
             }
-            else if (damageType.is(LodestoneDamageTypeTags.CAN_TRIGGER_MAGIC)) {
+        }
+    }
+
+    public static void triggerMagicDamage(LivingDamageEvent.Post event) {
+        if (event.getOriginalDamage() <= 0) {
+            return;
+        }
+        var source = event.getSource();
+        var target = event.getEntity();
+        var damageType = source.typeHolder();
+        if (source.getEntity() instanceof LivingEntity attacker) {
+            if (damageType.is(LodestoneDamageTypeTags.CAN_TRIGGER_MAGIC)) {
                 AttributeInstance magicDamage = attacker.getAttribute(LodestoneAttributes.MAGIC_DAMAGE);
                 if (magicDamage != null) {
                     if (magicDamage.getValue() > 0 && !target.isDeadOrDying()) {
