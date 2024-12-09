@@ -120,14 +120,8 @@ repositories {
 }
 
 dependencies {
-
-    //runtimeOnly("mezz.jei:jei-${property("minecraft_version")}-neoforge:${property("jei_version")}")
-
-    // Curios dependency
     compileOnly("top.theillusivec4.curios:curios-neoforge:${property("curios_version")}:api")
     runtimeOnly("top.theillusivec4.curios:curios-neoforge:${property("curios_version")}")
-
-//    implementation(fg.deobf("com.sammy.malum:malum:${minecraftVersion}-1.6.72"))
 }
 val generateModMetadata by tasks.registering(ProcessResources::class) {
     val replaceProperties = mapOf(

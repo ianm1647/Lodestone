@@ -203,9 +203,6 @@ public class VFXBuilders {
         }
 
         public ScreenVFXBuilder draw(PoseStack stack) {
-            if (bufferbuilder.building) {
-                bufferbuilder.buildOrThrow();
-            }
             begin();
             blit(stack);
             end();
@@ -217,6 +214,9 @@ public class VFXBuilders {
         }
 
         public ScreenVFXBuilder begin() {
+            if (bufferbuilder != null && bufferbuilder.building) {
+                bufferbuilder.buildOrThrow();
+            }
             bufferbuilder = tesselator.begin(VertexFormat.Mode.QUADS, format);
             return this;
         }
