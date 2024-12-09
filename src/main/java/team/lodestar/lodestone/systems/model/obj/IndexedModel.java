@@ -5,7 +5,7 @@ import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
-import team.lodestar.lodestone.ducks.IVertexBuffer;
+import team.lodestar.lodestone.systems.rendering.IVertexBuffer;
 import team.lodestar.lodestone.systems.model.obj.data.*;
 import team.lodestar.lodestone.systems.model.obj.modifier.*;
 
@@ -47,7 +47,7 @@ public abstract class IndexedModel {
         this.createMeshBuffer(poseStack);
         this.modelBuffer.bind();
         renderType.setupRenderState();
-        ((IVertexBuffer) (Object) this.modelBuffer).drawWithShaderInstanced(poseStack.last().pose(), RenderSystem.getProjectionMatrix(), RenderSystem.getShader(), instances);
+        IVertexBuffer.cast(this.modelBuffer).drawWithShaderInstanced(poseStack.last().pose(), RenderSystem.getProjectionMatrix(), RenderSystem.getShader(), instances);
         renderType.clearRenderState();
         VertexBuffer.unbind();
     }

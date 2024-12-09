@@ -7,7 +7,7 @@ import net.minecraft.client.renderer.ShaderInstance;
 import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import team.lodestar.lodestone.ducks.IVertexBuffer;
+import team.lodestar.lodestone.systems.rendering.IVertexBuffer;
 import team.lodestar.lodestone.systems.rendering.LodestoneRenderSystem;
 
 import static org.lwjgl.opengl.GL31.glDrawElementsInstanced;
