@@ -17,6 +17,10 @@ public class RuntimeEvents {
         LivingHurtEvent.EVENT.register(LodestoneAttributeEventHandler::processAttributes);
         LivingHurtEvent.EVENT.register(ItemEventHandler::triggerHurtResponses);
     }
+    @SubscribeEvent
+    public static void onHurt(LivingDamageEvent.Post event) {
+        LodestoneAttributeEventHandler.triggerMagicDamage(event);
+    }
 
     public static void onDeath() {
         LivingDeathEvent.EVENT.register(ItemEventHandler::triggerDeathResponses);
