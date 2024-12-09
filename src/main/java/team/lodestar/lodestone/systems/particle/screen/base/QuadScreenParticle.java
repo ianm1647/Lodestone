@@ -52,7 +52,7 @@ public abstract class QuadScreenParticle extends ScreenParticle {
     }
 
     public float getQuadZPosition() {
-        return 600;
+        return 1000;
     }
 
     protected abstract float getU0();
