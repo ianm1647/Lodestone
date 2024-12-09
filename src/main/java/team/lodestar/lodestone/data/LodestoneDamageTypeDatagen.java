@@ -4,6 +4,7 @@ import net.minecraft.core.*;
 import net.minecraft.core.HolderLookup.*;
 import net.minecraft.data.*;
 import net.minecraft.data.tags.*;
+import net.minecraft.tags.*;
 import net.minecraft.world.damagesource.*;
 import team.lodestar.lodestone.*;
 import team.lodestar.lodestone.registry.common.tag.*;

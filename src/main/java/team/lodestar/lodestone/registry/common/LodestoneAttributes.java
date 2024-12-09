@@ -9,8 +9,8 @@ import team.lodestar.lodestone.LodestoneLib;
 
 public class LodestoneAttributes {
 
-    public static final Holder<Attribute> MAGIC_RESISTANCE = register("magic_resistance", new RangedAttribute("lodestone.magic_resistance", 0.0D, 0.0D, 2048.0D).setSyncable(true));
-    public static final Holder<Attribute> MAGIC_PROFICIENCY = register("magic_proficiency", new RangedAttribute("lodestone.magic_proficiency", 0.0D, 0.0D, 2048.0D).setSyncable(true));
+    public static final Holder<Attribute> MAGIC_RESISTANCE = register("magic_resistance", new RangedAttribute("lodestone.magic_resistance", 1.0D, 0.0D, 2048.0D).setSyncable(true));
+    public static final Holder<Attribute> MAGIC_PROFICIENCY = register("magic_proficiency", new RangedAttribute("lodestone.magic_proficiency", 1.0D, 0.0D, 2048.0D).setSyncable(true));
     public static final Holder<Attribute> MAGIC_DAMAGE = register("magic_damage", new RangedAttribute("lodestone.magic_damage", 0.0D, 0.0D, 2048.0D).setSyncable(true));
 
     public static Holder<Attribute> register(String id, Attribute attribute) {
