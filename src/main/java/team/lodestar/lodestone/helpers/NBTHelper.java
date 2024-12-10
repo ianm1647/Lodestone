@@ -10,7 +10,7 @@ import static team.lodestar.lodestone.LodestoneLib.LOGGER;
 public class NBTHelper {
 
     public static BlockPos readBlockPos(CompoundTag tag) {
-        return BlockPos.CODEC.parse(NbtOps.INSTANCE, tag).resultOrPartial(LOGGER::error).orElse(null);
+        return BlockPos.CODEC.parse(NbtOps.INSTANCE, tag.getCompound("position")).resultOrPartial(LOGGER::error).orElse(null);
     }
 
     public static CompoundTag saveBlockPos(BlockPos pos) {
@@ -21,7 +21,7 @@ public class NBTHelper {
         BlockPos.CODEC
                 .encodeStart(NbtOps.INSTANCE, pos)
                 .resultOrPartial(LOGGER::error)
-                .ifPresent(p -> tag.put("raid_omen_position", p));
+                .ifPresent(p -> tag.put("position", p));
         return tag;
     }
 }
