@@ -4,6 +4,7 @@ import io.github.fabricators_of_create.porting_lib.util.DeferredHolder;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.*;
 import net.minecraft.data.PackOutput;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
@@ -23,7 +24,7 @@ public abstract class LodestoneBlockTagsProvider extends FabricTagProvider.Block
     }
 
     public void addTagsFromBlockProperties(Set<DeferredHolder<Block, ? extends Block>> blocks) {
-        var blockList = blocks.stream().map(DeferredHolder::get).sorted().toList();
+        var blockList = blocks.stream().map(DeferredHolder::get).sorted(Comparator.comparingInt((Block b) -> BuiltInRegistries.BLOCK.getId(b))).toList();
         for (Block block : blockList) {
             LodestoneBlockProperties properties = (LodestoneBlockProperties) block.properties();
             LodestoneDatagenBlockData data = properties.getDatagenData();
