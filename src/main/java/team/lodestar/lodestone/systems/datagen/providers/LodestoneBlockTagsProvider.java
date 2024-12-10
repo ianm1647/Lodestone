@@ -1,6 +1,7 @@
 package team.lodestar.lodestone.systems.datagen.providers;
 
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.*;
 import net.minecraft.data.PackOutput;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
@@ -22,7 +23,7 @@ public abstract class LodestoneBlockTagsProvider extends BlockTagsProvider {
     }
 
     public void addTagsFromBlockProperties(Set<DeferredHolder<Block, ? extends Block>> blocks) {
-        var blockList = blocks.stream().map(DeferredHolder::get).sorted().toList();
+        var blockList = blocks.stream().map(DeferredHolder::get).sorted(Comparator.comparingInt((Block b) -> BuiltInRegistries.BLOCK.getId(b))).toList();
         for (Block block : blockList) {
             LodestoneBlockProperties properties = (LodestoneBlockProperties) block.properties();
             LodestoneDatagenBlockData data = properties.getDatagenData();
