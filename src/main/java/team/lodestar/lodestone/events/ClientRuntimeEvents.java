@@ -9,10 +9,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
-import net.neoforged.neoforge.client.event.RenderFrameEvent;
-import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
-import net.neoforged.neoforge.client.event.ViewportEvent;
+import net.neoforged.neoforge.client.event.*;
 import net.neoforged.neoforge.event.GameShuttingDownEvent;
 import org.joml.Matrix4f;
 import team.lodestar.lodestone.LodestoneLib;
@@ -39,9 +36,14 @@ public class ClientRuntimeEvents {
         }
     }
 
+    @SubscribeEvent
+    public static void addAttributeTooltips(AddAttributeTooltipsEvent event) {
+        ItemEventHandler.addAttributeTooltips(event);
+    }
+
+    @SubscribeEvent
     public static void cameraSetup(ViewportEvent.ComputeCameraAngles event) {
         ScreenshakeHandler.cameraSetup(event.getCamera());
-
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)

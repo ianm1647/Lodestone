@@ -4,6 +4,8 @@ import com.mojang.datafixers.util.*;
 import net.minecraft.resources.*;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.item.*;
+import net.neoforged.neoforge.client.event.*;
+import net.neoforged.neoforge.common.*;
 import net.neoforged.neoforge.event.*;
 import net.neoforged.neoforge.event.entity.living.*;
 import team.lodestar.lodestone.*;
@@ -53,6 +55,13 @@ public class ItemEventHandler {
         }
     }
 
+    public static void addAttributeTooltips(AddAttributeTooltipsEvent event) {
+        final ItemStack stack = event.getStack();
+        if (stack.getItem() instanceof IEventResponderItem eventResponderItem) {
+            eventResponderItem.modifyAttributeTooltipEvent(event);
+        }
+    }
+
     public static List<EventResponderLookupResult> getEventResponders(LivingEntity entity) {
         return LOOKUPS.stream().map(s -> s.getEventResponders(entity)).toList();
     }
@@ -68,6 +77,10 @@ public class ItemEventHandler {
      * Implement on your item for the methods to be called.
      */
     public interface IEventResponderItem {
+
+        default void modifyAttributeTooltipEvent(AddAttributeTooltipsEvent event) {
+
+        }
 
         default void modifyAttributesEvent(ItemAttributeModifierEvent event) {
         }
