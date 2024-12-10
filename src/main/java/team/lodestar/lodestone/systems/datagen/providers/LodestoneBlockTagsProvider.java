@@ -1,5 +1,6 @@
 package team.lodestar.lodestone.systems.datagen.providers;
 
+import io.github.fabricators_of_create.porting_lib.util.DeferredHolder;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
 import net.minecraft.core.HolderLookup;
@@ -11,6 +12,7 @@ import team.lodestar.lodestone.systems.block.LodestoneBlockProperties;
 import team.lodestar.lodestone.systems.datagen.LodestoneDatagenBlockData;
 
 import java.util.Collection;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 public abstract class LodestoneBlockTagsProvider extends FabricTagProvider.BlockTagProvider {
@@ -20,8 +22,9 @@ public abstract class LodestoneBlockTagsProvider extends FabricTagProvider.Block
         super(output, registriesFuture);
     }
 
-    public void addTagsFromBlockProperties(Collection<Block> blocks) {
-        for (Block block : blocks) {
+    public void addTagsFromBlockProperties(Set<DeferredHolder<Block, ? extends Block>> blocks) {
+        var blockList = blocks.stream().map(DeferredHolder::get).sorted().toList();
+        for (Block block : blockList) {
             LodestoneBlockProperties properties = (LodestoneBlockProperties) block.properties();
             LodestoneDatagenBlockData data = properties.getDatagenData();
             for (TagKey<Block> tag : data.getTags()) {
