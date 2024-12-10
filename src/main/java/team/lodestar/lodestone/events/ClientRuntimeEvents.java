@@ -29,6 +29,10 @@ public class ClientRuntimeEvents {
         }
     }
 
+    public static void addAttributeTooltips(AddAttributeTooltipsEvent event) {
+        ItemEventHandler.addAttributeTooltips(event);
+    }
+
     public static void cameraSetup() {
         LodestoneCameraEvent.EVENT.register(ScreenshakeHandler::cameraSetup);
 

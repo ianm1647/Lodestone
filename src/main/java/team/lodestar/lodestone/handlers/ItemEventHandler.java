@@ -58,6 +58,13 @@ public class ItemEventHandler {
         }
     }
 
+    public static void addAttributeTooltips(AddAttributeTooltipsEvent event) {
+        final ItemStack stack = event.getStack();
+        if (stack.getItem() instanceof IEventResponderItem eventResponderItem) {
+            eventResponderItem.modifyAttributeTooltipEvent(event);
+        }
+    }
+
     public static List<EventResponderLookupResult> getEventResponders(LivingEntity entity) {
         return LOOKUPS.stream().map(s -> s.getEventResponders(entity)).toList();
     }
@@ -74,8 +81,12 @@ public class ItemEventHandler {
      */
     public interface IEventResponderItem {
 
-        //TODO default void modifyAttributesEvent(ItemAttributeModifierEvent event) {
-        //}
+        default void modifyAttributeTooltipEvent(AddAttributeTooltipsEvent event) {
+
+        }
+
+        default void modifyAttributesEvent(ItemAttributeModifierEvent event) {
+        }
 
         default void incomingDamageEvent(LivingHurtEvent event, LivingEntity attacker, LivingEntity target, ItemStack stack) {
         }
