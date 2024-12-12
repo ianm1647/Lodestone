@@ -19,23 +19,8 @@ import javax.annotation.Nullable;
 
 public class LodestoneTerrainParticleType extends AbstractLodestoneParticleType<LodestoneTerrainParticleOptions> {
 
-    //Lodestone particles do not support commands or networking as is, and as such, we do not need to implement a proper codec for em
-    public final MapCodec<LodestoneTerrainParticleOptions> CODEC = RecordCodecBuilder.mapCodec(obj -> obj.stable(new LodestoneTerrainParticleOptions(this, Blocks.AIR.defaultBlockState())));
-    public final StreamCodec<RegistryFriendlyByteBuf, LodestoneTerrainParticleOptions> STREAM_CODEC = StreamCodec.unit(new LodestoneTerrainParticleOptions(this, Blocks.AIR.defaultBlockState()));
-
-
     public LodestoneTerrainParticleType() {
         super();
-    }
-
-    @Override
-    public MapCodec<LodestoneTerrainParticleOptions> codec() {
-        return CODEC;
-    }
-
-    @Override
-    public StreamCodec<? super RegistryFriendlyByteBuf, LodestoneTerrainParticleOptions> streamCodec() {
-        return STREAM_CODEC;
     }
 
     public static class Factory implements ParticleProvider<LodestoneTerrainParticleOptions> {

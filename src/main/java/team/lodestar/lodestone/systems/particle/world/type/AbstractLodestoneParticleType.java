@@ -23,4 +23,14 @@ public abstract class AbstractLodestoneParticleType<T extends WorldParticleOptio
     public AbstractLodestoneParticleType<T> getType() {
         return this;
     }
+
+    @Override
+    public MapCodec<T> codec() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public StreamCodec<? super RegistryFriendlyByteBuf, T> streamCodec() {
+        throw new UnsupportedOperationException();
+    }
 }
