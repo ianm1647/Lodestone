@@ -14,23 +14,8 @@ import team.lodestar.lodestone.systems.particle.world.LodestoneItemCrumbParticle
 
 public class LodestoneItemCrumbsParticleType extends AbstractLodestoneParticleType<LodestoneItemCrumbsParticleOptions> {
 
-    //Lodestone particles do not support commands or networking as is, and as such, we do not need to implement a proper codec for em
-    public final MapCodec<LodestoneItemCrumbsParticleOptions> CODEC = RecordCodecBuilder.mapCodec(obj -> obj.stable(new LodestoneItemCrumbsParticleOptions(this, ItemStack.EMPTY)));
-    public final StreamCodec<RegistryFriendlyByteBuf, LodestoneItemCrumbsParticleOptions> STREAM_CODEC = StreamCodec.unit(new LodestoneItemCrumbsParticleOptions(this, ItemStack.EMPTY));
-
-
     public LodestoneItemCrumbsParticleType() {
         super();
-    }
-
-    @Override
-    public MapCodec<LodestoneItemCrumbsParticleOptions> codec() {
-        return CODEC;
-    }
-
-    @Override
-    public StreamCodec<? super RegistryFriendlyByteBuf, LodestoneItemCrumbsParticleOptions> streamCodec() {
-        return STREAM_CODEC;
     }
 
     public static class Factory implements ParticleProvider<LodestoneItemCrumbsParticleOptions> {

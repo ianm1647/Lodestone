@@ -19,23 +19,8 @@ import team.lodestar.lodestone.systems.particle.world.options.*;
 
 public class LodestoneWorldParticleType extends AbstractLodestoneParticleType<WorldParticleOptions> {
 
-    //Lodestone particles do not support commands or networking as is, and as such, we do not need to implement a proper codec for em
-    public final MapCodec<WorldParticleOptions> CODEC = RecordCodecBuilder.mapCodec(obj -> obj.stable(new WorldParticleOptions(this)));
-    public final StreamCodec<RegistryFriendlyByteBuf, WorldParticleOptions> STREAM_CODEC = StreamCodec.unit(new WorldParticleOptions(this));
-
-
     public LodestoneWorldParticleType() {
         super();
-    }
-
-    @Override
-    public MapCodec<WorldParticleOptions> codec() {
-        return CODEC;
-    }
-
-    @Override
-    public StreamCodec<? super RegistryFriendlyByteBuf, WorldParticleOptions> streamCodec() {
-        return STREAM_CODEC;
     }
 
     public static class Factory implements ParticleProvider<WorldParticleOptions> {
