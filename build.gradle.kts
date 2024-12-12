@@ -124,7 +124,7 @@ java {
 publishing {
     publications {
         create<MavenPublication>("mavenJava") {
-            artifactId = base.archivesName.get() + "-fabric"
+            artifactId = base.archivesName.get()
             from(components.getByName("java"))
         }
     }
