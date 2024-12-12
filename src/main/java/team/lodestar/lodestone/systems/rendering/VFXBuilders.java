@@ -30,50 +30,77 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class VFXBuilders {
+
+    public static final HashMap<VertexFormatElement, VertexConsumerActor> CONSUMER_INFO_MAP = new HashMap<>();
+
+    static {
+        CONSUMER_INFO_MAP.put(VertexFormatElement.POSITION, (consumer, last, builder, x, y, z, u, v) -> {
+            if (last == null)
+                consumer.addVertex(x, y, z);
+            else
+                consumer.addVertex(last, x, y, z);
+        });
+        CONSUMER_INFO_MAP.put(VertexFormatElement.COLOR, (consumer, last, builder, x, y, z, u, v) -> consumer.setColor(builder.r, builder.g, builder.b, builder.a));
+        CONSUMER_INFO_MAP.put(VertexFormatElement.UV0, (consumer, last, builder, x, y, z, u, v) -> consumer.setUv(u, v));
+        CONSUMER_INFO_MAP.put(VertexFormatElement.UV2, (consumer, last, builder, x, y, z, u, v) -> consumer.setLight(builder.light));
+    } //TODO: add more here
+
+
+    public interface VertexConsumerActor {
+        void placeVertex(VertexConsumer consumer, Matrix4f last, AbstractVFXBuilder builder, float x, float y, float z, float u, float v);
+    }
+
+    public static abstract class AbstractVFXBuilder {
+        float r = 1, g = 1, b = 1, a = 1;
+        int light = -1;
+        float u0 = 0, v0 = 0, u1 = 1, v1 = 1;
+    }
+
     public static ScreenVFXBuilder createScreen() {
         return new ScreenVFXBuilder();
     }
 
-    public static class ScreenVFXBuilder {
-        float r = 1, g = 1, b = 1, a = 1;
-        int light = -1;
-        float u0 = 0, v0 = 0, u1 = 1, v1 = 1;
+    public static class ScreenVFXBuilder extends AbstractVFXBuilder {
         float x0 = 0, y0 = 0, x1 = 1, y1 = 1;
         int zLevel;
 
         VertexFormat format;
         Supplier<ShaderInstance> shader = GameRenderer::getPositionTexShader;
         ResourceLocation texture;
-        ScreenVertexPlacementSupplier supplier;
+        VertexConsumerActor supplier;
         VertexFormat.Mode mode = VertexFormat.Mode.QUADS;
         Tesselator tesselator = Tesselator.getInstance();
-        BufferBuilder bufferbuilder;
 
+        @Deprecated
         public ScreenVFXBuilder setPosTexDefaultFormat() {
-            supplier = (b, l, x, y, u, v) -> b.addVertex(l, x, y, this.zLevel).setUv(u, v);
-            format = DefaultVertexFormat.POSITION_TEX;
             return this;
         }
 
+        @Deprecated
         public ScreenVFXBuilder setPosColorDefaultFormat() {
-            supplier = (b, l, x, y, u, v) -> b.addVertex(l, x, y, this.zLevel).setColor(this.r, this.g, this.b, this.a);
-            format = DefaultVertexFormat.POSITION_COLOR;
             return this;
         }
 
+        @Deprecated
         public ScreenVFXBuilder setPosTexColorDefaultFormat() {
-            supplier = (b, l, x, y, u, v) -> b.addVertex(l, x, y, this.zLevel).setUv(u, v).setColor(this.r, this.g, this.b, this.a);
-            format = DefaultVertexFormat.POSITION_TEX_COLOR;
             return this;
         }
 
+        @Deprecated
         public ScreenVFXBuilder setPosColorTexLightmapDefaultFormat() {
-            supplier = (b, l, x, y, u, v) -> b.addVertex(l, x, y, this.zLevel).setColor(this.r, this.g, this.b, this.a).setUv(u, v).setLight(this.light);
-            format = DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP;
             return this;
         }
 
         public ScreenVFXBuilder setFormat(VertexFormat format) {
+            ImmutableList<VertexFormatElement> elements = ImmutableList.copyOf(format.getElements());
+            return setFormatRaw(format).setVertexSupplier((consumer, last, builder, x, y, z, u, v) -> {
+                for (VertexFormatElement element : elements) {
+                    CONSUMER_INFO_MAP.get(element).placeVertex(consumer, last, this, x, y, z, u, v);
+                }
+            });
+        }
+
+        public ScreenVFXBuilder setFormatRaw(VertexFormat format) {
             this.format = format;
             return this;
         }
@@ -90,10 +117,10 @@ public class VFXBuilders {
 
         public ScreenVFXBuilder setShader(ShaderInstance shader) {
             this.shader = () -> shader;
-            return this;
+            return setFormat(shader.getVertexFormat());
         }
 
-        public ScreenVFXBuilder setVertexSupplier(ScreenVertexPlacementSupplier supplier) {
+        public ScreenVFXBuilder setVertexSupplier(VertexConsumerActor supplier) {
             this.supplier = supplier;
             return this;
         }
@@ -190,10 +217,10 @@ public class VFXBuilders {
                 RenderSystem.setShaderTexture(0, texture);
             }
             var bufferBuilder = tesselator.begin(mode, format);
-            supplier.placeVertex(bufferBuilder, last, x0, y1, u0, v1);
-            supplier.placeVertex(bufferBuilder, last, x1, y1, u1, v1);
-            supplier.placeVertex(bufferBuilder, last, x1, y0, u1, v0);
-            supplier.placeVertex(bufferBuilder, last, x0, y0, u0, v0);
+            supplier.placeVertex(bufferBuilder, last, this, x0, y1, zLevel, u0, v1);
+            supplier.placeVertex(bufferBuilder, last, this, x1, y1, zLevel, u1, v1);
+            supplier.placeVertex(bufferBuilder, last, this, x1, y0, zLevel, u1, v0);
+            supplier.placeVertex(bufferBuilder, last, this, x0, y0, zLevel, u0, v0);
             BufferUploader.drawWithShader(bufferBuilder.buildOrThrow());
             return this;
         }
@@ -213,25 +240,18 @@ public class VFXBuilders {
         public ScreenVFXBuilder end() {
             return this;
         }
-
-        public interface ScreenVertexPlacementSupplier {
-            void placeVertex(BufferBuilder bufferBuilder, Matrix4f last, float x, float y, float u, float v);
-        }
     }
 
     public static WorldVFXBuilder createWorld() {
         return new WorldVFXBuilder();
     }
 
-    public static class WorldVFXBuilder {
-        protected float r = 1, g = 1, b = 1, a = 1;
-        protected int light = RenderHelper.FULL_BRIGHT;
-        protected float u0 = 0, v0 = 0, u1 = 1, v1 = 1;
+    public static class WorldVFXBuilder extends AbstractVFXBuilder{
 
         protected MultiBufferSource bufferSource = RenderHandler.DELAYED_RENDER.getTarget();
         protected RenderType renderType;
         protected VertexFormat format;
-        protected WorldVertexConsumerActor supplier;
+        protected VertexConsumerActor supplier;
         protected VertexConsumer vertexConsumer;
 
         protected HashMap<Object, Consumer<WorldVFXBuilder>> modularActors = new HashMap<>();
@@ -246,20 +266,6 @@ public class VFXBuilders {
             this.bufferSource = bufferSource;
             return this;
         }
-
-        public static final HashMap<VertexFormatElement, WorldVertexConsumerActor> CONSUMER_INFO_MAP = new HashMap<>();
-
-        static {
-            CONSUMER_INFO_MAP.put(VertexFormatElement.POSITION, (consumer, last, builder, x, y, z, u, v) -> {
-                if (last == null)
-                    consumer.addVertex(x, y, z);
-                else
-                    consumer.addVertex(last, x, y, z);
-            });
-            CONSUMER_INFO_MAP.put(VertexFormatElement.COLOR, (consumer, last, builder, x, y, z, u, v) -> consumer.setColor(builder.r, builder.g, builder.b, builder.a));
-            CONSUMER_INFO_MAP.put(VertexFormatElement.UV0, (consumer, last, builder, x, y, z, u, v) -> consumer.setUv(u, v));
-            CONSUMER_INFO_MAP.put(VertexFormatElement.UV2, (consumer, last, builder, x, y, z, u, v) -> consumer.setLight(builder.light));
-        } //TODO: add more here 11!!~!!!!!!!!!!
 
         public WorldVFXBuilder setRenderType(RenderType renderType) {
             return setRenderTypeRaw(renderType).setFormat(renderType.format()).setVertexConsumer(bufferSource.getBuffer(renderType));
@@ -284,7 +290,7 @@ public class VFXBuilders {
             return this;
         }
 
-        public WorldVFXBuilder setVertexSupplier(WorldVertexConsumerActor supplier) {
+        public WorldVFXBuilder setVertexSupplier(VertexConsumerActor supplier) {
             this.supplier = supplier;
             return this;
         }
@@ -333,7 +339,7 @@ public class VFXBuilders {
             return format;
         }
 
-        public WorldVertexConsumerActor getSupplier() {
+        public VertexConsumerActor getSupplier() {
             return supplier;
         }
 
@@ -534,11 +540,6 @@ public class VFXBuilders {
                 }
             }
             return this;
-        }
-
-
-        public interface WorldVertexConsumerActor {
-            void placeVertex(VertexConsumer consumer, Matrix4f last, WorldVFXBuilder builder, float x, float y, float z, float u, float v);
         }
     }
 }
