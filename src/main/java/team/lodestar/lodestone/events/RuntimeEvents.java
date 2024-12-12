@@ -1,6 +1,7 @@
 package team.lodestar.lodestone.events;
 
 import io.github.fabricators_of_create.porting_lib.entity.events.EntityJoinLevelEvent;
+import io.github.fabricators_of_create.porting_lib.entity.events.living.LivingDamageEvent;
 import io.github.fabricators_of_create.porting_lib.entity.events.living.LivingDeathEvent;
 import io.github.fabricators_of_create.porting_lib.entity.events.living.LivingHurtEvent;
 import io.github.fabricators_of_create.porting_lib.entity.events.player.PlayerEvent;
@@ -16,11 +17,9 @@ public class RuntimeEvents {
     public static void onHurt() {
         LivingHurtEvent.EVENT.register(LodestoneAttributeEventHandler::processAttributes);
         LivingHurtEvent.EVENT.register(ItemEventHandler::triggerHurtResponses);
+        LivingDamageEvent.DAMAGE.register(LodestoneAttributeEventHandler::triggerMagicDamage);
     }
-    @SubscribeEvent
-    public static void onHurt(LivingDamageEvent.Post event) {
-        LodestoneAttributeEventHandler.triggerMagicDamage(event);
-    }
+
 
     public static void onDeath() {
         LivingDeathEvent.EVENT.register(ItemEventHandler::triggerDeathResponses);

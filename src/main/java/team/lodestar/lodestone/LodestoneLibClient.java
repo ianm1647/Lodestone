@@ -36,6 +36,7 @@ public class LodestoneLibClient implements ClientModInitializer {
         registerParticleProviders();
         ClientSetupEvents.clientSetup();
         ClientRuntimeEvents.cameraSetup();
+        ClientRuntimeEvents.addAttributeTooltips();
 
         WorldRenderEvents.LAST.register(PostProcessHandler::onWorldRenderLast);
         ClientTickEvents.END_CLIENT_TICK.register(ClientRuntimeEvents::clientTick);

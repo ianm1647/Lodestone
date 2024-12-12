@@ -13,6 +13,7 @@ import team.lodestar.lodestone.systems.block.LodestoneBlockProperties;
 import team.lodestar.lodestone.systems.datagen.LodestoneDatagenBlockData;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 

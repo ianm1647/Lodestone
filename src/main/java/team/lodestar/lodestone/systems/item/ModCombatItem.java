@@ -41,7 +41,7 @@ public class ModCombatItem extends TieredItem implements ItemStackExtensions {
     }
 
     @Override
-    public ItemAttributeModifiers getDefaultAttributeModifiers(ItemStack stack) {
+    public ItemAttributeModifiers getDefaultAttributeModifiers() {
         if (attributes == null) {
             return createExtraAttributes()
                     .add(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_ID, attackDamage, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
@@ -49,7 +49,7 @@ public class ModCombatItem extends TieredItem implements ItemStackExtensions {
                     .build();
         }
 
-        return super.getDefaultAttributeModifiers(stack);
+        return super.getDefaultAttributeModifiers();
     }
 
     public ItemAttributeModifiers.Builder createExtraAttributes() {

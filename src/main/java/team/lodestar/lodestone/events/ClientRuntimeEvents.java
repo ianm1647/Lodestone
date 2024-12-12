@@ -3,6 +3,7 @@ package team.lodestar.lodestone.events;
 import com.mojang.blaze3d.shaders.FogShape;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.phys.Vec3;
@@ -29,8 +30,9 @@ public class ClientRuntimeEvents {
         }
     }
 
-    public static void addAttributeTooltips(AddAttributeTooltipsEvent event) {
-        ItemEventHandler.addAttributeTooltips(event);
+    public static void addAttributeTooltips() {
+        ItemTooltipCallback.EVENT.register(ItemEventHandler::addAttributeTooltips);
+
     }
 
     public static void cameraSetup() {

@@ -1,19 +1,16 @@
 package team.lodestar.lodestone.handlers;
 
 import com.mojang.datafixers.util.*;
-import io.github.fabricators_of_create.porting_lib.entity.events.living.LivingDamageEvent;
 import io.github.fabricators_of_create.porting_lib.entity.events.living.LivingDeathEvent;
 import io.github.fabricators_of_create.porting_lib.entity.events.living.LivingHurtEvent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.*;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.item.*;
 import team.lodestar.lodestone.*;
-import team.lodestar.lodestone.helpers.ItemHelper;
 
 import java.util.*;
 import java.util.function.*;
-import java.util.stream.*;
 
 /**
  * A handler for firing {@link IEventResponderItem} events
@@ -58,10 +55,9 @@ public class ItemEventHandler {
         }
     }
 
-    public static void addAttributeTooltips(AddAttributeTooltipsEvent event) {
-        final ItemStack stack = event.getStack();
-        if (stack.getItem() instanceof IEventResponderItem eventResponderItem) {
-            eventResponderItem.modifyAttributeTooltipEvent(event);
+    public static void addAttributeTooltips(ItemStack itemStack, Item.TooltipContext ctx, TooltipFlag tooltipFlag, List<Component> components) {
+        if (itemStack.getItem() instanceof IEventResponderItem eventResponderItem) {
+            eventResponderItem.modifyAttributeTooltipEvent(itemStack, ctx, tooltipFlag, components);
         }
     }
 
@@ -81,12 +77,12 @@ public class ItemEventHandler {
      */
     public interface IEventResponderItem {
 
-        default void modifyAttributeTooltipEvent(AddAttributeTooltipsEvent event) {
+        default  void modifyAttributeTooltipEvent(ItemStack itemStack, Item.TooltipContext ctx, TooltipFlag tooltipFlag, List<Component> components) {
 
         }
 
-        default void modifyAttributesEvent(ItemAttributeModifierEvent event) {
-        }
+        //default void modifyAttributesEvent(ItemAttributeModifierEvent event) {
+        //}
 
         default void incomingDamageEvent(LivingHurtEvent event, LivingEntity attacker, LivingEntity target, ItemStack stack) {
         }
@@ -99,6 +95,8 @@ public class ItemEventHandler {
 
         default void outgoingDeathEvent(LivingDeathEvent event, LivingEntity attacker, LivingEntity target, ItemStack stack) {
         }
+
+
     }
 
     public record EventResponderLookupResult(EventResponderSource source, ArrayList<Pair<IEventResponderItem, ItemStack>> result) {

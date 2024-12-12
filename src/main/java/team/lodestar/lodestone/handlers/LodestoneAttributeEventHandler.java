@@ -1,5 +1,6 @@
 package team.lodestar.lodestone.handlers;
 
+import io.github.fabricators_of_create.porting_lib.entity.events.living.LivingDamageEvent;
 import io.github.fabricators_of_create.porting_lib.entity.events.living.LivingHurtEvent;
 import net.minecraft.core.*;
 import net.minecraft.world.damagesource.*;
@@ -44,8 +45,8 @@ public class LodestoneAttributeEventHandler {
         }
     }
 
-    public static void triggerMagicDamage(LivingDamageEvent.Post event) {
-        if (event.getOriginalDamage() <= 0) {
+    public static void triggerMagicDamage(LivingDamageEvent event) {
+        if (event.getAmount() <= 0) {
             return;
         }
         var source = event.getSource();
@@ -68,7 +69,4 @@ public class LodestoneAttributeEventHandler {
             }
         }
     }
-
-
-
 }
