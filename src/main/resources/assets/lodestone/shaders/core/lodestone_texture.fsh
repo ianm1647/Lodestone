@@ -18,5 +18,9 @@ out vec4 fragColor;
 
 void main() {
     vec4 color = transformColor(texture(Sampler0, texCoord0), LumiTransparency, vertexColor, ColorModulator);
-    fragColor = applyFog(color, FogStart, FogEnd, FogColor, vertexDistance);
+    vec4 fog = applyFog(color, FogStart, FogEnd, FogColor, vertexDistance);
+    if (fog.a == 0.0) {
+        discard;
+    }
+    fragColor = fog;
 }

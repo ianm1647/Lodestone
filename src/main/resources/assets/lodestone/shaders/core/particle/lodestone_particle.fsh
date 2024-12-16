@@ -27,7 +27,11 @@ void main() {
     vec2 screenUV = gl_FragCoord.xy/ScreenSize;
 
     vec4 color = transformColor(texture(Sampler0, texCoord0), LumiTransparency, vertexColor, ColorModulator);
-    fragColor = applyFog(color, FogStart, FogEnd, FogColor, vertexDistance);
+    vec4 fog = applyFog(color, FogStart, FogEnd, FogColor, vertexDistance);
+    if (fog.a == 0.0) {
+        discard;
+    }
+    fragColor = fog;
 
     float sceneDepthClip = getDepth(SceneDepthBuffer, screenUV);
     vec3 sceneViewSpace = viewSpaceFromDepth(sceneDepthClip, screenUV, InvProjMat);

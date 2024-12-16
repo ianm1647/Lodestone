@@ -40,9 +40,13 @@ neoForge {
     }
 
     accessTransformers.from(
-        project.files("src/main/resources/META-INF/accesstransformer.cfg", "src/main/resources/META-INF/recipebuilders.cfg", "src/main/resources/META-INF/blockproperties.cfg")
+        project.files(
+            "src/main/resources/META-INF/accesstransformer.cfg",
+            "src/main/resources/META-INF/recipebuilders.cfg",
+            "src/main/resources/META-INF/blockproperties.cfg",
+            "src/main/resources/META-INF/renderstates.cfg"
+        )
     )
-
     runs {
         register("client") {
             client()
@@ -122,6 +126,8 @@ repositories {
 dependencies {
     compileOnly("top.theillusivec4.curios:curios-neoforge:${property("curios_version")}:api")
     runtimeOnly("top.theillusivec4.curios:curios-neoforge:${property("curios_version")}")
+
+//    runtimeOnly(("com.sammy.malum:malum:${property("minecraft_version")}-1.7.0.112"))
 }
 val generateModMetadata by tasks.registering(ProcessResources::class) {
     val replaceProperties = mapOf(
