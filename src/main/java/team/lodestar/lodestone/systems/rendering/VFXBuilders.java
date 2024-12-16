@@ -65,7 +65,7 @@ public class VFXBuilders {
         int zLevel;
 
         VertexFormat format;
-        Supplier<ShaderInstance> shader = GameRenderer::getPositionTexShader;
+        Supplier<ShaderInstance> shader;
         ResourceLocation texture;
         VertexConsumerActor supplier;
         VertexFormat.Mode mode = VertexFormat.Mode.QUADS;
@@ -90,7 +90,7 @@ public class VFXBuilders {
         public ScreenVFXBuilder setPosColorTexLightmapDefaultFormat() {
             return this;
         }
-        
+
         public ScreenVFXBuilder setShader(Supplier<ShaderInstance> shader) {
             this.shader = shader;
             return updateVertexFormat();
@@ -101,8 +101,15 @@ public class VFXBuilders {
             return updateVertexFormat();
         }
 
+        public Supplier<ShaderInstance> getShader() {
+            if (shader == null) {
+                setShader(GameRenderer::getPositionTexShader);
+            }
+            return shader;
+        }
+
         public final ScreenVFXBuilder updateVertexFormat() {
-            return setFormat(shader.get().getVertexFormat());
+            return setFormat(getShader().get().getVertexFormat());
         }
 
         public ScreenVFXBuilder setFormat(VertexFormat format) {
@@ -216,7 +223,7 @@ public class VFXBuilders {
 
         public ScreenVFXBuilder blit(PoseStack stack) {
             Matrix4f last = stack.last().pose();
-            RenderSystem.setShader(shader);
+            RenderSystem.setShader(getShader());
             if (texture != null) {
                 RenderSystem.setShaderTexture(0, texture);
             }
