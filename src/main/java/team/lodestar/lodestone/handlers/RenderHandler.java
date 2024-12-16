@@ -154,7 +154,7 @@ public class RenderHandler {
                 }
             }
             else {
-                //source.endBatch(type);
+                source.endBatch(type);
             }
         }
     }
