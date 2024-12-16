@@ -45,4 +45,15 @@ public class LodestoneRenderType extends RenderType {
     public String toString() {
         return "RenderType[" + this.name + ":" + this.state + "]";
     }
+
+    @Override
+    public void draw(MeshData meshData) {
+        if (state.writeMaskState.writeDepth) {
+            RenderSystem.depthMask(true);
+        }
+
+        this.setupRenderState();
+        BufferUploader.drawWithShader(meshData);
+        this.clearRenderState();
+    }
 }

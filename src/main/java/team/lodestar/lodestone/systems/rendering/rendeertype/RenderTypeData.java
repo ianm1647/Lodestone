@@ -13,29 +13,17 @@ public class RenderTypeData {
     public final String name;
     public final VertexFormat format;
     public final VertexFormat.Mode mode;
-    public final RenderStateShard.ShaderStateShard shader;
-    public final RenderStateShard.EmptyTextureStateShard texture;
-    public final RenderStateShard.CullStateShard cull;
-    public final RenderStateShard.LightmapStateShard lightmap;
-    public RenderStateShard.TransparencyStateShard transparency = StateShards.ADDITIVE_TRANSPARENCY;
+    public final RenderType.CompositeState state;
 
-    public RenderTypeData(String name, VertexFormat format, VertexFormat.Mode mode, RenderStateShard.ShaderStateShard shader, RenderStateShard.EmptyTextureStateShard texture, RenderStateShard.CullStateShard cull, RenderStateShard.LightmapStateShard lightmap) {
+    public RenderTypeData(String name, VertexFormat format, VertexFormat.Mode mode, RenderType.CompositeState state) {
         this.name = name;
         this.format = format;
         this.mode = mode;
-        this.shader = shader;
-        this.texture = texture;
-        this.cull = cull;
-        this.lightmap = lightmap;
-    }
-
-    public RenderTypeData(String name, VertexFormat format, VertexFormat.Mode mode, RenderStateShard.ShaderStateShard shader, RenderStateShard.TransparencyStateShard transparency, RenderStateShard.EmptyTextureStateShard texture, RenderStateShard.CullStateShard cull, RenderStateShard.LightmapStateShard lightmap) {
-        this(name, format, mode, shader, texture, cull, lightmap);
-        this.transparency = transparency;
+        this.state = state;
     }
 
     public RenderTypeData(String name, LodestoneRenderType type) {
-        this(name, type.format(), type.mode(), type.state.shaderState, type.state.transparencyState, type.state.textureState, type.state.cullState, type.state.lightmapState);
+        this(name, type.format(), type.mode(), type.state);
     }
 
     public RenderTypeData(LodestoneRenderType type) {
