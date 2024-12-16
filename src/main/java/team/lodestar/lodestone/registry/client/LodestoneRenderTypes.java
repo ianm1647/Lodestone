@@ -91,10 +91,13 @@ public class LodestoneRenderTypes extends RenderStateShard {
             createGenericRenderType("texture",
                     builder(token, StateShards.NO_TRANSPARENCY, LodestoneShaders.LODESTONE_TEXTURE, CULL, LIGHTMAP)));
 
+    public static final RenderTypeProvider CUTOUT_TEXTURE = new RenderTypeProvider((token) ->
+            createGenericRenderType("cutout_texture",
+                    builder(token, StateShards.NORMAL_TRANSPARENCY, RENDERTYPE_CUTOUT_SHADER, CULL, LIGHTMAP)));
+
     public static final RenderTypeProvider TRANSPARENT_TEXTURE = new RenderTypeProvider((token) ->
             createGenericRenderType("transparent_texture",
                     builder(token, StateShards.NORMAL_TRANSPARENCY, LodestoneShaders.LODESTONE_TEXTURE, CULL, LIGHTMAP)));
-
     public static final RenderTypeProvider TRANSPARENT_TEXTURE_TRIANGLE = new RenderTypeProvider((token) ->
             createGenericRenderType("transparent_texture_triangle",
                     builder(token, StateShards.NORMAL_TRANSPARENCY, LodestoneShaders.TRIANGLE_TEXTURE, CULL, LIGHTMAP)));
@@ -104,7 +107,6 @@ public class LodestoneRenderTypes extends RenderStateShard {
     public static final RenderTypeProvider TRANSPARENT_ROUNDED_TEXTURE_TRIANGLE = new RenderTypeProvider((token) ->
             createGenericRenderType("transparent_rounded_texture_triangle",
                     builder(token, StateShards.NORMAL_TRANSPARENCY, LodestoneShaders.ROUNDED_TRIANGLE_TEXTURE, CULL, LIGHTMAP)));
-
     public static final RenderTypeProvider TRANSPARENT_SCROLLING_TEXTURE_TRIANGLE = new RenderTypeProvider((token) ->
             createGenericRenderType("transparent_scrolling_texture_triangle",
                     builder(token, StateShards.NORMAL_TRANSPARENCY, LodestoneShaders.SCROLLING_TRIANGLE_TEXTURE, CULL, LIGHTMAP)));
@@ -116,7 +118,6 @@ public class LodestoneRenderTypes extends RenderStateShard {
     public static final RenderTypeProvider ADDITIVE_TEXTURE = new RenderTypeProvider((token) ->
             createGenericRenderType("additive_texture",
                     builder(token, StateShards.ADDITIVE_TRANSPARENCY, LodestoneShaders.LODESTONE_TEXTURE, CULL, LIGHTMAP)));
-
     public static final RenderTypeProvider ADDITIVE_TEXTURE_TRIANGLE = new RenderTypeProvider((token) ->
             createGenericRenderType("additive_texture_triangle",
                     builder(token, StateShards.ADDITIVE_TRANSPARENCY, LodestoneShaders.TRIANGLE_TEXTURE, CULL, LIGHTMAP)));
@@ -126,7 +127,6 @@ public class LodestoneRenderTypes extends RenderStateShard {
     public static final RenderTypeProvider ADDITIVE_ROUNDED_TEXTURE_TRIANGLE = new RenderTypeProvider((token) ->
             createGenericRenderType("additive_rounded_texture_triangle",
                     builder(token, StateShards.ADDITIVE_TRANSPARENCY, LodestoneShaders.ROUNDED_TRIANGLE_TEXTURE, CULL, LIGHTMAP)));
-
     public static final RenderTypeProvider ADDITIVE_SCROLLING_TEXTURE_TRIANGLE = new RenderTypeProvider((token) ->
             createGenericRenderType("additive_scrolling_texture_triangle",
                     builder(token, StateShards.ADDITIVE_TRANSPARENCY, LodestoneShaders.SCROLLING_TRIANGLE_TEXTURE, CULL, LIGHTMAP)));
