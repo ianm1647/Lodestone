@@ -52,7 +52,7 @@ public class VFXBuilders {
 
     public static abstract class AbstractVFXBuilder {
         float r = 1, g = 1, b = 1, a = 1;
-        int light = -1;
+        int light = RenderHelper.FULL_BRIGHT;
         float u0 = 0, v0 = 0, u1 = 1, v1 = 1;
     }
 
