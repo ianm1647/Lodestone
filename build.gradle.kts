@@ -127,7 +127,7 @@ dependencies {
     compileOnly("top.theillusivec4.curios:curios-neoforge:${property("curios_version")}:api")
     runtimeOnly("top.theillusivec4.curios:curios-neoforge:${property("curios_version")}")
 
-//    runtimeOnly(("com.sammy.malum:malum:${property("minecraft_version")}-1.7.0.112"))
+//    runtimeOnly(("com.sammy.malum:malum:${property("minecraft_version")}-1.7.0.113"))
 }
 val generateModMetadata by tasks.registering(ProcessResources::class) {
     val replaceProperties = mapOf(

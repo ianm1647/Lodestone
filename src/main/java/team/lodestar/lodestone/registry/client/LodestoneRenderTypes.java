@@ -14,7 +14,7 @@ import team.lodestar.lodestone.systems.rendering.*;
 import team.lodestar.lodestone.systems.rendering.rendeertype.*;
 import team.lodestar.lodestone.systems.rendering.shader.ShaderHolder;
 
-import java.util.HashMap;
+import java.util.*;
 import java.util.function.*;
 
 import static com.mojang.blaze3d.vertex.DefaultVertexFormat.*;
@@ -48,7 +48,7 @@ public class LodestoneRenderTypes extends RenderStateShard {
      */
     public static final HashMap<Pair<Object, LodestoneRenderType>, LodestoneRenderType> COPIES = new HashMap<>();
 
-    public static final Function<RenderTypeData, LodestoneRenderType> GENERIC = (data) -> createGenericRenderType(data.name, data.format, data.mode, data.shader, data.transparency, data.texture, data.cull);
+    public static final Function<RenderTypeData, LodestoneRenderType> GENERIC = (data) -> createGenericRenderType(data.name, data.format, data.mode, builder().copyState(data.state));
 
     private static Consumer<LodestoneCompositeStateBuilder> MODIFIER;
     /**
@@ -136,22 +136,6 @@ public class LodestoneRenderTypes extends RenderStateShard {
             LodestoneRenderTypes.createGenericRenderType("additive_text",
                     builder(token, StateShards.ADDITIVE_TRANSPARENCY, LodestoneShaders.LODESTONE_TEXT, LIGHTMAP, COLOR_WRITE)));
 
-    /**
-     * &#064;Deprecated - use @Link{LodestoneRenderTypeRegistry}
-     */
-    @Deprecated
-    public static LodestoneRenderType createGenericRenderType(String name, VertexFormat format, ShaderStateShard shader, TransparencyStateShard transparency, ResourceLocation texture) {
-        return createGenericRenderType(name, format, QUADS, shader, transparency, new TextureStateShard(texture, false, false), CULL);
-    }
-
-    public static LodestoneRenderType createGenericRenderType(String name, VertexFormat format, VertexFormat.Mode mode, ShaderStateShard shader, TransparencyStateShard transparency, EmptyTextureStateShard texture, CullStateShard cull) {
-        return createGenericRenderType(name, format, mode, builder()
-                .setShaderState(shader)
-                .setTransparencyState(transparency)
-                .setTextureState(texture)
-                .setLightmapState(LIGHTMAP)
-                .setCullState(cull));
-    }
 
     public static LodestoneRenderType createGenericRenderType(String name, LodestoneCompositeStateBuilder builder) {
         return createGenericRenderType(name, POSITION_COLOR_TEX_LIGHTMAP, QUADS, builder);
@@ -166,7 +150,7 @@ public class LodestoneRenderTypes extends RenderStateShard {
         if (MODIFIER != null) {
             MODIFIER.accept(builder);
         }
-        LodestoneRenderType type = LodestoneRenderType.createRenderType(name, format, builder.mode != null ? builder.mode : mode, 256, false, true, builder.createCompositeState(true));
+        LodestoneRenderType type = LodestoneRenderType.createRenderType(name, format, builder.modeOverride != null ? builder.modeOverride : mode, 256, false, true, builder.createCompositeState(true));
         RenderHandler.addRenderType(type);
         if (handler != null) {
             applyUniformChanges(type, handler);
@@ -226,15 +210,25 @@ public class LodestoneRenderTypes extends RenderStateShard {
 
     public static class LodestoneCompositeStateBuilder extends RenderType.CompositeState.CompositeStateBuilder {
 
-        protected VertexFormat.Mode mode;
-
+        protected VertexFormat.Mode modeOverride;
+        protected RenderType.CompositeState stateOverride;
         LodestoneCompositeStateBuilder() {
             super();
         }
 
         public LodestoneCompositeStateBuilder replaceVertexFormat(VertexFormat.Mode mode) {
-            this.mode = mode;
+            this.modeOverride = mode;
             return this;
+        }
+
+        public LodestoneCompositeStateBuilder copyState(RenderType.CompositeState state) {
+            this.stateOverride = state;
+            return this;
+        }
+
+        @Override
+        public RenderType.CompositeState createCompositeState(RenderType.OutlineProperty outlineState) {
+            return Objects.requireNonNullElseGet(stateOverride, () -> super.createCompositeState(outlineState));
         }
 
         public LodestoneCompositeStateBuilder setStateShards(Object... objects) {
