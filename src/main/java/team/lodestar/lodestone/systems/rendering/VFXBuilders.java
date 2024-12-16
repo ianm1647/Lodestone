@@ -90,6 +90,20 @@ public class VFXBuilders {
         public ScreenVFXBuilder setPosColorTexLightmapDefaultFormat() {
             return this;
         }
+        
+        public ScreenVFXBuilder setShader(Supplier<ShaderInstance> shader) {
+            this.shader = shader;
+            return updateVertexFormat();
+        }
+
+        public ScreenVFXBuilder setShader(ShaderInstance shader) {
+            this.shader = () -> shader;
+            return updateVertexFormat();
+        }
+
+        public final ScreenVFXBuilder updateVertexFormat() {
+            return setFormat(shader.get().getVertexFormat());
+        }
 
         public ScreenVFXBuilder setFormat(VertexFormat format) {
             ImmutableList<VertexFormatElement> elements = ImmutableList.copyOf(format.getElements());
@@ -108,16 +122,6 @@ public class VFXBuilders {
         public ScreenVFXBuilder setShaderTexture(ResourceLocation texture) {
             this.texture = texture;
             return this;
-        }
-
-        public ScreenVFXBuilder setShader(Supplier<ShaderInstance> shader) {
-            this.shader = shader;
-            return setFormat(shader.get().getVertexFormat());
-        }
-
-        public ScreenVFXBuilder setShader(ShaderInstance shader) {
-            this.shader = () -> shader;
-            return setFormat(shader.getVertexFormat());
         }
 
         public ScreenVFXBuilder setVertexSupplier(VertexConsumerActor supplier) {
