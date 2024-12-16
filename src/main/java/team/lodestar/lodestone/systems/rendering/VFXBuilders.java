@@ -112,7 +112,7 @@ public class VFXBuilders {
 
         public ScreenVFXBuilder setShader(Supplier<ShaderInstance> shader) {
             this.shader = shader;
-            return this;
+            return setFormat(shader.get().getVertexFormat());
         }
 
         public ScreenVFXBuilder setShader(ShaderInstance shader) {
