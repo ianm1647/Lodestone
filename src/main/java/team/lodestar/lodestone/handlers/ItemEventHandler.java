@@ -117,7 +117,7 @@ public class ItemEventHandler {
         public final ResourceLocation id;
         public final Function<LivingEntity, Collection<ItemStack>> stackFunction;
 
-        protected EventResponderSource(ResourceLocation id, Function<LivingEntity, Collection<ItemStack>> stackFunction) {
+        public EventResponderSource(ResourceLocation id, Function<LivingEntity, Collection<ItemStack>> stackFunction) {
             this.id = id;
             this.stackFunction = stackFunction;
         }
