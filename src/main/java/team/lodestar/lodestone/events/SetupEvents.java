@@ -2,6 +2,7 @@ package team.lodestar.lodestone.events;
 
 import team.lodestar.lodestone.handlers.ThrowawayBlockDataHandler;
 import team.lodestar.lodestone.registry.common.LodestoneCommandArgumentTypes;
+import team.lodestar.lodestone.systems.item.LodestoneItemProperties;
 
 public class SetupEvents {
 
@@ -13,8 +14,8 @@ public class SetupEvents {
         ThrowawayBlockDataHandler.wipeCache();
     }
 
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public static void buildCreativeTabs(BuildCreativeModeTabContentsEvent event) {
-        LodestoneItemProperties.populateItemGroups(event);
+
+    public static void buildCreativeTabs() {
+        LodestoneItemProperties.populateItemGroups();
     }
 }
