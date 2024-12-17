@@ -15,6 +15,7 @@ public class LodestoneItemProperties extends Item.Properties {
     public LodestoneItemProperties(DeferredHolder<CreativeModeTab, CreativeModeTab> tab) {
         this(tab.getKey());
     }
+
     public LodestoneItemProperties(ResourceKey<CreativeModeTab> tab) {
         this.tab = tab;
     }
@@ -29,6 +30,7 @@ public class LodestoneItemProperties extends Item.Properties {
         final ResourceKey<CreativeModeTab> tabKey = event.getTabKey();
         if (TAB_SORTING.containsKey(tabKey)) {
             TAB_SORTING.get(tabKey).stream().map(BuiltInRegistries.ITEM::get)
+                    .filter(s -> !event.getParentEntries().contains(s.getDefaultInstance()))
                     .forEach(event::accept);
         }
     }
