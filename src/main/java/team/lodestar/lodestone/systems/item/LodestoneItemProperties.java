@@ -12,17 +12,25 @@ public class LodestoneItemProperties extends Item.Properties {
 
     public final ResourceKey<CreativeModeTab> tab;
 
+    public LodestoneItemProperties(DeferredHolder<CreativeModeTab, CreativeModeTab> tab) {
+        this(tab.getKey());
+    }
     public LodestoneItemProperties(ResourceKey<CreativeModeTab> tab) {
         this.tab = tab;
     }
 
+    public static void addToTabSorting(ResourceLocation itemId, Item.Properties properties) {
+        if (properties instanceof LodestoneItemProperties lodestoneItemProperties) {
+            TAB_SORTING.computeIfAbsent(lodestoneItemProperties.tab, (key) -> new ArrayList<>()).add(itemId);
+        }
+    }
 
-    public static void populateItemGroups(CreativeModeTab tab, FabricItemGroupEntries entry) {
-        Optional<ResourceKey<CreativeModeTab>> opt = BuiltInRegistries.CREATIVE_MODE_TAB.getResourceKey(tab);
-        if (opt.isPresent()) {
-            if (TAB_SORTING.containsKey(opt.get())) {
-                TAB_SORTING.get(opt.get()).stream().map(BuiltInRegistries.ITEM::get).forEach(entry::accept);
-            }
+
+    public static void populateItemGroups(BuildCreativeModeTabContentsEvent event) {
+        final ResourceKey<CreativeModeTab> tabKey = event.getTabKey();
+        if (TAB_SORTING.containsKey(tabKey)) {
+            TAB_SORTING.get(tabKey).stream().map(BuiltInRegistries.ITEM::get)
+                    .forEach(event::accept);
         }
     }
 }
