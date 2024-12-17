@@ -40,7 +40,6 @@ public class LodestoneLib {
         CuriosCompat.init();
 
         modBus.addListener(this::gatherData);
-        modBus.addListener(LodestoneItemProperties::populateItemGroups);
     }
 
     public static ResourceLocation lodestonePath(String path) {
