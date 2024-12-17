@@ -12,4 +12,9 @@ public class SetupEvents {
     public static void lateSetup() {
         ThrowawayBlockDataHandler.wipeCache();
     }
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public static void buildCreativeTabs(BuildCreativeModeTabContentsEvent event) {
+        LodestoneItemProperties.populateItemGroups(event);
+    }
 }
