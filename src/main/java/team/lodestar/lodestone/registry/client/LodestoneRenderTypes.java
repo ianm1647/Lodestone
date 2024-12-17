@@ -94,7 +94,7 @@ public class LodestoneRenderTypes extends RenderStateShard {
 
     public static final RenderTypeProvider CUTOUT_TEXTURE = new RenderTypeProvider((token) ->
             createGenericRenderType("cutout_texture",
-                    builder(token, StateShards.NORMAL_TRANSPARENCY, LodestoneShaders.LODESTONE_TEXTURE, CULL, LIGHTMAP)));
+                    builder(token, StateShards.NO_TRANSPARENCY, LodestoneShaders.LODESTONE_TEXTURE, CULL, LIGHTMAP)));
 
     public static final RenderTypeProvider TRANSPARENT_TEXTURE = new RenderTypeProvider((token) ->
             createGenericRenderType("transparent_texture",
