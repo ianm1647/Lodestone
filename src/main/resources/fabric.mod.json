@@ -22,6 +22,9 @@
     ],
     "fabric-datagen": [
       "team.lodestar.lodestone.data.LodestoneDatagen"
+    ],
+    "mixinsquared": [
+      "team.lodestar.lodestone.LodestoneMixinPlugin"
     ]
   },
   "mixins": [

@@ -62,6 +62,7 @@ repositories {
     maven("https://mvn.devos.one/snapshots/")
     maven(url = "https://mvn.devos.one/releases/")
     maven( "https://maven.jamieswhiteshirt.com/libs-release")
+    maven( url = "https://maven.bawnorton.com/releases" )
 }
 
 dependencies {
@@ -85,8 +86,11 @@ dependencies {
         include("io.github.fabricators_of_create.Porting-Lib:$module:${property("port_lib_version")}")
         modApi("io.github.fabricators_of_create.Porting-Lib:$module:${property("port_lib_version")}")
     }
+    include("com.github.bawnorton.mixinsquared:mixinsquared-fabric:0.2.0")
+    implementation("com.github.bawnorton.mixinsquared:mixinsquared-fabric:0.2.0")
+    annotationProcessor("com.github.bawnorton.mixinsquared:mixinsquared-fabric:0.2.0")
 
-    //modImplementation("io.github.ladysnake:satin:${property("satin_version")}")
+//modImplementation("io.github.ladysnake:satin:${property("satin_version")}")
 
     compileOnly("maven.modrinth:sodium:${property("sodium_version")}")
     compileOnly("maven.modrinth:iris:${property("iris_version")}")

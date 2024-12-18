@@ -28,7 +28,6 @@
     "client.ParticleEngineMixin",
     "client.ScreenEffectRendererMixin",
     "client.ShaderInstanceMixin",
-    "client.GuiGraphicsMixin",
     "client.VertexBufferMixin"
   ],
   "injectors": {
