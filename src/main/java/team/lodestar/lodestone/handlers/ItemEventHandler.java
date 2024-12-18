@@ -1,6 +1,7 @@
 package team.lodestar.lodestone.handlers;
 
 import com.mojang.datafixers.util.*;
+import io.github.fabricators_of_create.porting_lib.entity.events.living.LivingDamageEvent;
 import io.github.fabricators_of_create.porting_lib.entity.events.living.LivingDeathEvent;
 import io.github.fabricators_of_create.porting_lib.entity.events.living.LivingHurtEvent;
 import net.minecraft.network.chat.Component;
@@ -42,8 +43,8 @@ public class ItemEventHandler {
         }
     }
 
-    public static void triggerHurtResponses(LivingHurtEvent event) {
-        if (event.isCanceled() || event.getAmount() <= 0) {
+    public static void triggerHurtResponses(LivingDamageEvent event) {
+        if (event.getAmount() <= 0) {
             return;
         }
         var source = event.getSource();
@@ -84,10 +85,10 @@ public class ItemEventHandler {
         //default void modifyAttributesEvent(ItemAttributeModifierEvent event) {
         //}
 
-        default void incomingDamageEvent(LivingHurtEvent event, LivingEntity attacker, LivingEntity target, ItemStack stack) {
+        default void incomingDamageEvent(LivingDamageEvent event, LivingEntity attacker, LivingEntity target, ItemStack stack) {
         }
 
-        default void outgoingDamageEvent(LivingHurtEvent event, LivingEntity attacker, LivingEntity target, ItemStack stack) {
+        default void outgoingDamageEvent(LivingDamageEvent event, LivingEntity attacker, LivingEntity target, ItemStack stack) {
         }
 
         default void incomingDeathEvent(LivingDeathEvent event, LivingEntity attacker, LivingEntity target, ItemStack stack) {
