@@ -2,6 +2,7 @@ package team.lodestar.lodestone.helpers;
 
 import net.minecraft.core.*;
 import net.minecraft.nbt.*;
+import net.minecraft.world.level.block.Block;
 
 import java.util.*;
 
@@ -9,19 +10,11 @@ import static team.lodestar.lodestone.LodestoneLib.LOGGER;
 
 public class NBTHelper {
 
-    public static BlockPos readBlockPos(CompoundTag tag) {
-        return BlockPos.CODEC.parse(NbtOps.INSTANCE, tag.getCompound("position")).resultOrPartial(LOGGER::error).orElse(null);
+    public static BlockPos readBlockPos(Tag tag) {
+        return BlockPos.CODEC.parse(NbtOps.INSTANCE, tag).resultOrPartial(LOGGER::error).orElse(null);
     }
 
-    public static CompoundTag saveBlockPos(BlockPos pos) {
-        return saveBlockPos(new CompoundTag(), pos);
-    }
-
-    public static CompoundTag saveBlockPos(CompoundTag tag, BlockPos pos) {
-        BlockPos.CODEC
-                .encodeStart(NbtOps.INSTANCE, pos)
-                .resultOrPartial(LOGGER::error)
-                .ifPresent(p -> tag.put("position", p));
-        return tag;
+    public static Tag saveBlockPos(BlockPos pos) {
+        return BlockPos.CODEC.encodeStart(NbtOps.INSTANCE, pos).resultOrPartial(LOGGER::error).orElseThrow();
     }
 }
