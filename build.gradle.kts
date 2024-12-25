@@ -45,7 +45,6 @@ neoForge {
         "src/main/resources/META-INF/blockproperties.cfg",
         "src/main/resources/META-INF/renderstates.cfg"
     )
-
     runs {
         register("client") {
             client()
