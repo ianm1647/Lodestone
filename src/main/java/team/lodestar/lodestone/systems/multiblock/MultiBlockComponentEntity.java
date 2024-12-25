@@ -34,14 +34,14 @@ public class MultiBlockComponentEntity extends LodestoneBlockEntity {
     @Override
     protected void saveAdditional(CompoundTag pTag, HolderLookup.Provider pRegistries) {
         if (corePos != null) {
-            pTag.put("core_position", NBTHelper.saveBlockPos(corePos));
+            NBTHelper.saveBlockPos(pTag, corePos);
         }
         super.saveAdditional(pTag, pRegistries);
     }
 
     @Override
     protected void loadAdditional(CompoundTag pTag, HolderLookup.Provider pRegistries) {
-        corePos = NBTHelper.readBlockPos(pTag.getCompound("core_position"));
+        corePos = NBTHelper.readBlockPos(pTag);
         super.loadAdditional(pTag, pRegistries);
     }
 
