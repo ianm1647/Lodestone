@@ -41,7 +41,7 @@ public class MultiBlockComponentEntity extends LodestoneBlockEntity {
 
     @Override
     protected void loadAdditional(CompoundTag pTag, HolderLookup.Provider pRegistries) {
-        corePos = NBTHelper.readBlockPos(pTag.getCompound("core_position"));
+        corePos = NBTHelper.readBlockPos(pTag, "core_position");
         super.loadAdditional(pTag, pRegistries);
     }
 
