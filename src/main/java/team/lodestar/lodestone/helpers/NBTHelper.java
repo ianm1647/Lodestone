@@ -13,6 +13,10 @@ public class NBTHelper {
         return BlockPos.CODEC.parse(NbtOps.INSTANCE, tag.get("position")).resultOrPartial(LOGGER::error).orElse(null);
     }
 
+    public static BlockPos readBlockPos(ListTag tag, int index) {
+        return BlockPos.CODEC.parse(NbtOps.INSTANCE, tag.get(index)).resultOrPartial(LOGGER::error).orElse(null);
+    }
+
     public static CompoundTag saveBlockPos(BlockPos pos) {
         return saveBlockPos(new CompoundTag(), pos);
     }
@@ -22,6 +26,18 @@ public class NBTHelper {
                 .encodeStart(NbtOps.INSTANCE, pos)
                 .resultOrPartial(LOGGER::error)
                 .ifPresent(p -> tag.put("position", p));
+        return tag;
+    }
+
+    public static ListTag saveBlockPosToList(BlockPos pos) {
+        return saveBlockPosToList(new ListTag(), pos);
+    }
+
+    public static ListTag saveBlockPosToList(ListTag tag, BlockPos pos) {
+        BlockPos.CODEC
+                .encodeStart(NbtOps.INSTANCE, pos)
+                .resultOrPartial(LOGGER::error)
+                .ifPresent(tag::add);
         return tag;
     }
 }
