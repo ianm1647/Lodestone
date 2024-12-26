@@ -40,7 +40,7 @@ public class LodestoneBlockEntityInventory extends ItemStackHandler {
         this(blockEntity, slotCount, allowedItemSize, Predicates.alwaysTrue());
         updateData();
     }
-    public LodestoneBlockEntityInventory(LodestoneBlockEntity blockEntity, int slotCount, int allowedItemSize, Class<Item> inputClass) {
+    public LodestoneBlockEntityInventory(LodestoneBlockEntity blockEntity, int slotCount, int allowedItemSize, Class<? extends Item> inputClass) {
         this(blockEntity, slotCount, allowedItemSize, s -> inputClass.isInstance(s.getItem()));
     }
 
