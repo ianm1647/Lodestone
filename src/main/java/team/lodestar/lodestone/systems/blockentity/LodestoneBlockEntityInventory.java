@@ -25,8 +25,8 @@ import java.util.stream.Collectors;
 /**
  * A powerful ItemStackHandler designed to work with block entities
  */
-public class LodestoneBlockEntityInventory<T extends LodestoneBlockEntity> extends ItemStackHandler {
-    public T blockEntity;
+public class LodestoneBlockEntityInventory extends ItemStackHandler {
+    public LodestoneBlockEntity blockEntity;
     public final int slotCount;
     public final int allowedItemSize;
     public final Predicate<ItemStack> inputPredicate;
@@ -36,15 +36,15 @@ public class LodestoneBlockEntityInventory<T extends LodestoneBlockEntity> exten
     public int nonEmptyItemAmount;
     public int firstEmptyItemIndex;
 
-    public LodestoneBlockEntityInventory(T blockEntity, int slotCount, int allowedItemSize) {
+    public LodestoneBlockEntityInventory(LodestoneBlockEntity blockEntity, int slotCount, int allowedItemSize) {
         this(blockEntity, slotCount, allowedItemSize, Predicates.alwaysTrue());
         updateData();
     }
-    public LodestoneBlockEntityInventory(T blockEntity, int slotCount, int allowedItemSize, Class<Item> inputClass) {
+    public LodestoneBlockEntityInventory(LodestoneBlockEntity blockEntity, int slotCount, int allowedItemSize, Class<Item> inputClass) {
         this(blockEntity, slotCount, allowedItemSize, s -> inputClass.isInstance(s.getItem()));
     }
 
-    public LodestoneBlockEntityInventory(T blockEntity, int slotCount, int allowedItemSize, Predicate<ItemStack> inputPredicate) {
+    public LodestoneBlockEntityInventory(LodestoneBlockEntity blockEntity, int slotCount, int allowedItemSize, Predicate<ItemStack> inputPredicate) {
         super(slotCount);
         this.blockEntity = blockEntity;
         this.slotCount = slotCount;
