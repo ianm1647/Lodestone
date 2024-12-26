@@ -154,9 +154,9 @@ public abstract class PostProcessor {
             if (postChain != null) {
                 time += MC.getTimer().getGameTimeDeltaPartialTick(false) / 20.0;
 
-                applyDefaultUniforms();
-
                 beforeProcess(viewModelMatrix);
+
+                applyDefaultUniforms();
                 if (!isActive) return;
                 postChain.process(MC.getTimer().getGameTimeDeltaPartialTick(false));
 
