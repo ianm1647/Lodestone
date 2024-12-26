@@ -42,7 +42,10 @@ public class LodestoneEntityBlock<T extends LodestoneBlockEntity> extends Block 
 
     public LodestoneEntityBlock<T> setBlockEntity(Supplier<BlockEntityType<T>> type) {
         this.blockEntityType = type;
-        this.ticker = (l, p, s, t) -> t.tick();
+        this.ticker = (l, p, s, t) -> {
+            t.updateWithLevel();
+            t.tick();
+        };
         return this;
     }
 

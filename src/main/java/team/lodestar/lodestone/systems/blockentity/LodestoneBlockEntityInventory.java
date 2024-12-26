@@ -1,5 +1,6 @@
 package team.lodestar.lodestone.systems.blockentity;
 
+import com.google.common.base.Predicates;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
@@ -7,8 +8,10 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.items.ItemStackHandler;
@@ -22,34 +25,31 @@ import java.util.stream.Collectors;
 /**
  * A powerful ItemStackHandler designed to work with block entities
  */
-public class LodestoneBlockEntityInventory extends ItemStackHandler {
+public class LodestoneBlockEntityInventory<T extends LodestoneBlockEntity> extends ItemStackHandler {
+    public T blockEntity;
     public final int slotCount;
     public final int allowedItemSize;
-    public Predicate<ItemStack> inputPredicate;
-    public Predicate<ItemStack> outputPredicate;
-    //TODO? public final LazyOptional<IItemHandler> inventoryOptional = LazyOptional.of(() -> this);
-
+    public final Predicate<ItemStack> inputPredicate;
     public ArrayList<ItemStack> nonEmptyItemStacks = new ArrayList<>();
 
     public int emptyItemAmount;
     public int nonEmptyItemAmount;
     public int firstEmptyItemIndex;
 
-    public LodestoneBlockEntityInventory(int slotCount, int allowedItemSize, Predicate<ItemStack> inputPredicate, Predicate<ItemStack> outputPredicate) {
-        this(slotCount, allowedItemSize, inputPredicate);
-        this.outputPredicate = outputPredicate;
+    public LodestoneBlockEntityInventory(T blockEntity, int slotCount, int allowedItemSize) {
+        this(blockEntity, slotCount, allowedItemSize, Predicates.alwaysTrue());
+        updateData();
+    }
+    public LodestoneBlockEntityInventory(T blockEntity, int slotCount, int allowedItemSize, Class<Item> inputClass) {
+        this(blockEntity, slotCount, allowedItemSize, s -> inputClass.isInstance(s.getItem()));
     }
 
-    public LodestoneBlockEntityInventory(int slotCount, int allowedItemSize, Predicate<ItemStack> inputPredicate) {
-        this(slotCount, allowedItemSize);
-        this.inputPredicate = inputPredicate;
-    }
-
-    public LodestoneBlockEntityInventory(int slotCount, int allowedItemSize) {
+    public LodestoneBlockEntityInventory(T blockEntity, int slotCount, int allowedItemSize, Predicate<ItemStack> inputPredicate) {
         super(slotCount);
+        this.blockEntity = blockEntity;
         this.slotCount = slotCount;
         this.allowedItemSize = allowedItemSize;
-        updateData();
+        this.inputPredicate = inputPredicate;
     }
 
     @Override
@@ -69,23 +69,10 @@ public class LodestoneBlockEntityInventory extends ItemStackHandler {
 
     @Override
     public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-        if (inputPredicate != null) {
-            if (!inputPredicate.test(stack)) {
-                return false;
-            }
+        if (!inputPredicate.test(stack)) {
+            return false;
         }
         return super.isItemValid(slot, stack);
-    }
-
-    @Nonnull
-    @Override
-    public ItemStack extractItem(int slot, int amount, boolean simulate) {
-        if (outputPredicate != null) {
-            if (!outputPredicate.test(super.extractItem(slot, amount, true))) {
-                return ItemStack.EMPTY;
-            }
-        }
-        return super.extractItem(slot, amount, simulate);
     }
 
     public void updateData() {

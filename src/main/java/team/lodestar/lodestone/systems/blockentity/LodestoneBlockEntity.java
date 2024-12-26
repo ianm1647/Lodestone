@@ -22,11 +22,11 @@ import org.jetbrains.annotations.Nullable;
 import team.lodestar.lodestone.systems.block.LodestoneEntityBlock;
 
 /**
- * A simple block entity with various frequently used methods called from {@link LodestoneEntityBlock}
+ * A simple block entity with various methods normally found inside of Block delegated here from {@link LodestoneEntityBlock}
  */
 public class LodestoneBlockEntity extends BlockEntity {
 
-    public boolean needsSync;
+    private boolean isDirty;
 
     public LodestoneBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
@@ -67,15 +67,8 @@ public class LodestoneBlockEntity extends BlockEntity {
     }
 
     @Override
-    public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider lookupProvider) {
-        if (tag != null) {
-            super.handleUpdateTag(tag, lookupProvider);
-        }
-    }
-
-    @Override
     protected void loadAdditional(CompoundTag pTag, HolderLookup.Provider pRegistries) {
-        needsSync = true;
+        markDirty();
         super.loadAdditional(pTag, pRegistries);
     }
 
@@ -91,15 +84,19 @@ public class LodestoneBlockEntity extends BlockEntity {
     }
 
     public void tick() {
-        if (needsSync) {
-            init();
-            needsSync = false;
+    }
+
+    public void markDirty() {
+        isDirty = true;
+    }
+
+    public final void updateWithLevel() {
+        if (isDirty) {
+            loadLevel();
+            isDirty = false;
         }
     }
 
-    public void init() {
-
+    public void loadLevel() {
     }
-
-
 }
