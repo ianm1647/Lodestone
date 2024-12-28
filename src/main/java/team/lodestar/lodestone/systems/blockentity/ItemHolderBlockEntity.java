@@ -4,6 +4,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.ItemInteractionResult;
@@ -27,7 +28,9 @@ public abstract class ItemHolderBlockEntity extends LodestoneBlockEntity {
 
     @Override
     public ItemInteractionResult onUseWithItem(Player pPlayer, ItemStack pStack, InteractionHand pHand) {
-        inventory.interact(pPlayer.level(), pPlayer, pHand);
+        if (level instanceof ServerLevel serverLevel) {
+            inventory.interact(serverLevel, pPlayer, pHand);
+        }
         return ItemInteractionResult.SUCCESS;
     }
 
