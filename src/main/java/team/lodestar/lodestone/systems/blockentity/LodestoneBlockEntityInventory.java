@@ -4,6 +4,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -28,6 +29,7 @@ public class LodestoneBlockEntityInventory extends ItemStackHandler {
     public final int slotCount;
     public final int allowedItemSize;
     public Predicate<ItemStack> inputPredicate;
+    public boolean autoSync;
 
     public ArrayList<ItemStack> nonEmptyItemStacks = new ArrayList<>();
     public int emptyItemAmount;
@@ -46,10 +48,17 @@ public class LodestoneBlockEntityInventory extends ItemStackHandler {
         return this;
     }
 
+    public LodestoneBlockEntityInventory triggerBlockEntityUpdate() {
+        this.autoSync = true;
+        return this;
+    }
+
     @Override
     public void onContentsChanged(int slot) {
         updateInventoryCaches();
-        BlockStateHelper.updateState(blockEntity.getLevel(), blockEntity.getBlockPos());
+        if (autoSync) {
+            BlockStateHelper.updateState(blockEntity.getLevel(), blockEntity.getBlockPos());
+        }
     }
 
     @Override
@@ -135,36 +144,39 @@ public class LodestoneBlockEntityInventory extends ItemStackHandler {
         }
     }
 
-    public ItemStack interact(Level level, Player player, InteractionHand handIn) {
+    public ItemStack interact(ServerLevel level, Player player, InteractionHand handIn) {
         if (!level.isClientSide) {
-            ItemStack held = player.getItemInHand(handIn);
+            var heldStack = player.getItemInHand(handIn);
+            var nonEmptyStacks = this.nonEmptyItemStacks;
+            if (nonEmptyStacks.isEmpty()) {
+                return heldStack;
+            }
             player.swing(handIn, true);
             int size = nonEmptyItemStacks.size() - 1;
-            if ((held.isEmpty() || firstEmptyItemIndex == -1) && size != -1) {
-                ItemStack takeOutStack = nonEmptyItemStacks.get(size);
-                if (takeOutStack.getItem().equals(held.getItem())) {
-                    return insertItem(player, held);
+            if ((heldStack.isEmpty() || firstEmptyItemIndex == -1)) {
+                var takeOutStack = nonEmptyItemStacks.get(size);
+                if (takeOutStack.is(heldStack.getItem())) {
+                    return insertItem(player, heldStack);
                 }
-                ItemStack extractedStack = extractItem(level, held, player);
-                boolean success = !extractedStack.isEmpty();
-                if (success) {
-                    insertItem(player, held);
+                var extractedStack = extractItem(level, heldStack, player);
+                if (!extractedStack.isEmpty()) {
+                    insertItem(player, heldStack);
                 }
                 return extractedStack;
             } else {
-                return insertItem(player, held);
+                return insertItem(player, heldStack);
             }
         }
         return ItemStack.EMPTY;
     }
 
-    public ItemStack extractItem(Level level, ItemStack heldStack, Player player) {
+    public ItemStack extractItem(ServerLevel level, ItemStack heldStack, Player player) {
         if (!level.isClientSide) {
             List<ItemStack> nonEmptyStacks = this.nonEmptyItemStacks;
             if (nonEmptyStacks.isEmpty()) {
                 return heldStack;
             }
-            ItemStack takeOutStack = nonEmptyStacks.get(nonEmptyStacks.size() - 1);
+            ItemStack takeOutStack = nonEmptyStacks.getLast();
             int slot = stacks.indexOf(takeOutStack);
             if (extractItem(slot, takeOutStack.getCount(), true).equals(ItemStack.EMPTY)) {
                 return heldStack;
