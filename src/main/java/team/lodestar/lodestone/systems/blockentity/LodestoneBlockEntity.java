@@ -21,6 +21,8 @@ import net.minecraft.world.phys.HitResult;
 import org.jetbrains.annotations.Nullable;
 import team.lodestar.lodestone.systems.block.LodestoneEntityBlock;
 
+import javax.annotation.Nonnull;
+
 /**
  * A simple block entity with various methods normally found inside of Block delegated here from {@link LodestoneEntityBlock}
  */
@@ -72,6 +74,9 @@ public class LodestoneBlockEntity extends BlockEntity {
         super.loadAdditional(pTag, pRegistries);
     }
 
+    public void placeIntoLevel(@Nonnull Level level) {
+    }
+
     @Override
     public ClientboundBlockEntityDataPacket getUpdatePacket() {
         return ClientboundBlockEntityDataPacket.create(this);
@@ -91,12 +96,9 @@ public class LodestoneBlockEntity extends BlockEntity {
     }
 
     public final void updateWithLevel() {
-        if (isDirty) {
-            loadLevel();
+        if (isDirty && level != null) {
+            placeIntoLevel(level);
             isDirty = false;
         }
-    }
-
-    public void loadLevel() {
     }
 }

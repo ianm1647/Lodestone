@@ -1,6 +1,5 @@
 package team.lodestar.lodestone.systems.blockentity;
 
-import com.google.common.base.Predicates;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
@@ -8,10 +7,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.items.ItemStackHandler;
@@ -29,32 +26,28 @@ public class LodestoneBlockEntityInventory extends ItemStackHandler {
     public LodestoneBlockEntity blockEntity;
     public final int slotCount;
     public final int allowedItemSize;
-    public final Predicate<ItemStack> inputPredicate;
-    public ArrayList<ItemStack> nonEmptyItemStacks = new ArrayList<>();
+    public Predicate<ItemStack> inputPredicate;
 
+    public ArrayList<ItemStack> nonEmptyItemStacks = new ArrayList<>();
     public int emptyItemAmount;
     public int nonEmptyItemAmount;
     public int firstEmptyItemIndex;
 
     public LodestoneBlockEntityInventory(LodestoneBlockEntity blockEntity, int slotCount, int allowedItemSize) {
-        this(blockEntity, slotCount, allowedItemSize, Predicates.alwaysTrue());
-        updateData();
-    }
-    public LodestoneBlockEntityInventory(LodestoneBlockEntity blockEntity, int slotCount, int allowedItemSize, Class<? extends Item> inputClass) {
-        this(blockEntity, slotCount, allowedItemSize, s -> inputClass.isInstance(s.getItem()));
-    }
-
-    public LodestoneBlockEntityInventory(LodestoneBlockEntity blockEntity, int slotCount, int allowedItemSize, Predicate<ItemStack> inputPredicate) {
         super(slotCount);
         this.blockEntity = blockEntity;
         this.slotCount = slotCount;
         this.allowedItemSize = allowedItemSize;
+    }
+
+    public LodestoneBlockEntityInventory setInputPredicate(Predicate<ItemStack> inputPredicate) {
         this.inputPredicate = inputPredicate;
+        return this;
     }
 
     @Override
     public void onContentsChanged(int slot) {
-        updateData();
+        updateInventoryCaches();
     }
 
     @Override
@@ -75,7 +68,7 @@ public class LodestoneBlockEntityInventory extends ItemStackHandler {
         return super.isItemValid(slot, stack);
     }
 
-    public void updateData() {
+    public void updateInventoryCaches() {
         NonNullList<ItemStack> stacks = getStacks();
         nonEmptyItemStacks = stacks.stream().filter(s -> !s.isEmpty()).collect(Collectors.toCollection(ArrayList::new));
         nonEmptyItemAmount = nonEmptyItemStacks.size();
@@ -102,7 +95,7 @@ public class LodestoneBlockEntityInventory extends ItemStackHandler {
                 stacks.add(ItemStack.EMPTY);
             }
         }
-        updateData();
+        updateInventoryCaches();
     }
 
     public void save(HolderLookup.Provider provider, CompoundTag compound) {
