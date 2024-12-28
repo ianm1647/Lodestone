@@ -12,6 +12,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.items.ItemStackHandler;
+import team.lodestar.lodestone.helpers.block.BlockStateHelper;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -48,6 +49,7 @@ public class LodestoneBlockEntityInventory extends ItemStackHandler {
     @Override
     public void onContentsChanged(int slot) {
         updateInventoryCaches();
+        BlockStateHelper.updateState(blockEntity.getLevel(), blockEntity.getBlockPos());
     }
 
     @Override
