@@ -151,41 +151,38 @@ public class LodestoneBlockEntityInventory extends ItemStackHandler {
         if ((heldStack.isEmpty() || firstEmptyItemIndex == -1)) {
             var takeOutStack = nonEmptyItemStacks.get(size);
             if (takeOutStack.is(heldStack.getItem())) {
-                return insertItem(player, heldStack);
+                return takeItemFromPlayer(player, heldStack);
             }
             var extractedStack = extractItem(level, heldStack, player);
             if (!extractedStack.isEmpty()) {
-                insertItem(player, heldStack);
+                takeItemFromPlayer(player, heldStack);
             }
             return extractedStack;
         } else {
-            return insertItem(player, heldStack);
+            return takeItemFromPlayer(player, heldStack);
         }
     }
 
     public ItemStack extractItem(ServerLevel level, ItemStack heldStack, Player player) {
-        if (!level.isClientSide) {
-            List<ItemStack> nonEmptyStacks = this.nonEmptyItemStacks;
-            if (nonEmptyStacks.isEmpty()) {
-                return heldStack;
-            }
-            ItemStack takeOutStack = nonEmptyStacks.getLast();
-            int slot = stacks.indexOf(takeOutStack);
-            if (extractItem(slot, takeOutStack.getCount(), true).equals(ItemStack.EMPTY)) {
-                return heldStack;
-            }
-            extractItem(player, takeOutStack, slot);
-            return takeOutStack;
+        List<ItemStack> nonEmptyStacks = this.nonEmptyItemStacks;
+        if (nonEmptyStacks.isEmpty()) {
+            return heldStack;
         }
-        return ItemStack.EMPTY;
+        ItemStack takeOutStack = nonEmptyStacks.getLast();
+        int slot = stacks.indexOf(takeOutStack);
+        if (extractItem(slot, takeOutStack.getCount(), true).equals(ItemStack.EMPTY)) {
+            return heldStack;
+        }
+        giveItemToPlayer(player, takeOutStack, slot);
+        return takeOutStack;
     }
 
-    public void extractItem(Player playerEntity, ItemStack stack, int slot) {
+    public void giveItemToPlayer(Player playerEntity, ItemStack stack, int slot) {
         ItemHandlerHelper.giveItemToPlayer(playerEntity, stack);
         setStackInSlot(slot, ItemStack.EMPTY);
     }
 
-    public ItemStack insertItem(Player playerEntity, ItemStack stack) {
+    public ItemStack takeItemFromPlayer(Player playerEntity, ItemStack stack) {
         return insertItem(stack);
     }
     public ItemStack insertItem(ItemStack stack) {
