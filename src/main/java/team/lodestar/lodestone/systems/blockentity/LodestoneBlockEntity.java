@@ -31,7 +31,7 @@ import java.util.function.Consumer;
  */
 public class LodestoneBlockEntity extends BlockEntity {
 
-    private Collection<Consumer<Level>> loadWithLevel = new ArrayList<>();
+    private final Collection<Consumer<Level>> loadWithLevel = new ArrayList<>();
 
     public LodestoneBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
@@ -51,6 +51,12 @@ public class LodestoneBlockEntity extends BlockEntity {
     public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider lookupProvider) {
         super.onDataPacket(net, pkt, lookupProvider);
         handleUpdateTag(getUpdatePacket().getTag(), lookupProvider);
+    }
+
+    @Override
+    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
+        loadWithLevel(this::update);
     }
 
     public void onBreak(@Nullable Player player) {
@@ -79,6 +85,14 @@ public class LodestoneBlockEntity extends BlockEntity {
     }
 
     public void onEntityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
+
+    }
+
+    /**
+     * Runs after the block entity is loaded from memory or synced to the client.
+     * Effectively the same as loadAdditional but runs the next tick and with a valid level.
+     */
+    public void update(@Nonnull Level level) {
 
     }
 
