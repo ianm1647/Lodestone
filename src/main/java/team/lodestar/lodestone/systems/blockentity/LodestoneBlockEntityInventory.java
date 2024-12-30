@@ -148,7 +148,7 @@ public class LodestoneBlockEntityInventory extends ItemStackHandler {
         updateInventoryCaches();
         var heldStack = player.getItemInHand(handIn);
         int size = nonEmptyItemStacks.size() - 1;
-        if ((heldStack.isEmpty() || firstEmptyItemIndex == -1) && size > 1) {
+        if ((heldStack.isEmpty() || firstEmptyItemIndex == -1)) {
             var takeOutStack = nonEmptyItemStacks.get(size);
             if (takeOutStack.is(heldStack.getItem())) {
                 return insertItem(player, heldStack);
