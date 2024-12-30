@@ -33,7 +33,6 @@ public class LodestoneBlockEntityInventory extends ItemStackHandler {
 
     public ArrayList<ItemStack> nonEmptyItemStacks = new ArrayList<>();
     public int emptyItemAmount;
-    public int nonEmptyItemAmount;
     public int firstEmptyItemIndex;
 
     public LodestoneBlockEntityInventory(LodestoneBlockEntity blockEntity, int slotCount, int allowedItemSize) {
@@ -82,7 +81,6 @@ public class LodestoneBlockEntityInventory extends ItemStackHandler {
     public void updateInventoryCaches() {
         NonNullList<ItemStack> stacks = getStacks();
         nonEmptyItemStacks = stacks.stream().filter(s -> !s.isEmpty()).collect(Collectors.toCollection(ArrayList::new));
-        nonEmptyItemAmount = nonEmptyItemStacks.size();
         emptyItemAmount = (int) stacks.stream().filter(ItemStack::isEmpty).count();
         for (int i = 0; i < stacks.size(); i++) {
             ItemStack stack = stacks.get(i);
@@ -122,7 +120,7 @@ public class LodestoneBlockEntityInventory extends ItemStackHandler {
     }
 
     public boolean isEmpty() {
-        return nonEmptyItemAmount == 0;
+        return nonEmptyItemStacks.isEmpty();
     }
 
     public void clear() {
@@ -147,9 +145,8 @@ public class LodestoneBlockEntityInventory extends ItemStackHandler {
     public ItemStack interact(ServerLevel level, Player player, InteractionHand handIn) {
         updateInventoryCaches();
         var heldStack = player.getItemInHand(handIn);
-        int size = nonEmptyItemStacks.size() - 1;
-        if ((heldStack.isEmpty() || firstEmptyItemIndex == -1)) {
-            var takeOutStack = nonEmptyItemStacks.get(size);
+        if ((heldStack.isEmpty() || !isEmpty())) {
+            var takeOutStack = nonEmptyItemStacks.getLast();
             if (takeOutStack.is(heldStack.getItem())) {
                 return takeItemFromPlayer(player, heldStack);
             }
