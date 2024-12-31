@@ -32,8 +32,8 @@ public class LodestoneBlockEntityInventory extends ItemStackHandler {
     public boolean autoSync;
 
     public ArrayList<ItemStack> nonEmptyItemStacks = new ArrayList<>();
-    public int emptyItemAmount;
-    public int firstEmptyItemIndex;
+    private int emptySlots;
+    private int firstEmptyItemIndex;
 
     public LodestoneBlockEntityInventory(LodestoneBlockEntity blockEntity, int slotCount, int allowedItemSize) {
         super(slotCount);
@@ -50,6 +50,30 @@ public class LodestoneBlockEntityInventory extends ItemStackHandler {
     public LodestoneBlockEntityInventory triggerBlockEntityUpdate() {
         this.autoSync = true;
         return this;
+    }
+
+    public NonNullList<ItemStack> getStacks() {
+        return stacks;
+    }
+
+    public ArrayList<ItemStack> getNonEmptyStacks() {
+        return nonEmptyItemStacks;
+    }
+
+    public int getEmptySlotCount() {
+        return emptySlots;
+    }
+
+    public int getFilledSlotCount() {
+        return slotCount - emptySlots;
+    }
+
+    public int getFirstEmptyItemIndex() {
+        return firstEmptyItemIndex;
+    }
+
+    public boolean isEmpty() {
+        return nonEmptyItemStacks.isEmpty();
     }
 
     @Override
@@ -81,7 +105,7 @@ public class LodestoneBlockEntityInventory extends ItemStackHandler {
     public void updateInventoryCaches() {
         NonNullList<ItemStack> stacks = getStacks();
         nonEmptyItemStacks = stacks.stream().filter(s -> !s.isEmpty()).collect(Collectors.toCollection(ArrayList::new));
-        emptyItemAmount = (int) stacks.stream().filter(ItemStack::isEmpty).count();
+        emptySlots = (int) stacks.stream().filter(ItemStack::isEmpty).count();
         for (int i = 0; i < stacks.size(); i++) {
             ItemStack stack = stacks.get(i);
             if (stack.isEmpty()) {
@@ -113,14 +137,6 @@ public class LodestoneBlockEntityInventory extends ItemStackHandler {
 
     public void save(HolderLookup.Provider provider, CompoundTag compound, String name) {
         compound.put(name, serializeNBT(provider));
-    }
-
-    public NonNullList<ItemStack> getStacks() {
-        return stacks;
-    }
-
-    public boolean isEmpty() {
-        return nonEmptyItemStacks.isEmpty();
     }
 
     public void clear() {
