@@ -28,7 +28,7 @@ public class LodestoneBlockEntityInventory extends ItemStackHandler {
     public LodestoneBlockEntity blockEntity;
     public final int slotCount;
     public final int allowedItemSize;
-    public Predicate<ItemStack> inputPredicate;
+    public Predicate<ItemStack> inputPredicate = s -> true;
     public boolean autoSync;
 
     public ArrayList<ItemStack> nonEmptyItemStacks = new ArrayList<>();
