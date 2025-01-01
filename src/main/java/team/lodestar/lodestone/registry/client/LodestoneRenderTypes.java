@@ -99,7 +99,7 @@ public class LodestoneRenderTypes extends RenderStateShard {
     public static final RenderTypeProvider TRANSPARENT_TEXTURE = new RenderTypeProvider((token) ->
             createGenericRenderType("transparent_texture",
                     builder(token, StateShards.NORMAL_TRANSPARENCY, LodestoneShaders.LODESTONE_TEXTURE, CULL, LIGHTMAP, COLOR_WRITE)));
-    public static final RenderTypeProvider DISTORTED_TRANSPARENT_TEXTURE = new RenderTypeProvider((token) ->
+    public static final RenderTypeProvider TRANSPARENT_DISTORTED_TEXTURE = new RenderTypeProvider((token) ->
             createGenericRenderType("distorted_transparent_texture",
                     builder(token, StateShards.NORMAL_TRANSPARENCY, LodestoneShaders.DISTORTED_TEXTURE, CULL, LIGHTMAP, COLOR_WRITE)));
     public static final RenderTypeProvider TRANSPARENT_TEXTURE_TRIANGLE = new RenderTypeProvider((token) ->
@@ -122,7 +122,7 @@ public class LodestoneRenderTypes extends RenderStateShard {
     public static final RenderTypeProvider ADDITIVE_TEXTURE = new RenderTypeProvider((token) ->
             createGenericRenderType("additive_texture",
                     builder(token, StateShards.ADDITIVE_TRANSPARENCY, LodestoneShaders.LODESTONE_TEXTURE, CULL, LIGHTMAP, COLOR_WRITE)));
-    public static final RenderTypeProvider DISTORTED_ADDITIVE_TEXTURE = new RenderTypeProvider((token) ->
+    public static final RenderTypeProvider ADDITIVE_DISTORTED_TEXTURE = new RenderTypeProvider((token) ->
             createGenericRenderType("distorted_additive_texture",
                     builder(token, StateShards.ADDITIVE_TRANSPARENCY, LodestoneShaders.DISTORTED_TEXTURE, CULL, LIGHTMAP, COLOR_WRITE)));
     public static final RenderTypeProvider ADDITIVE_TEXTURE_TRIANGLE = new RenderTypeProvider((token) ->
