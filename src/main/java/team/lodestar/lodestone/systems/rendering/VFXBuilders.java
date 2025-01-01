@@ -487,7 +487,7 @@ public class VFXBuilders {
             return this;
         }
 
-        public void drawCube(PoseStack poseStack, CubeVertexData cubeVertexData) {
+        public WorldVFXBuilder drawCube(PoseStack poseStack, CubeVertexData cubeVertexData) {
             Vector3f[] topVertices = cubeVertexData.topVertices();
             Vector3f[] bottomVertices = cubeVertexData.bottomVertices();
             Collection<Vector3f[]> offsetMap = cubeVertexData.offsetMap();
@@ -496,11 +496,13 @@ public class VFXBuilders {
             }
             renderQuad(poseStack, new Vector3f[]{bottomVertices[3], bottomVertices[2], bottomVertices[1], bottomVertices[0]});
             renderQuad(poseStack, topVertices);
+            return this;
         }
 
-        public void drawCubeSide(PoseStack poseStack, CubeVertexData cubeVertexData, Direction direction) {
+        public WorldVFXBuilder drawCubeSide(PoseStack poseStack, CubeVertexData cubeVertexData, Direction direction) {
             Vector3f[] vertices = cubeVertexData.getVerticesByDirection(direction);
             renderQuad(poseStack, vertices);
+            return this;
         }
 
         public WorldVFXBuilder renderQuad(PoseStack stack) {
