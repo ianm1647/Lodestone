@@ -26,7 +26,8 @@ public record CubeVertexData(Vector3f[] bottomVertices, Vector3f[] topVertices, 
         Vector3f[] topVertices = new Vector3f[]{new Vector3f(xStart, yEnd, xStart), new Vector3f(xStart, yEnd, xEnd), new Vector3f(xEnd, yEnd, xEnd), new Vector3f(xEnd, yEnd, xStart)};
         List<Vector3f[]> offsetMap = new ArrayList<>();
         for (int i = 0; i < 4; i++) {
-            offsetMap.add(new Vector3f[]{bottomVertices[i], bottomVertices[(i + 1) % 4], topVertices[(i + 1) % 4], topVertices[(i) % 4]});
+            int index = (i*3+3) % 4; //this weird and specific numbering is to tie the vertices to horizontal directions
+            offsetMap.add(new Vector3f[]{bottomVertices[(index) % 4], bottomVertices[(index+1) % 4], topVertices[(index+1) % 4], topVertices[(index) % 4]});
         }
         return new CubeVertexData(bottomVertices, topVertices, offsetMap);
     }
