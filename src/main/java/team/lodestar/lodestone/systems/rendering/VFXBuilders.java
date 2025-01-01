@@ -9,6 +9,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
@@ -18,6 +19,7 @@ import org.joml.Vector4f;
 import team.lodestar.lodestone.handlers.RenderHandler;
 import team.lodestar.lodestone.helpers.RenderHelper;
 import team.lodestar.lodestone.helpers.VecHelper;
+import team.lodestar.lodestone.systems.rendering.cube.CubeVertexData;
 import team.lodestar.lodestone.systems.rendering.trail.TrailPoint;
 import team.lodestar.lodestone.systems.rendering.trail.TrailRenderPoint;
 
@@ -257,7 +259,7 @@ public class VFXBuilders {
         return new WorldVFXBuilder();
     }
 
-    public static class WorldVFXBuilder extends AbstractVFXBuilder{
+    public static class WorldVFXBuilder extends AbstractVFXBuilder {
 
         protected MultiBufferSource bufferSource = RenderHandler.DELAYED_RENDER.getTarget();
         protected RenderType renderType;
@@ -466,7 +468,7 @@ public class VFXBuilders {
             points[0] = new TrailRenderPoint(positions.get(0),
                     RenderHelper.perpendicularTrailPoints(positions.get(0), positions.get(1), widthFunc.apply(0f)));
             points[count] = new TrailRenderPoint(positions.get(count),
-                    RenderHelper.perpendicularTrailPoints(positions.get(count-1), positions.get(count), widthFunc.apply(1f)));
+                    RenderHelper.perpendicularTrailPoints(positions.get(count - 1), positions.get(count), widthFunc.apply(1f)));
             return renderPoints(points, u0, v0, u1, v1, vfxOperator);
         }
 
@@ -485,6 +487,25 @@ public class VFXBuilders {
             return this;
         }
 
+        public void drawCube(PoseStack poseStack, CubeVertexData cubeVertexData) {
+            Vector3f[] topVertices = cubeVertexData.topVertices();
+            Vector3f[] bottomVertices = cubeVertexData.bottomVertices();
+            Collection<Vector3f[]> offsetMap = cubeVertexData.offsetMap();
+            for (Vector3f[] offsets : offsetMap) {
+                renderQuad(poseStack, offsets);
+            }
+            renderQuad(poseStack, new Vector3f[]{bottomVertices[3], bottomVertices[2], bottomVertices[1], bottomVertices[0]});
+            renderQuad(poseStack, topVertices);
+        }
+
+        public void drawCubeSide(PoseStack poseStack, CubeVertexData cubeVertexData, Direction direction) {
+            Vector3f[] vertices = cubeVertexData.getVerticesByDirection(direction);
+            renderQuad(poseStack, vertices);
+        }
+
+        public WorldVFXBuilder renderQuad(PoseStack stack) {
+            return renderQuad(stack, 1f);
+        }
         public WorldVFXBuilder renderQuad(PoseStack stack, float size) {
             return renderQuad(stack, size, size);
         }
@@ -494,6 +515,9 @@ public class VFXBuilders {
             return renderQuad(stack, positions, width, height);
         }
 
+        public WorldVFXBuilder renderQuad(PoseStack stack, Vector3f[] positions) {
+            return renderQuad(stack, positions, 1f);
+        }
         public WorldVFXBuilder renderQuad(PoseStack stack, Vector3f[] positions, float size) {
             return renderQuad(stack, positions, size, size);
         }
