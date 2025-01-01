@@ -16,14 +16,9 @@ public record CubeVertexData(Vector3f[] bottomVertices, Vector3f[] topVertices, 
     }
 
     public static CubeVertexData makeCubePositions(float xScale, float yScale) {
-        float half = 0.5f;
         float xOffset = xScale / 2f;
         float yOffset = yScale / 2f;
-        float xStart = -xOffset + half;
-        float xEnd = xOffset + half;
-        float yStart = -yOffset + half;
-        float yEnd = yOffset + half;
-        return makeCubePositions(xStart, xEnd, yStart, yEnd);
+        return makeCubePositions(-xOffset, xOffset, -yOffset, yOffset);
     }
 
     public static CubeVertexData makeCubePositions(float xStart, float xEnd, float yStart, float yEnd) {
