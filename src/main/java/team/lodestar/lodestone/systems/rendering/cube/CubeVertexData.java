@@ -64,34 +64,18 @@ public record CubeVertexData(Vector3f[] bottomVertices, Vector3f[] topVertices, 
         return this;
     }
 
-    public CubeVertexData stretch(float scale) {
-        return stretch(scale, scale);
+    public CubeVertexData scale(float scale) {
+        return scale(scale, scale);
     }
 
-    public CubeVertexData stretch(float width, float height) {
-        return stretch(width, height, width);
+    public CubeVertexData scale(float width, float height) {
+        return scale(width, height, width);
     }
 
-    public CubeVertexData stretch(float x, float y, float z) {
+    public CubeVertexData scale(float x, float y, float z) {
         for (int i = 0; i < bottomVertices.length; i++) {
             bottomVertices[i].mul(x, y, z);
             topVertices[i].mul(x, y, z);
-        }
-        return this;
-    }
-
-    public CubeVertexData constrict(float scale) {
-        return constrict(scale, scale);
-    }
-
-    public CubeVertexData constrict(float width, float height) {
-        return constrict(width, height, width);
-    }
-
-    public CubeVertexData constrict(float x, float y, float z) {
-        for (int i = 0; i < bottomVertices.length; i++) {
-            bottomVertices[i].div(x, y, z);
-            topVertices[i].div(x, y, z);
         }
         return this;
     }
