@@ -499,6 +499,13 @@ public class VFXBuilders {
             return this;
         }
 
+        public WorldVFXBuilder drawCubeSides(PoseStack poseStack, CubeVertexData cubeVertexData, Direction... directions) {
+            for (Direction direction : directions) {
+                drawCubeSide(poseStack, cubeVertexData, direction);
+            }
+            return this;
+        }
+
         public WorldVFXBuilder drawCubeSide(PoseStack poseStack, CubeVertexData cubeVertexData, Direction direction) {
             Vector3f[] vertices = cubeVertexData.getVerticesByDirection(direction);
             renderQuad(poseStack, vertices);
