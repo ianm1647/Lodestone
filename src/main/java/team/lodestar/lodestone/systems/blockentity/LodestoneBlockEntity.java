@@ -54,6 +54,12 @@ public class LodestoneBlockEntity extends BlockEntity {
     }
 
     @Override
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.saveAdditional(tag, registries);
+        loadWithLevel(this::update);
+    }
+
+    @Override
     protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
         loadWithLevel(this::update);
@@ -89,8 +95,8 @@ public class LodestoneBlockEntity extends BlockEntity {
     }
 
     /**
-     * Runs after the block entity is loaded from memory or synced to the client.
-     * Effectively the same as loadAdditional but runs the next tick and with a valid level.
+     * A method designed to run anytime substantial changes to the entity are made.
+     * On the Server it runs when the entity is saved to NBT, and on the Client it runs when the entity is loaded from NBT
      */
     public void update(@Nonnull Level level) {
 
