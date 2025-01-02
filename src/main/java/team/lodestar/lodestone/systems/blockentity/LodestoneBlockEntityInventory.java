@@ -161,10 +161,12 @@ public class LodestoneBlockEntityInventory extends ItemStackHandler {
     public ItemStack interact(ServerLevel level, Player player, InteractionHand handIn) {
         updateInventoryCaches();
         var heldStack = player.getItemInHand(handIn);
-        if ((heldStack.isEmpty() && !isEmpty())) {
-            var takeOutStack = nonEmptyItemStacks.getLast();
-            if (takeOutStack.is(heldStack.getItem())) {
-                return takeItemFromPlayer(player, heldStack);
+        if ((heldStack.isEmpty() || !isEmpty())) {
+            if (!nonEmptyItemStacks.isEmpty()) {
+                var takeOutStack = nonEmptyItemStacks.getLast();
+                if (takeOutStack.is(heldStack.getItem())) {
+                    return takeItemFromPlayer(player, heldStack);
+                }
             }
             var extractedStack = extractItem(level, heldStack, player);
             if (!extractedStack.isEmpty()) {
