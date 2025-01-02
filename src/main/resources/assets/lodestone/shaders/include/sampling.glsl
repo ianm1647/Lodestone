@@ -25,7 +25,7 @@ vec4 sampleVolumeAtlas(in sampler2D volume, in ivec2 spriteDims, in vec3 worldPo
 */
 vec4 sampleVolumeAtlasInterpolated(in sampler2D volume, in ivec2 spriteDims, in vec3 worldPos) {
     float numSlices  = float(spriteDims.x * spriteDims.y);
-    float sliceFloat = clampedPos.z * (numSlices - 1.0);
+    float sliceFloat = worldPos.z * (numSlices - 1.0);
     int   sliceIndex = int(floor(sliceFloat));
     int   sliceIndex2 = min(sliceIndex + 1, spriteDims.x * spriteDims.y - 1);
 
