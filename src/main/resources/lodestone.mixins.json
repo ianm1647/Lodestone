@@ -10,10 +10,11 @@
         "common.LivingEntityMixin"
     ],
     "client": [
+        "accessor.GlStateManagerAccessor",
         "client.AbstractContainerScreenMixin",
         "client.CreativeModeInventoryScreenMixin",
-        "client.EffectProgramMixin",
         "client.EffectInstanceMixin",
+        "client.EffectProgramMixin",
         "client.GameRendererMixin",
         "client.GuiGraphicsMixin",
         "client.GuiMixin",
