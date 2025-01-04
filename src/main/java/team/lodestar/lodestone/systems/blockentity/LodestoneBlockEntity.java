@@ -54,12 +54,6 @@ public class LodestoneBlockEntity extends BlockEntity {
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
-        loadWithLevel(this::update);
-    }
-
-    @Override
     protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
         loadWithLevel(this::update);
@@ -96,7 +90,7 @@ public class LodestoneBlockEntity extends BlockEntity {
 
     /**
      * A method designed to run anytime substantial changes to the entity are made.
-     * On the Server it runs when the entity is saved to NBT, and on the Client it runs when the entity is loaded from NBT
+     * Called the tick after the entity is updated from the server to the client, or loaded from memory
      */
     public void update(@Nonnull Level level) {
 
@@ -106,7 +100,7 @@ public class LodestoneBlockEntity extends BlockEntity {
     }
 
     /**
-     * Call from {@link LodestoneBlockEntity#loadAdditional(CompoundTag, HolderLookup.Provider)} for any network syncing that requires a non-null level
+     * Call from {@link LodestoneBlockEntity#loadAdditional(CompoundTag, HolderLookup.Provider)} for anything tied to the entity being initialized/updated that requires a non-null level
      */
     public void loadWithLevel(Consumer<Level> levelConsumer) {
         loadWithLevel.add(levelConsumer);

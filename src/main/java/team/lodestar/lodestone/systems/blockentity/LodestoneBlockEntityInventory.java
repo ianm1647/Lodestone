@@ -29,6 +29,7 @@ public class LodestoneBlockEntityInventory extends ItemStackHandler {
     public final int slotCount;
     public final int allowedItemSize;
     public Predicate<ItemStack> inputPredicate = s -> true;
+    public Runnable contentsChangeBehavior;
     public boolean autoSync;
 
     public ArrayList<ItemStack> nonEmptyItemStacks = new ArrayList<>();
@@ -44,6 +45,11 @@ public class LodestoneBlockEntityInventory extends ItemStackHandler {
 
     public LodestoneBlockEntityInventory setInputPredicate(Predicate<ItemStack> inputPredicate) {
         this.inputPredicate = inputPredicate;
+        return this;
+    }
+
+    public LodestoneBlockEntityInventory onContentsChanged(Runnable contentsChangeBehavior) {
+        this.contentsChangeBehavior = contentsChangeBehavior;
         return this;
     }
 
@@ -81,6 +87,9 @@ public class LodestoneBlockEntityInventory extends ItemStackHandler {
         updateInventoryCaches();
         if (autoSync) {
             BlockStateHelper.updateState(blockEntity.getLevel(), blockEntity.getBlockPos());
+        }
+        if (contentsChangeBehavior != null) {
+            contentsChangeBehavior.run();
         }
     }
 
