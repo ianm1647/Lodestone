@@ -46,6 +46,14 @@ public class MultiBlockComponentEntity extends LodestoneBlockEntity {
     }
 
     @Override
+    public ItemInteractionResult onUse(Player pPlayer, InteractionHand pHand) {
+        if (corePos != null && level.getBlockEntity(corePos) instanceof MultiBlockCoreEntity core) {
+            return core.onUse(pPlayer, pHand);
+        }
+        return super.onUse(pPlayer, pHand);
+    }
+
+    @Override
     public InteractionResult onUseWithoutItem(Player pPlayer) {
         if (corePos != null && level.getBlockEntity(corePos) instanceof MultiBlockCoreEntity core) {
             return core.onUseWithoutItem(pPlayer);

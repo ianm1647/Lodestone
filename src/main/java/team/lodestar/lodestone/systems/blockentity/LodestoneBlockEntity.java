@@ -21,15 +21,42 @@ import net.minecraft.world.phys.HitResult;
 import org.jetbrains.annotations.Nullable;
 import team.lodestar.lodestone.systems.block.LodestoneEntityBlock;
 
+import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.function.Consumer;
+
 /**
  * A simple block entity with various methods normally found inside of Block delegated here from {@link LodestoneEntityBlock}
  */
 public class LodestoneBlockEntity extends BlockEntity {
 
-    private boolean isDirty;
+    private final Collection<Consumer<Level>> loadWithLevel = new ArrayList<>();
 
     public LodestoneBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
+    }
+
+    @Override
+    public CompoundTag getUpdateTag(HolderLookup.Provider pRegistries) {
+        return this.saveWithoutMetadata(pRegistries);
+    }
+
+    @Override
+    public ClientboundBlockEntityDataPacket getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
+    }
+
+    @Override
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider lookupProvider) {
+        super.onDataPacket(net, pkt, lookupProvider);
+        handleUpdateTag(getUpdatePacket().getTag(), lookupProvider);
+    }
+
+    @Override
+    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
+        loadWithLevel(this::update);
     }
 
     public void onBreak(@Nullable Player player) {
@@ -61,42 +88,30 @@ public class LodestoneBlockEntity extends BlockEntity {
 
     }
 
-    @Override
-    public CompoundTag getUpdateTag(HolderLookup.Provider pRegistries) {
-        return this.saveWithoutMetadata(pRegistries);
-    }
+    /**
+     * A method designed to run anytime substantial changes to the entity are made.
+     * Called the tick after the entity is updated from the server to the client, or loaded from memory
+     */
+    public void update(@Nonnull Level level) {
 
-    @Override
-    protected void loadAdditional(CompoundTag pTag, HolderLookup.Provider pRegistries) {
-        markDirty();
-        super.loadAdditional(pTag, pRegistries);
-    }
-
-    @Override
-    public ClientboundBlockEntityDataPacket getUpdatePacket() {
-        return ClientboundBlockEntityDataPacket.create(this);
-    }
-
-    @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider lookupProvider) {
-        super.onDataPacket(net, pkt, lookupProvider);
-        handleUpdateTag(getUpdatePacket().getTag(), lookupProvider);
     }
 
     public void tick() {
     }
 
-    public void markDirty() {
-        isDirty = true;
+    /**
+     * Call from {@link LodestoneBlockEntity#loadAdditional(CompoundTag, HolderLookup.Provider)} for anything tied to the entity being initialized/updated that requires a non-null level
+     */
+    public void loadWithLevel(Consumer<Level> levelConsumer) {
+        loadWithLevel.add(levelConsumer);
     }
 
-    public final void updateWithLevel() {
-        if (isDirty) {
-            loadLevel();
-            isDirty = false;
+    public final void triggerLevelConsumers() {
+        if (level != null && !loadWithLevel.isEmpty()) {
+            for (Consumer<Level> levelConsumer : loadWithLevel) {
+                levelConsumer.accept(level);
+            }
+            loadWithLevel.clear();
         }
-    }
-
-    public void loadLevel() {
     }
 }

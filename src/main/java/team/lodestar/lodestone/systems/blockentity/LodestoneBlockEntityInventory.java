@@ -1,20 +1,19 @@
 package team.lodestar.lodestone.systems.blockentity;
 
-import com.google.common.base.Predicates;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.items.ItemStackHandler;
+import team.lodestar.lodestone.helpers.block.BlockStateHelper;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -29,32 +28,69 @@ public class LodestoneBlockEntityInventory extends ItemStackHandler {
     public LodestoneBlockEntity blockEntity;
     public final int slotCount;
     public final int allowedItemSize;
-    public final Predicate<ItemStack> inputPredicate;
-    public ArrayList<ItemStack> nonEmptyItemStacks = new ArrayList<>();
+    public Predicate<ItemStack> inputPredicate = s -> true;
+    public Runnable contentsChangeBehavior;
+    public boolean autoSync;
 
-    public int emptyItemAmount;
-    public int nonEmptyItemAmount;
-    public int firstEmptyItemIndex;
+    public ArrayList<ItemStack> nonEmptyItemStacks = new ArrayList<>();
+    private int emptySlots;
+    private int firstEmptyItemIndex;
 
     public LodestoneBlockEntityInventory(LodestoneBlockEntity blockEntity, int slotCount, int allowedItemSize) {
-        this(blockEntity, slotCount, allowedItemSize, Predicates.alwaysTrue());
-        updateData();
-    }
-    public LodestoneBlockEntityInventory(LodestoneBlockEntity blockEntity, int slotCount, int allowedItemSize, Class<? extends Item> inputClass) {
-        this(blockEntity, slotCount, allowedItemSize, s -> inputClass.isInstance(s.getItem()));
-    }
-
-    public LodestoneBlockEntityInventory(LodestoneBlockEntity blockEntity, int slotCount, int allowedItemSize, Predicate<ItemStack> inputPredicate) {
         super(slotCount);
         this.blockEntity = blockEntity;
         this.slotCount = slotCount;
         this.allowedItemSize = allowedItemSize;
+    }
+
+    public LodestoneBlockEntityInventory setInputPredicate(Predicate<ItemStack> inputPredicate) {
         this.inputPredicate = inputPredicate;
+        return this;
+    }
+
+    public LodestoneBlockEntityInventory onContentsChanged(Runnable contentsChangeBehavior) {
+        this.contentsChangeBehavior = contentsChangeBehavior;
+        return this;
+    }
+
+    public LodestoneBlockEntityInventory triggerBlockEntityUpdate() {
+        this.autoSync = true;
+        return this;
+    }
+
+    public NonNullList<ItemStack> getStacks() {
+        return stacks;
+    }
+
+    public ArrayList<ItemStack> getNonEmptyStacks() {
+        return nonEmptyItemStacks;
+    }
+
+    public int getEmptySlotCount() {
+        return emptySlots;
+    }
+
+    public int getFilledSlotCount() {
+        return slotCount - emptySlots;
+    }
+
+    public int getFirstEmptyItemIndex() {
+        return firstEmptyItemIndex;
+    }
+
+    public boolean isEmpty() {
+        return nonEmptyItemStacks.isEmpty();
     }
 
     @Override
     public void onContentsChanged(int slot) {
-        updateData();
+        updateInventoryCaches();
+        if (autoSync) {
+            BlockStateHelper.updateState(blockEntity.getLevel(), blockEntity.getBlockPos());
+        }
+        if (contentsChangeBehavior != null) {
+            contentsChangeBehavior.run();
+        }
     }
 
     @Override
@@ -75,11 +111,10 @@ public class LodestoneBlockEntityInventory extends ItemStackHandler {
         return super.isItemValid(slot, stack);
     }
 
-    public void updateData() {
+    public void updateInventoryCaches() {
         NonNullList<ItemStack> stacks = getStacks();
         nonEmptyItemStacks = stacks.stream().filter(s -> !s.isEmpty()).collect(Collectors.toCollection(ArrayList::new));
-        nonEmptyItemAmount = nonEmptyItemStacks.size();
-        emptyItemAmount = (int) stacks.stream().filter(ItemStack::isEmpty).count();
+        emptySlots = (int) stacks.stream().filter(ItemStack::isEmpty).count();
         for (int i = 0; i < stacks.size(); i++) {
             ItemStack stack = stacks.get(i);
             if (stack.isEmpty()) {
@@ -102,7 +137,7 @@ public class LodestoneBlockEntityInventory extends ItemStackHandler {
                 stacks.add(ItemStack.EMPTY);
             }
         }
-        updateData();
+        updateInventoryCaches();
     }
 
     public void save(HolderLookup.Provider provider, CompoundTag compound) {
@@ -111,14 +146,6 @@ public class LodestoneBlockEntityInventory extends ItemStackHandler {
 
     public void save(HolderLookup.Provider provider, CompoundTag compound, String name) {
         compound.put(name, serializeNBT(provider));
-    }
-
-    public NonNullList<ItemStack> getStacks() {
-        return stacks;
-    }
-
-    public boolean isEmpty() {
-        return nonEmptyItemAmount == 0;
     }
 
     public void clear() {
@@ -140,52 +167,46 @@ public class LodestoneBlockEntityInventory extends ItemStackHandler {
         }
     }
 
-    public ItemStack interact(Level level, Player player, InteractionHand handIn) {
-        if (!level.isClientSide) {
-            ItemStack held = player.getItemInHand(handIn);
-            player.swing(handIn, true);
-            int size = nonEmptyItemStacks.size() - 1;
-            if ((held.isEmpty() || firstEmptyItemIndex == -1) && size != -1) {
-                ItemStack takeOutStack = nonEmptyItemStacks.get(size);
-                if (takeOutStack.getItem().equals(held.getItem())) {
-                    return insertItem(player, held);
+    public ItemStack interact(ServerLevel level, Player player, InteractionHand handIn) {
+        updateInventoryCaches();
+        var heldStack = player.getItemInHand(handIn);
+        if ((heldStack.isEmpty() || !isEmpty())) {
+            if (!nonEmptyItemStacks.isEmpty()) {
+                var takeOutStack = nonEmptyItemStacks.getLast();
+                if (takeOutStack.is(heldStack.getItem())) {
+                    return takeItemFromPlayer(player, heldStack);
                 }
-                ItemStack extractedStack = extractItem(level, held, player);
-                boolean success = !extractedStack.isEmpty();
-                if (success) {
-                    insertItem(player, held);
-                }
-                return extractedStack;
-            } else {
-                return insertItem(player, held);
             }
+            var extractedStack = extractItem(level, heldStack, player);
+            if (!extractedStack.isEmpty()) {
+                takeItemFromPlayer(player, heldStack);
+            }
+            return extractedStack;
+        } else {
+            return takeItemFromPlayer(player, heldStack);
         }
-        return ItemStack.EMPTY;
     }
 
-    public ItemStack extractItem(Level level, ItemStack heldStack, Player player) {
-        if (!level.isClientSide) {
-            List<ItemStack> nonEmptyStacks = this.nonEmptyItemStacks;
-            if (nonEmptyStacks.isEmpty()) {
-                return heldStack;
-            }
-            ItemStack takeOutStack = nonEmptyStacks.get(nonEmptyStacks.size() - 1);
-            int slot = stacks.indexOf(takeOutStack);
-            if (extractItem(slot, takeOutStack.getCount(), true).equals(ItemStack.EMPTY)) {
-                return heldStack;
-            }
-            extractItem(player, takeOutStack, slot);
-            return takeOutStack;
+    public ItemStack extractItem(ServerLevel level, ItemStack heldStack, Player player) {
+        List<ItemStack> nonEmptyStacks = this.nonEmptyItemStacks;
+        if (nonEmptyStacks.isEmpty()) {
+            return heldStack;
         }
-        return ItemStack.EMPTY;
+        ItemStack takeOutStack = nonEmptyStacks.getLast();
+        int slot = stacks.indexOf(takeOutStack);
+        if (extractItem(slot, takeOutStack.getCount(), true).equals(ItemStack.EMPTY)) {
+            return heldStack;
+        }
+        giveItemToPlayer(player, takeOutStack, slot);
+        return takeOutStack;
     }
 
-    public void extractItem(Player playerEntity, ItemStack stack, int slot) {
+    public void giveItemToPlayer(Player playerEntity, ItemStack stack, int slot) {
         ItemHandlerHelper.giveItemToPlayer(playerEntity, stack);
         setStackInSlot(slot, ItemStack.EMPTY);
     }
 
-    public ItemStack insertItem(Player playerEntity, ItemStack stack) {
+    public ItemStack takeItemFromPlayer(Player playerEntity, ItemStack stack) {
         return insertItem(stack);
     }
     public ItemStack insertItem(ItemStack stack) {

@@ -17,12 +17,13 @@ import static team.lodestar.lodestone.LodestoneLib.lodestonePath;
 public class LodestoneShaders {
 
     public static ShaderHolder LODESTONE_TEXTURE = new ShaderHolder(lodestonePath("lodestone_texture"), DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, "LumiTransparency");
+    public static ShaderHolder DISTORTED_TEXTURE = new ShaderHolder(lodestonePath("distorted_texture"), DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP , "Speed", "TimeOffset", "Intensity", "XFrequency", "YFrequency", "UVCoordinates");
     public static ShaderHolder LODESTONE_TEXT = new ShaderHolder(lodestonePath("lodestone_text"), DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP);
 
     public static ShaderHolder PARTICLE = new ShaderHolder(lodestonePath("particle/lodestone_particle"), DefaultVertexFormat.PARTICLE, "LumiTransparency", "DepthFade");
 
     public static ShaderHolder SCREEN_PARTICLE = new ShaderHolder(lodestonePath("screen/screen_particle"), DefaultVertexFormat.POSITION_TEX_COLOR);
-    public static ShaderHolder DISTORTED_TEXTURE = new ShaderHolder(lodestonePath("screen/distorted_texture"), DefaultVertexFormat.POSITION_TEX_COLOR , "Speed", "TimeOffset", "Intensity", "XFrequency", "YFrequency", "UVCoordinates");
+    public static ShaderHolder SCREEN_DISTORTED_TEXTURE = new ShaderHolder(lodestonePath("screen/screen_distorted_texture"), DefaultVertexFormat.POSITION_TEX_COLOR , "Speed", "TimeOffset", "Intensity", "XFrequency", "YFrequency", "UVCoordinates");
 
     public static ShaderHolder TRIANGLE_TEXTURE = new ShaderHolder(lodestonePath("shapes/triangle_texture"), DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, "LumiTransparency");
     public static ShaderHolder TWO_SIDED_TRIANGLE_TEXTURE = new ShaderHolder(lodestonePath("shapes/two_sided_triangle_texture"), DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, "LumiTransparency");
@@ -35,12 +36,14 @@ public class LodestoneShaders {
     @SubscribeEvent
     public static void shaderRegistry(RegisterShadersEvent event) {
         registerShader(event, LODESTONE_TEXTURE);
+        registerShader(event, DISTORTED_TEXTURE);
+
         registerShader(event, LODESTONE_TEXT);
 
         registerShader(event, PARTICLE);
 
         registerShader(event, SCREEN_PARTICLE);
-        registerShader(event, DISTORTED_TEXTURE);
+        registerShader(event, SCREEN_DISTORTED_TEXTURE);
 
         registerShader(event, TRIANGLE_TEXTURE);
         registerShader(event, TWO_SIDED_TRIANGLE_TEXTURE);
