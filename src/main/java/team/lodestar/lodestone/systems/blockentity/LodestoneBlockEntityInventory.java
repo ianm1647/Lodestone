@@ -166,8 +166,8 @@ public class LodestoneBlockEntityInventory extends ItemStackHandler {
         for (int i = 0; i < slotCount; i++) {
             if (!getStackInSlot(i).isEmpty()) {
                 level.addFreshEntity(new ItemEntity(level, pos.x(), pos.y(), pos.z(), getStackInSlot(i)));
+                setStackInSlot(i, ItemStack.EMPTY);
             }
-            setStackInSlot(i, ItemStack.EMPTY);
         }
     }
 
