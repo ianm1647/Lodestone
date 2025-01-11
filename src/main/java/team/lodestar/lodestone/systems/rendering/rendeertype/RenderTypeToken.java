@@ -24,18 +24,10 @@ public class RenderTypeToken implements Supplier<RenderStateShard.EmptyTextureSt
     }
 
     public static RenderTypeToken createToken(ResourceLocation texture) {
-        return new RenderTypeToken(texture);
-    }
-
-    public static RenderTypeToken createToken(RenderStateShard.EmptyTextureStateShard texture) {
-        return new RenderTypeToken(texture);
-    }
-
-    public static RenderTypeToken createCachedToken(ResourceLocation texture) {
         return CACHED_TEXTURE_TOKENS.computeIfAbsent(texture, RenderTypeToken::new);
     }
 
-    public static RenderTypeToken createCachedToken(RenderStateShard.EmptyTextureStateShard texture) {
+    public static RenderTypeToken createToken(RenderStateShard.EmptyTextureStateShard texture) {
         return CACHED_STATE_TOKENS.computeIfAbsent(texture, RenderTypeToken::new);
     }
 
