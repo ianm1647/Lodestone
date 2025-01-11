@@ -4,33 +4,31 @@ plugins {
     id("net.neoforged.moddev") version "2.0.30-beta"
 }
 
-tasks.named<Wrapper>("wrapper") {
-    distributionType = Wrapper.DistributionType.BIN
-}
-group = "${property("mod_group_id")}"
-
 version = "${property("minecraft_version")}-${property("mod_version")}"
 if (System.getenv("BUILD_NUMBER") != null) {
     version = "$version.${System.getenv("BUILD_NUMBER")}"
 }
-
-repositories {
-    mavenLocal()
-}
-
+val baseArchivesName = project.property("mod_id").toString()
 base {
-    archivesName.set("${property("mod_id")}")
+    archivesName.set(project.property("mod_id").toString())
 }
+group = "${property("mod_group_id")}"
 
-// Mojang ships Java 21 to end users starting in 1.20.5, so mods should target Java 21.
 java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(21))
     }
 }
-tasks.javadoc {
-    enabled = false
+
+tasks.named<Wrapper>("wrapper") {
+    distributionType = Wrapper.DistributionType.BIN
 }
+
+val localRuntime: Configuration by configurations.creating
+configurations.runtimeClasspath {
+    extendsFrom(localRuntime)
+}
+
 neoForge {
     version.set(project.property("neo_version").toString())
 
@@ -95,6 +93,7 @@ sourceSets {
 }
 
 repositories {
+    mavenLocal()
     mavenCentral()
     maven {
         name = "OctoStudios"
@@ -119,13 +118,17 @@ repositories {
             includeGroup("curse.maven")
         }
     }
+    maven {
+        name = "Curios maven"
+        url = uri("https://maven.theillusivec4.top/")
+    }
 }
 
 dependencies {
-    compileOnly("top.theillusivec4.curios:curios-neoforge:${property("curios_version")}:api")
-    runtimeOnly("top.theillusivec4.curios:curios-neoforge:${property("curios_version")}")
+    compileOnlyApi("top.theillusivec4.curios:curios-neoforge:${property("curios_version")}:api")
+    localRuntime("top.theillusivec4.curios:curios-neoforge:${property("curios_version")}")
 
-//    runtimeOnly(("com.sammy.malum:malum:${property("minecraft_version")}-1.7.0.134"))
+//    runtimeOnly(("com.sammy.malum:malum:${property("minecraft_version")}-1.7.0.144"))
 }
 val generateModMetadata by tasks.registering(ProcessResources::class) {
     val replaceProperties = mapOf(
@@ -162,26 +165,6 @@ java {
     withJavadocJar()
     withSourcesJar()
 }
-/*
-tasks.withType<Jar> {
-    val now = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(Date())
-    manifest {
-        attributes(mapOf(
-                "Specification-Title" to "${property("mod_name")}",
-                "Specification-Vendor" to "${property("mod_authors")}",
-                "Specification-Version" to '1',
-                "Implementation-Title" to "${property("mod_name")}",
-                "Implementation-Version" to "${property("version")}",
-                "Implementation-Vendor" to "${property("mod_authors")}",
-                "Implementation-Timestamp" to now,
-        ))
-    }
-    finalizedBy("reobfJar")
-    finalizedBy("reobfJarJar")
-}
-
- */
-
 publishing {
     publications {
         register<MavenPublication>("mavenJava") {

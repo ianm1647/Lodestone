@@ -10,7 +10,6 @@
         "common.LivingEntityMixin"
     ],
     "client": [
-        "accessor.GlStateManagerAccessor",
         "client.AbstractContainerScreenMixin",
         "client.CreativeModeInventoryScreenMixin",
         "client.EffectInstanceMixin",

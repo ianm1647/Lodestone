@@ -46,5 +46,7 @@ public class LodestoneItemTagDatagen extends LodestoneItemTagsProvider {
         tag(INGOTS_ZINC);
         tag(NUGGETS_TIN);
         tag(INGOTS_TIN);
+        tag(NUGGETS_COBALT);
+        tag(INGOTS_COBALT);
     }
 }
