@@ -28,7 +28,7 @@ public class WorldEventType {
     /**
      * Creates a new world event type.
      * <p>By default, the event will not be client-synced.</p>
-     * See {@link #WorldEventType(ResourceLocation, EventInstanceSupplier, boolean)} for more information.</p>
+     * <p>See {@link #WorldEventType(ResourceLocation, EventInstanceSupplier, boolean)} for more information.</p>
      * @param id The id of the event type
      * @param supplier The supplier for the event instance
      */
