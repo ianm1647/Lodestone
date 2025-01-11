@@ -4,36 +4,31 @@ plugins {
     id("net.neoforged.moddev") version "2.0.30-beta"
 }
 
-tasks.named<Wrapper>("wrapper") {
-    distributionType = Wrapper.DistributionType.BIN
-}
-group = "${property("mod_group_id")}"
-
 version = "${property("minecraft_version")}-${property("mod_version")}"
 if (System.getenv("BUILD_NUMBER") != null) {
     version = "$version.${System.getenv("BUILD_NUMBER")}"
 }
-
-repositories {
-    mavenLocal()
-}
-val localRuntime: Configuration by configurations.creating
-configurations.runtimeClasspath {
-    extendsFrom(localRuntime)
-}
-
+val baseArchivesName = project.property("mod_id").toString()
 base {
-    archivesName.set("${property("mod_id")}")
+    archivesName.set(project.property("mod_id").toString())
 }
+group = "${property("mod_group_id")}"
 
 java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(21))
     }
 }
-tasks.javadoc {
-    enabled = false
+
+tasks.named<Wrapper>("wrapper") {
+    distributionType = Wrapper.DistributionType.BIN
 }
+
+val localRuntime: Configuration by configurations.creating
+configurations.runtimeClasspath {
+    extendsFrom(localRuntime)
+}
+
 neoForge {
     version.set(project.property("neo_version").toString())
 
@@ -98,6 +93,7 @@ sourceSets {
 }
 
 repositories {
+    mavenLocal()
     mavenCentral()
     maven {
         name = "OctoStudios"
