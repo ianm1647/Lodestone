@@ -26,6 +26,8 @@ public class LodestoneItemTags {
     public static final TagKey<Item> INGOTS_ZINC = forgeTag("ingots/zinc");
     public static final TagKey<Item> NUGGETS_TIN = forgeTag("nuggets/tin");
     public static final TagKey<Item> INGOTS_TIN = forgeTag("ingots/tin");
+    public static final TagKey<Item> NUGGETS_COBALT = forgeTag("nuggets/cobalt");
+    public static final TagKey<Item> INGOTS_COBALT = forgeTag("ingots/cobalt");
 
     public static TagKey<Item> modTag(String path) {
         return TagKey.create(Registries.ITEM, ResourceLocation.parse(path));
