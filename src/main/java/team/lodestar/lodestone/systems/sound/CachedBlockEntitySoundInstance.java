@@ -31,16 +31,21 @@ public class CachedBlockEntitySoundInstance<T extends LodestoneBlockEntity> exte
 
     public static void playSound(LodestoneBlockEntity blockEntity, CachedBlockEntitySoundInstance<?> sound) {
         var blockPos = blockEntity.getBlockPos();
+        boolean success = false;
         if (ACTIVE_SOUNDS.containsKey(blockPos)) {
             var existingSound = ACTIVE_SOUNDS.get(blockPos);
             if (!existingSound.location.equals(sound.location)) {
                 existingSound.stop();
                 ACTIVE_SOUNDS.put(blockPos, sound);
+                success = true;
             }
         }
         else {
             ACTIVE_SOUNDS.put(blockPos, sound);
+            success = true;
         }
-        Minecraft.getInstance().getSoundManager().queueTickingSound(sound);
+        if (success) {
+            Minecraft.getInstance().getSoundManager().queueTickingSound(sound);
+        }
     }
 }
