@@ -3,6 +3,7 @@ package team.lodestar.lodestone.mixin.client;
 import com.google.common.collect.Maps;
 import com.google.gson.JsonElement;
 import com.llamalad7.mixinextras.sugar.Local;
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.renderer.EffectInstance;
 import org.lwjgl.opengl.GL11;
@@ -11,7 +12,6 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import team.lodestar.lodestone.LodestoneLib;
-import team.lodestar.lodestone.mixin.accessor.GlStateManagerAccessor;
 import team.lodestar.lodestone.systems.rendering.shader.SamplerType;
 
 import java.util.List;
@@ -27,9 +27,10 @@ public abstract class EffectInstanceMixin {
     private boolean samplerDimension(List<String> samplerNames, Object s, @Local JsonElement json) {
         String name = s.toString();
         if (json.getAsJsonObject().has("type")) {
-            SamplerType type = SamplerType.fromString(json.getAsJsonObject().get("type").getAsString());
+            String type1 = json.getAsJsonObject().get("type").getAsString();
+            SamplerType type = SamplerType.fromString(type1);
             if (type == null) {
-                LodestoneLib.LOGGER.warn("Unknown sampler type: " + json.getAsJsonObject().get("type").getAsString());
+                LodestoneLib.LOGGER.warn("Unknown sampler type: " + type1);
             } else {
                 samplerTypeMap.put(name, type);
             }
@@ -48,8 +49,8 @@ public abstract class EffectInstanceMixin {
     }
 
     private void bindTexture(int samplerType, int texture) {
-        if (texture != GlStateManagerAccessor.getTextureStates()[GlStateManagerAccessor.getActiveTexture()].binding) {
-            GlStateManagerAccessor.getTextureStates()[GlStateManagerAccessor.getActiveTexture()].binding = texture;
+        if (texture != GlStateManager.TEXTURES[GlStateManager.activeTexture].binding) {
+            GlStateManager.TEXTURES[GlStateManager.activeTexture].binding = texture;
             GL11.glBindTexture(samplerType, texture);
         }
     }
