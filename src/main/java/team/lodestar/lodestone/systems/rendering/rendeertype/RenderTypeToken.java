@@ -31,6 +31,16 @@ public class RenderTypeToken implements Supplier<RenderStateShard.EmptyTextureSt
         return CACHED_STATE_TOKENS.computeIfAbsent(texture, RenderTypeToken::new);
     }
 
+    @Deprecated(forRemoval = true)
+    public static RenderTypeToken createCachedToken(ResourceLocation texture) {
+        return createToken(texture);
+    }
+
+    @Deprecated(forRemoval = true)
+    public static RenderTypeToken createCachedToken(RenderStateShard.EmptyTextureStateShard texture) {
+        return createToken(texture);
+    }
+
     @Override
     public RenderStateShard.EmptyTextureStateShard get() {
         return texture;
