@@ -74,6 +74,10 @@ public class LodestoneBlockEntityInventory extends ItemStackHandler {
         return slotCount - emptySlots;
     }
 
+    public boolean hasEmptySlots() {
+        return getFilledSlotCount() != slotCount;
+    }
+
     public int getFirstEmptyItemIndex() {
         return firstEmptyItemIndex;
     }
@@ -174,17 +178,21 @@ public class LodestoneBlockEntityInventory extends ItemStackHandler {
             if (!nonEmptyItemStacks.isEmpty()) {
                 var takeOutStack = nonEmptyItemStacks.getLast();
                 if (takeOutStack.is(heldStack.getItem())) {
+                    //If an item already exists in the storage, always take it from the player if they're holding it
                     return takeItemFromPlayer(player, heldStack);
                 }
             }
-            var extractedStack = extractItem(level, heldStack, player);
-            if (!extractedStack.isEmpty()) {
-                takeItemFromPlayer(player, heldStack);
+            if (heldStack.isEmpty() || !hasEmptySlots()) {
+                //If the player isn't holding anything, or all the slots in the inventory are filled, give the item a player
+                var extractedStack = extractItem(level, heldStack, player);
+                if (!heldStack.isEmpty() && !extractedStack.isEmpty()) {
+                    //if the player is holding something, and we did give the player an item, try to place the player's held item into the storage
+                    takeItemFromPlayer(player, heldStack);
+                }
+                return extractedStack;
             }
-            return extractedStack;
-        } else {
-            return takeItemFromPlayer(player, heldStack);
         }
+        return takeItemFromPlayer(player, heldStack);
     }
 
     public ItemStack extractItem(ServerLevel level, ItemStack heldStack, Player player) {
