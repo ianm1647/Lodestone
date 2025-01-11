@@ -48,10 +48,8 @@ public class LodestoneRenderType extends RenderType {
 
     @Override
     public void draw(MeshData meshData) {
-        if (state.writeMaskState.writeDepth) {
-            RenderSystem.depthMask(true);
-        }
-
+        //I think there's a better way to do this, but this makes sure our depth writing is correct
+        RenderSystem.depthMask(state.writeMaskState.writeDepth);
         this.setupRenderState();
         BufferUploader.drawWithShader(meshData);
         this.clearRenderState();
