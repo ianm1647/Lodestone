@@ -7,11 +7,12 @@ import team.lodestar.lodestone.systems.blockentity.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.WeakHashMap;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public class CachedBlockEntitySoundInstance<T extends LodestoneBlockEntity> extends LodestoneBlockEntitySoundInstance<T> {
-    private static final Map<BlockPos, CachedBlockEntitySoundInstance<?>> ACTIVE_SOUNDS = new HashMap<>();
+    private static final Map<BlockPos, CachedBlockEntitySoundInstance<?>> ACTIVE_SOUNDS = new WeakHashMap<>();
 
     public CachedBlockEntitySoundInstance(T blockEntity, Supplier<SoundEvent> soundEvent, float volume, float pitch) {
         super(blockEntity, soundEvent.get(), volume, pitch);
