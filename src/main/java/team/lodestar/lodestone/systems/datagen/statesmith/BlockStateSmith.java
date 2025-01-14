@@ -45,9 +45,9 @@ public class BlockStateSmith<T extends Block> extends AbstractBlockStateSmith<T>
         Block block = registryObject.get();
         if (blockClass.isInstance(block)) {
             stateSupplier.act(blockClass.cast(block), data.provider);
-            itemModelSmith.act(block::asItem, data.provider.itemModelProvider);
+            itemModelSmith.act(data.provider.itemModelProvider, block::asItem);
         } else {
-            LodestoneLib.LOGGER.warn("Block does not match the state smith it was assigned: " + registryObject.get().toString());
+            LodestoneLib.LOGGER.warn("Block does not match the state smith it was assigned: {}", registryObject.get().toString());
         }
     }
 
