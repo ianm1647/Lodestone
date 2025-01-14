@@ -14,12 +14,20 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+/**
+ * A class responsible for generating item models when used with an ItemModelProvider
+ */
 public class ItemModelSmith extends AbstractItemModelSmith {
 
     public final ItemModelSupplier modelSupplier;
+    public final ItemModelModifier<ItemModelBuilder> modifier;
 
     public ItemModelSmith(ItemModelSupplier modelSupplier) {
+        this(modelSupplier, null);
+    }
+    public ItemModelSmith(ItemModelSupplier modelSupplier, ItemModelModifier<ItemModelBuilder> modifier) {
         this.modelSupplier = modelSupplier;
+        this.modifier = modifier;
     }
 
     @SafeVarargs
@@ -34,10 +42,15 @@ public class ItemModelSmith extends AbstractItemModelSmith {
     private ItemModelBuilder act(ItemModelSmithData data, Supplier<? extends Item> registryObject) {
         return act(data.provider, registryObject);
     }
-
+ 
     public ItemModelBuilder act(LodestoneItemModelProvider provider, Supplier<? extends Item> registryObject) {
         Item item = registryObject.get();
-        return modelSupplier.act(item, provider);
+        ItemModelBuilder model = modelSupplier.act(item, provider);
+        if (modifier != null) {
+            modifier.act(model, item, provider);
+            return model;
+        }
+        return model;
     }
 
     @SafeVarargs
@@ -64,17 +77,15 @@ public class ItemModelSmith extends AbstractItemModelSmith {
         ItemModelBuilder act(Item item, LodestoneItemModelProvider provider);
     }
 
-
     public interface ItemModelModifier<T extends ModelBuilder<T>> {
+        void act(T builder, Item item, LodestoneItemModelProvider provider);
+
+    }
+    public interface ItemModelModifierTemplate<T extends ModelBuilder<T>, K extends CustomLoaderBuilder<T>> {
         ItemModelModifierTemplate<ItemModelBuilder, ItemLayerModelBuilder<ItemModelBuilder>> FACE_DATA = (c) -> (b, i, p) -> {
             var faceBuilder = ItemLayerModelBuilder.begin(b, p.existingFileHelper);
             c.accept(faceBuilder);
         };
-        void act(T builder, Item item, LodestoneItemModelProvider provider);
-
-    }
-
-    public interface ItemModelModifierTemplate<T extends ModelBuilder<T>, K extends CustomLoaderBuilder<T>> {
         ItemModelModifierTemplate<ItemModelBuilder, SeparateTransformsModelBuilder<ItemModelBuilder>> SEPARATE_TRANSFORMS = (c) -> (b, i, p) -> {
             var faceBuilder = SeparateTransformsModelBuilder.begin(b, p.existingFileHelper);
             c.accept(faceBuilder);

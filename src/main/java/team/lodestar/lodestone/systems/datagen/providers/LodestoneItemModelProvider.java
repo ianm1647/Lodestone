@@ -10,12 +10,6 @@ import net.minecraft.world.item.Items;
 import net.neoforged.neoforge.client.model.generators.ItemModelBuilder;
 import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
-import team.lodestar.lodestone.systems.datagen.ItemModelSmithTypes;
-
-import java.util.concurrent.CompletableFuture;
-
-import static team.lodestar.lodestone.systems.datagen.itemsmith.ItemModelSmith.ItemModelModifier.FACE_DATA;
-import static team.lodestar.lodestone.systems.datagen.itemsmith.ItemModelSmith.ItemModelModifierTemplate.SEPARATE_TRANSFORMS;
 
 public abstract class LodestoneItemModelProvider extends ItemModelProvider {
 
