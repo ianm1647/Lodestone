@@ -23,7 +23,7 @@ public class ModularBlockStateSmith<T extends Block> extends AbstractBlockStateS
 
     @SafeVarargs
     public final void act(StateSmithData data, StateFunction<T> actor, ModelFileSupplier modelFileSupplier, Supplier<? extends Block>... blocks) {
-        act(data, ItemModelSmithTypes.BLOCK_MODEL_ITEM, actor, modelFileSupplier, blocks);
+        act(data, ItemModelSmithTypes.NO_MODEL, actor, modelFileSupplier, blocks);
     }
 
     @SafeVarargs
@@ -35,7 +35,7 @@ public class ModularBlockStateSmith<T extends Block> extends AbstractBlockStateS
     }
 
     public void act(StateSmithData data, StateFunction<T> actor, ModelFileSupplier modelFileSupplier, Collection<Supplier<? extends Block>> blocks) {
-        act(data, ItemModelSmithTypes.BLOCK_MODEL_ITEM, actor, modelFileSupplier, blocks);
+        act(data, ItemModelSmithTypes.NO_MODEL, actor, modelFileSupplier, blocks);
     }
 
     public void act(StateSmithData data, ItemModelSmith itemModelSmith, StateFunction<T> actor, ModelFileSupplier modelFileSupplier, Collection<Supplier<? extends Block>> blocks) {
