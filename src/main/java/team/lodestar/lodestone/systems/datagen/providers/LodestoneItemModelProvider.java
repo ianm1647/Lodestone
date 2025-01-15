@@ -11,12 +11,25 @@ import net.neoforged.neoforge.client.model.generators.ItemModelBuilder;
 import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
+import java.util.function.Consumer;
+import java.util.function.Function;
+
 public abstract class LodestoneItemModelProvider extends ItemModelProvider {
 
     private String texturePath = "";
+    private Function<String, String> modelPathModifier;
 
     public LodestoneItemModelProvider(PackOutput output, String modid, ExistingFileHelper existingFileHelper) {
         super(output, modid, existingFileHelper);
+    }
+
+    @Override
+    public ItemModelBuilder getBuilder(String path) {
+        if (modelPathModifier != null) {
+            path = modelPathModifier.apply(path);
+            modelPathModifier = null;
+        }
+        return super.getBuilder(path);
     }
 
     public void setTexturePath(String texturePath) {
