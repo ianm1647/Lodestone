@@ -6,7 +6,6 @@
     "mixins": [
         "common.BlockItemMixin",
         "common.EntityMixin",
-        "common.ItemStackMixin",
         "common.LivingEntityMixin"
     ],
     "client": [
