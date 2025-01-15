@@ -12,8 +12,6 @@ import team.lodestar.lodestone.systems.datagen.providers.LodestoneItemModelProvi
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
@@ -46,18 +44,9 @@ public class ItemModelSmith {
         return items.stream().peek(data.consumer).map(s -> act(data, s)).toList();
     }
 
-    public final ItemModelBuilder act(ItemModelSmithData data, Supplier<? extends Item> registryObject) {
+    public ItemModelBuilder act(ItemModelSmithData data, Supplier<? extends Item> registryObject) {
+        data.consumer.accept(registryObject);
         return act(data.provider, registryObject);
-    }
-
-    public ItemModelBuilder act(LodestoneItemModelProvider provider, Supplier<? extends Item> registryObject) {
-        Item item = registryObject.get();
-        ItemModelBuilder model = modelSupplier.act(item, provider);
-        if (modifier != null) {
-            modifier.act(model, item, provider);
-            return model;
-        }
-        return model;
     }
 
     @SafeVarargs
@@ -66,17 +55,23 @@ public class ItemModelSmith {
     }
 
     public final List<ItemModelBuilder> act(ItemModelSmithData data, ItemModelModifier<ItemModelBuilder> modifier, Collection<Supplier<? extends Item>> items) {
-        return items.stream().peek(data.consumer).map(s -> act(data, modifier, s)).toList();
+        return items.stream().map(s -> act(data, s, modifier)).toList();
     }
 
-    public final ItemModelBuilder act(ItemModelSmithData data, ItemModelModifier<ItemModelBuilder> modifier, Supplier<? extends Item> registryObject) {
-        return act(data.provider, registryObject, modifier);
+    public ItemModelBuilder act(ItemModelSmithData data, Supplier<? extends Item> registryObject, ItemModelModifier<ItemModelBuilder> modifier) {
+        Item item = registryObject.get();
+        data.consumer.accept(registryObject);
+        ItemModelBuilder model = act(data.provider, registryObject);
+        modifier.act(model, item, data.provider);
+        return model;
     }
 
-    public ItemModelBuilder act(LodestoneItemModelProvider provider, Supplier<? extends Item> registryObject, ItemModelModifier<ItemModelBuilder> modifier) {
+    public ItemModelBuilder act(LodestoneItemModelProvider provider, Supplier<? extends Item> registryObject) {
         Item item = registryObject.get();
         ItemModelBuilder model = modelSupplier.act(item, provider);
-        modifier.act(model, item, provider);
+        if (modifier != null) {
+            modifier.act(model, item, provider);
+        }
         return model;
     }
 
@@ -101,6 +96,6 @@ public class ItemModelSmith {
             c.accept(faceBuilder, i, p);
         };
 
-        ItemModelModifier<T> apply(TriConsumer<K, Item, LodestoneItemModelProvider> behavior);
+        ItemModelModifier<T> apply(TriConsumer<K, Item, LodestoneItemModelProvider> data);
     }
 }
