@@ -41,7 +41,7 @@ public class ItemModelSmith {
     }
 
     public final List<ItemModelBuilder> act(ItemModelSmithData data, Collection<Supplier<? extends Item>> items) {
-        return items.stream().peek(data.consumer).map(s -> act(data, s)).toList();
+        return items.stream().map(s -> act(data, s)).toList();
     }
 
     public ItemModelBuilder act(ItemModelSmithData data, Supplier<? extends Item> registryObject) {
