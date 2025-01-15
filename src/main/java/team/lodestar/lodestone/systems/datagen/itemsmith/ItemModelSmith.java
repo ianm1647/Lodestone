@@ -11,6 +11,7 @@ import team.lodestar.lodestone.systems.datagen.providers.LodestoneItemModelProvi
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -19,20 +20,20 @@ import java.util.function.Supplier;
  */
 public class ItemModelSmith extends AbstractItemModelSmith {
 
-    public final ItemModelSupplier modelSupplier;
-    public final ItemModelModifier<ItemModelBuilder> modifier;
+    private final ItemModelSupplier modelSupplier;
+    private final ItemModelModifier<ItemModelBuilder> modifier;
 
     public ItemModelSmith(ItemModelSupplier modelSupplier) {
         this(modelSupplier, null);
     }
 
+    public ItemModelSmith(ItemModelSmith modelSmith, ItemModelModifier<ItemModelBuilder> modifier) {
+        this(modelSmith.modelSupplier, modifier);
+    }
+
     public ItemModelSmith(ItemModelSupplier modelSupplier, ItemModelModifier<ItemModelBuilder> modifier) {
         this.modelSupplier = modelSupplier;
         this.modifier = modifier;
-    }
-
-    public ItemModelSmith(ItemModelSmith modelSmith, ItemModelModifier<ItemModelBuilder> modifier) {
-        this(modelSmith.modelSupplier, modifier);
     }
 
     @SafeVarargs
@@ -89,13 +90,13 @@ public class ItemModelSmith extends AbstractItemModelSmith {
     public interface ItemModelModifierTemplate<T extends ModelBuilder<T>, K extends CustomLoaderBuilder<T>> {
         ItemModelModifierTemplate<ItemModelBuilder, ItemLayerModelBuilder<ItemModelBuilder>> FACE_DATA = (c) -> (b, i, p) -> {
             var faceBuilder = ItemLayerModelBuilder.begin(b, p.existingFileHelper);
-            c.accept(faceBuilder);
+            c.accept(faceBuilder, p);
         };
         ItemModelModifierTemplate<ItemModelBuilder, SeparateTransformsModelBuilder<ItemModelBuilder>> SEPARATE_TRANSFORMS = (c) -> (b, i, p) -> {
             var faceBuilder = SeparateTransformsModelBuilder.begin(b, p.existingFileHelper);
-            c.accept(faceBuilder);
+            c.accept(faceBuilder, p);
         };
 
-        ItemModelModifier<T> apply(Consumer<K> behavior);
+        ItemModelModifier<T> apply(BiConsumer<K, LodestoneItemModelProvider> behavior);
     }
 }
