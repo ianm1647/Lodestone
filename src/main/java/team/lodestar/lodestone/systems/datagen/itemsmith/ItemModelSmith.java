@@ -25,9 +25,14 @@ public class ItemModelSmith extends AbstractItemModelSmith {
     public ItemModelSmith(ItemModelSupplier modelSupplier) {
         this(modelSupplier, null);
     }
+
     public ItemModelSmith(ItemModelSupplier modelSupplier, ItemModelModifier<ItemModelBuilder> modifier) {
         this.modelSupplier = modelSupplier;
         this.modifier = modifier;
+    }
+
+    public ItemModelSmith(ItemModelSmith modelSmith, ItemModelModifier<ItemModelBuilder> modifier) {
+        this(modelSmith.modelSupplier, modifier);
     }
 
     @SafeVarargs
@@ -42,7 +47,7 @@ public class ItemModelSmith extends AbstractItemModelSmith {
     private ItemModelBuilder act(ItemModelSmithData data, Supplier<? extends Item> registryObject) {
         return act(data.provider, registryObject);
     }
- 
+
     public ItemModelBuilder act(LodestoneItemModelProvider provider, Supplier<? extends Item> registryObject) {
         Item item = registryObject.get();
         ItemModelBuilder model = modelSupplier.act(item, provider);
