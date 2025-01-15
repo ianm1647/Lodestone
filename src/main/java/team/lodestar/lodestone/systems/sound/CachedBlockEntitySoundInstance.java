@@ -7,11 +7,12 @@ import team.lodestar.lodestone.systems.blockentity.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.WeakHashMap;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public class CachedBlockEntitySoundInstance<T extends LodestoneBlockEntity> extends LodestoneBlockEntitySoundInstance<T> {
-    private static final Map<BlockPos, CachedBlockEntitySoundInstance<?>> ACTIVE_SOUNDS = new HashMap<>();
+    private static final Map<BlockPos, CachedBlockEntitySoundInstance<?>> ACTIVE_SOUNDS = new WeakHashMap<>();
 
     public CachedBlockEntitySoundInstance(T blockEntity, Supplier<SoundEvent> soundEvent, float volume, float pitch) {
         super(blockEntity, soundEvent.get(), volume, pitch);
@@ -31,16 +32,21 @@ public class CachedBlockEntitySoundInstance<T extends LodestoneBlockEntity> exte
 
     public static void playSound(LodestoneBlockEntity blockEntity, CachedBlockEntitySoundInstance<?> sound) {
         var blockPos = blockEntity.getBlockPos();
+        boolean success = false;
         if (ACTIVE_SOUNDS.containsKey(blockPos)) {
             var existingSound = ACTIVE_SOUNDS.get(blockPos);
             if (!existingSound.location.equals(sound.location)) {
                 existingSound.stop();
                 ACTIVE_SOUNDS.put(blockPos, sound);
+                success = true;
             }
         }
         else {
             ACTIVE_SOUNDS.put(blockPos, sound);
+            success = true;
         }
-        Minecraft.getInstance().getSoundManager().queueTickingSound(sound);
+        if (success) {
+            Minecraft.getInstance().getSoundManager().queueTickingSound(sound);
+        }
     }
 }

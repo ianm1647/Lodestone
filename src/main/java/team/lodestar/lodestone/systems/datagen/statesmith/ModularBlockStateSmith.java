@@ -47,9 +47,9 @@ public class ModularBlockStateSmith<T extends Block> extends AbstractBlockStateS
         Block block = registryObject.get();
         if (blockClass.isInstance(block)) {
             stateSupplier.act(blockClass.cast(block), data.provider, actor, modelFileSupplier);
-            itemModelSmith.act(block::asItem, data.provider.itemModelProvider);
+            itemModelSmith.act(data.provider.itemModelProvider, block::asItem);
         } else {
-            LodestoneLib.LOGGER.warn("Block does not match the state smith it was assigned: " + registryObject.get().toString());
+            LodestoneLib.LOGGER.warn("Block does not match the state smith it was assigned: {}", registryObject.get().toString());
         }
     }
 

@@ -49,8 +49,9 @@ public abstract class EffectInstanceMixin {
     }
 
     private void bindTexture(int samplerType, int texture) {
-        if (texture != GlStateManager.TEXTURES[GlStateManager.activeTexture].binding) {
-            GlStateManager.TEXTURES[GlStateManager.activeTexture].binding = texture;
+        GlStateManager.TextureState activeTexture = GlStateManager.TEXTURES[GlStateManager.activeTexture];
+        if (texture != activeTexture.binding) {
+            activeTexture.binding = texture;
             GL11.glBindTexture(samplerType, texture);
         }
     }
