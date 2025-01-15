@@ -2,7 +2,6 @@ package team.lodestar.lodestone.systems.datagen;
 
 import net.minecraft.Util;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.PackType;
 import net.neoforged.neoforge.client.model.generators.ModelFile;
 import team.lodestar.lodestone.systems.datagen.itemsmith.EmptyItemModelSmith;
 import team.lodestar.lodestone.systems.datagen.itemsmith.ItemModelSmith;
@@ -15,7 +14,7 @@ public class ItemModelSmithTypes {
     public static final ResourceLocation GENERATED = ResourceLocation.parse("item/generated");
     public static final ResourceLocation HANDHELD = ResourceLocation.parse("item/handheld");
 
-    public static ItemModelSmith NO_MODEL = new EmptyItemModelSmith();
+    public static ItemModelSmith NO_DATAGEN = new EmptyItemModelSmith();
 
     public static Function<ResourceLocation, ItemModelSmith> PARENTED_ITEM = Util.memoize((parent) -> new ItemModelSmith(((item, provider) -> {
         String name = provider.getItemName(item);
