@@ -6,6 +6,7 @@ import net.neoforged.neoforge.client.model.generators.ItemModelBuilder;
 import net.neoforged.neoforge.client.model.generators.ModelBuilder;
 import net.neoforged.neoforge.client.model.generators.loaders.ItemLayerModelBuilder;
 import net.neoforged.neoforge.client.model.generators.loaders.SeparateTransformsModelBuilder;
+import org.apache.logging.log4j.util.TriConsumer;
 import team.lodestar.lodestone.systems.datagen.providers.LodestoneItemModelProvider;
 
 import java.util.Arrays;
@@ -85,18 +86,21 @@ public class ItemModelSmith {
 
     public interface ItemModelModifier<T extends ModelBuilder<T>> {
         void act(T builder, Item item, LodestoneItemModelProvider provider);
-
     }
+
+    /**
+     * This thing is horribly overengineered haha
+     * */
     public interface ItemModelModifierTemplate<T extends ModelBuilder<T>, K extends CustomLoaderBuilder<T>> {
         ItemModelModifierTemplate<ItemModelBuilder, ItemLayerModelBuilder<ItemModelBuilder>> FACE_DATA = (c) -> (b, i, p) -> {
             var faceBuilder = ItemLayerModelBuilder.begin(b, p.existingFileHelper);
-            c.accept(faceBuilder, p);
+            c.accept(faceBuilder, i, p);
         };
         ItemModelModifierTemplate<ItemModelBuilder, SeparateTransformsModelBuilder<ItemModelBuilder>> SEPARATE_TRANSFORMS = (c) -> (b, i, p) -> {
             var faceBuilder = SeparateTransformsModelBuilder.begin(b, p.existingFileHelper);
-            c.accept(faceBuilder, p);
+            c.accept(faceBuilder, i, p);
         };
 
-        ItemModelModifier<T> apply(BiConsumer<K, LodestoneItemModelProvider> behavior);
+        ItemModelModifier<T> apply(TriConsumer<K, Item, LodestoneItemModelProvider> behavior);
     }
 }
