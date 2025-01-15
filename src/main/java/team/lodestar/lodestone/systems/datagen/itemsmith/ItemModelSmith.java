@@ -18,7 +18,7 @@ import java.util.function.Supplier;
 /**
  * A class responsible for generating item models when used with an ItemModelProvider
  */
-public class ItemModelSmith extends AbstractItemModelSmith {
+public class ItemModelSmith {
 
     private final ItemModelSupplier modelSupplier;
     private final ItemModelModifier<ItemModelBuilder> modifier;
@@ -41,11 +41,11 @@ public class ItemModelSmith extends AbstractItemModelSmith {
         return act(data, Arrays.stream(items).toList());
     }
 
-    public List<ItemModelBuilder> act(ItemModelSmithData data, Collection<Supplier<? extends Item>> items) {
+    public final List<ItemModelBuilder> act(ItemModelSmithData data, Collection<Supplier<? extends Item>> items) {
         return items.stream().peek(data.consumer).map(s -> act(data, s)).toList();
     }
 
-    private ItemModelBuilder act(ItemModelSmithData data, Supplier<? extends Item> registryObject) {
+    public final ItemModelBuilder act(ItemModelSmithData data, Supplier<? extends Item> registryObject) {
         return act(data.provider, registryObject);
     }
 
@@ -64,11 +64,11 @@ public class ItemModelSmith extends AbstractItemModelSmith {
         return act(data, modifier, Arrays.stream(items).toList());
     }
 
-    public List<ItemModelBuilder> act(ItemModelSmithData data, ItemModelModifier<ItemModelBuilder> modifier, Collection<Supplier<? extends Item>> items) {
+    public final List<ItemModelBuilder> act(ItemModelSmithData data, ItemModelModifier<ItemModelBuilder> modifier, Collection<Supplier<? extends Item>> items) {
         return items.stream().peek(data.consumer).map(s -> act(data, modifier, s)).toList();
     }
 
-    private ItemModelBuilder act(ItemModelSmithData data, ItemModelModifier<ItemModelBuilder> modifier, Supplier<? extends Item> registryObject) {
+    public final ItemModelBuilder act(ItemModelSmithData data, ItemModelModifier<ItemModelBuilder> modifier, Supplier<? extends Item> registryObject) {
         return act(data.provider, registryObject, modifier);
     }
 
