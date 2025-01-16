@@ -9,6 +9,7 @@ import net.neoforged.neoforge.client.model.generators.loaders.SeparateTransforms
 import org.apache.logging.log4j.util.TriConsumer;
 import team.lodestar.lodestone.systems.datagen.providers.LodestoneItemModelProvider;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -41,7 +42,12 @@ public class ItemModelSmith {
     }
 
     public final List<ItemModelBuilder> act(ItemModelSmithData data, Collection<Supplier<? extends Item>> items) {
-        return items.stream().map(s -> act(data, s)).toList();
+        var copy = new ArrayList<>(items);
+        List<ItemModelBuilder> result = new ArrayList<>();
+        for (Supplier<? extends Item> item : copy) {
+            result.add(act(data, item));
+        }
+        return result;
     }
 
     public ItemModelBuilder act(ItemModelSmithData data, Supplier<? extends Item> registryObject) {
@@ -55,7 +61,12 @@ public class ItemModelSmith {
     }
 
     public final List<ItemModelBuilder> act(ItemModelSmithData data, ItemModelModifier<ItemModelBuilder> modifier, Collection<Supplier<? extends Item>> items) {
-        return items.stream().map(s -> act(data, s, modifier)).toList();
+        var copy = new ArrayList<>(items);
+        List<ItemModelBuilder> result = new ArrayList<>();
+        for (Supplier<? extends Item> item : copy) {
+            result.add(act(data, item, modifier));
+        }
+        return result;
     }
 
     public ItemModelBuilder act(ItemModelSmithData data, Supplier<? extends Item> registryObject, ItemModelModifier<ItemModelBuilder> modifier) {
