@@ -1,6 +1,7 @@
 package team.lodestar.lodestone.systems.datagen.itemsmith;
 
 import net.minecraft.world.item.Item;
+import net.neoforged.neoforge.client.model.generators.CustomLoaderBuilder;
 import net.neoforged.neoforge.client.model.generators.ItemModelBuilder;
 import net.neoforged.neoforge.client.model.generators.loaders.ItemLayerModelBuilder;
 import net.neoforged.neoforge.client.model.generators.loaders.SeparateTransformsModelBuilder;
@@ -31,14 +32,13 @@ public class ItemModelSmithResult {
         return builder;
     }
 
-    public ItemLayerModelBuilder<ItemModelBuilder> makeItemLayerBuilder() {
-        return ItemLayerModelBuilder.begin(getBuilder(), getProvider().existingFileHelper);
+    public ItemLayerModelBuilder<ItemModelBuilder> addModelLayerData() {
+        return builder.customLoader(ItemLayerModelBuilder::begin);
     }
 
-    public SeparateTransformsModelBuilder<ItemModelBuilder> makeSeparateTransformBuilder() {
-        return SeparateTransformsModelBuilder.begin(getBuilder(), getProvider().existingFileHelper);
+    public SeparateTransformsModelBuilder<ItemModelBuilder> addSeparateTransformData() {
+        return builder.customLoader(SeparateTransformsModelBuilder::begin);
     }
-
     public ItemModelSmithResult applyModifier(Consumer<ItemModelSmithResult> modifier) {
         modifier.accept(this);
         return this;
