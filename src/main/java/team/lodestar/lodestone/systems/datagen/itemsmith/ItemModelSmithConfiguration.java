@@ -24,9 +24,17 @@ public class ItemModelSmithConfiguration extends ItemModelSmith {
         return this;
     }
 
+    public ItemModelSmithConfiguration addModelNameAffix(String affix) {
+        return modifyModelName(s -> s + affix);
+    }
+
     public ItemModelSmithConfiguration modifyModelName(Function<String, String> modelNameModifier) {
         this.modelNameModifier = modelNameModifier;
         return this;
+    }
+
+    public ItemModelSmithConfiguration addTextureNameAffix(String affix) {
+        return modifyTextureName(s -> s + affix);
     }
 
     public ItemModelSmithConfiguration modifyTextureName(Function<String, String> textureNameModifier) {
@@ -37,6 +45,7 @@ public class ItemModelSmithConfiguration extends ItemModelSmith {
     @Override
     protected void preDatagen(LodestoneItemModelProvider provider, Item item) {
         provider.setModelNameModifier(modelNameModifier);
+        provider.setTextureNameModifier(textureNameModifier);
     }
 
     @Override

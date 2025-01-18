@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -21,7 +23,27 @@ public class ItemModelSmith {
         this.modelSupplier = modelSupplier;
     }
 
-    public ItemModelSmithConfiguration configure() {
+    public ItemModelSmithConfiguration modifyResult(Consumer<ItemModelSmithResult> modifier) {
+        return configure().modifyResult(modifier);
+    }
+
+    public ItemModelSmithConfiguration addModelNameAffix(String affix) {
+        return configure().addModelNameAffix(affix);
+    }
+
+    public ItemModelSmithConfiguration modifyModelName(Function<String, String> modelNameModifier) {
+        return configure().modifyModelName(modelNameModifier);
+    }
+
+    public ItemModelSmithConfiguration addTextureNameAffix(String affix) {
+        return configure().addTextureNameAffix(affix);
+    }
+
+    public ItemModelSmithConfiguration modifyTextureName(Function<String, String> textureNameModifier) {
+        return configure().modifyTextureName(textureNameModifier);
+    }
+
+    protected ItemModelSmithConfiguration configure() {
         return new ItemModelSmithConfiguration(modelSupplier);
     }
 
