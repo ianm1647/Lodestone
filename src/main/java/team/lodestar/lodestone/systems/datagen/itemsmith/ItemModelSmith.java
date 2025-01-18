@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
@@ -16,17 +17,17 @@ import java.util.function.Supplier;
 public class ItemModelSmith {
 
     private final ItemModelSupplier modelSupplier;
-    private final ItemModelSmithResult.ItemModelModifier modifier;
+    private final Consumer<ItemModelSmithResult> modifier;
 
     public ItemModelSmith(ItemModelSupplier modelSupplier) {
         this(modelSupplier, null);
     }
 
-    public ItemModelSmith(ItemModelSmith modelSmith, ItemModelSmithResult.ItemModelModifier modifier) {
+    public ItemModelSmith(ItemModelSmith modelSmith, Consumer<ItemModelSmithResult> modifier) {
         this(modelSmith.modelSupplier, modifier);
     }
 
-    public ItemModelSmith(ItemModelSupplier modelSupplier, ItemModelSmithResult.ItemModelModifier modifier) {
+    public ItemModelSmith(ItemModelSupplier modelSupplier, Consumer<ItemModelSmithResult> modifier) {
         this.modelSupplier = modelSupplier;
         this.modifier = modifier;
     }

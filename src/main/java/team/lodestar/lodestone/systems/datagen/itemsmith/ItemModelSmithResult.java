@@ -6,6 +6,8 @@ import net.neoforged.neoforge.client.model.generators.loaders.ItemLayerModelBuil
 import net.neoforged.neoforge.client.model.generators.loaders.SeparateTransformsModelBuilder;
 import team.lodestar.lodestone.systems.datagen.providers.LodestoneItemModelProvider;
 
+import java.util.function.Consumer;
+
 public class ItemModelSmithResult {
     public final LodestoneItemModelProvider provider;
     public final Item item;
@@ -17,31 +19,16 @@ public class ItemModelSmithResult {
         this.builder = builder;
     }
 
-    public ModifiedItemModelSmithResult applyModifier(ItemModelModifier modifier) {
-        return new ModifiedItemModelSmithResult(this, modifier);
+    public ItemLayerModelBuilder<ItemModelBuilder> makeItemLayerBuilder() {
+        return ItemLayerModelBuilder.begin(builder, provider.existingFileHelper);
     }
 
-    public interface ItemModelModifier {
-        void act(ItemModelSmithResult result);
+    public SeparateTransformsModelBuilder<ItemModelBuilder> makeSeparateTransformBuilder() {
+        return SeparateTransformsModelBuilder.begin(builder, provider.existingFileHelper);
     }
 
-    public static class ModifiedItemModelSmithResult extends ItemModelSmithResult {
-
-        public ModifiedItemModelSmithResult(ItemModelSmithResult parent, ItemModelModifier modifier) {
-            super(parent.provider, parent.item, parent.builder);
-            modifier.act(this);
-        }
-
-        public ModifiedItemModelSmithResult(LodestoneItemModelProvider provider, Item item, ItemModelBuilder result) {
-            super(provider, item, result);
-        }
-
-        public ItemLayerModelBuilder<ItemModelBuilder> makeItemLayerBuilder() {
-            return ItemLayerModelBuilder.begin(builder, provider.existingFileHelper);
-        }
-
-        public SeparateTransformsModelBuilder<ItemModelBuilder> makeSeparateTransformBuilder() {
-            return SeparateTransformsModelBuilder.begin(builder, provider.existingFileHelper);
-        }
+    public ItemModelSmithResult applyModifier(Consumer<ItemModelSmithResult> modifier) {
+        modifier.accept(this);
+        return this;
     }
 }
