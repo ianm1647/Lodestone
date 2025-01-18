@@ -53,5 +53,8 @@ public class ItemModelSmithConfiguration extends ItemModelSmith {
         if (modifier != null) {
             result.applyModifier(modifier);
         }
+        var provider = result.getProvider();
+        provider.setTextureNameModifier(null);
+        provider.setModelNameModifier(null);
     }
 }
