@@ -14,6 +14,7 @@ public abstract class LodestoneItemModelProvider extends ItemModelProvider {
 
     private String texturePath = "";
     private Function<String, String> modelNameModifier;
+    private Function<String, String> textureNameModifier;
 
     public LodestoneItemModelProvider(PackOutput output, String modid, ExistingFileHelper existingFileHelper) {
         super(output, modid, existingFileHelper);
@@ -32,6 +33,10 @@ public abstract class LodestoneItemModelProvider extends ItemModelProvider {
         this.modelNameModifier = modelNameModifier;
     }
 
+    public void setTextureNameModifier(Function<String, String> textureNameModifier) {
+        this.textureNameModifier = textureNameModifier;
+    }
+
     public void setTexturePath(String texturePath) {
         this.texturePath = texturePath;
     }
@@ -45,7 +50,16 @@ public abstract class LodestoneItemModelProvider extends ItemModelProvider {
     }
 
     public ResourceLocation getItemTexture(String path) {
-        return modLoc("item/" + getTexturePath() + path);
+        String texture = path;
+        if (textureNameModifier != null) {
+            texture = textureNameModifier.apply(texture);
+            textureNameModifier = null;
+        }
+        var texturePath = "item/" + getTexturePath();
+        if (!texturePath.endsWith("/")) {
+            texturePath += "/";
+        }
+        return modLoc(texturePath + texture);
     }
 
     public ResourceLocation getBlockTexture(String path) {

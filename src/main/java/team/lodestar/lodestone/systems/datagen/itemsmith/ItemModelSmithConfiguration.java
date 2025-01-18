@@ -6,10 +6,14 @@ import team.lodestar.lodestone.systems.datagen.providers.LodestoneItemModelProvi
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+/**
+ * A configured instance of an ItemModelSmith
+ */
 public class ItemModelSmithConfiguration extends ItemModelSmith {
 
     private Consumer<ItemModelSmithResult> modifier;
     private Function<String, String> modelNameModifier;
+    private Function<String, String> textureNameModifier;
 
     public ItemModelSmithConfiguration(ItemModelSupplier modelSupplier) {
         super(modelSupplier);
@@ -22,6 +26,11 @@ public class ItemModelSmithConfiguration extends ItemModelSmith {
 
     public ItemModelSmithConfiguration modifyModelName(Function<String, String> modelNameModifier) {
         this.modelNameModifier = modelNameModifier;
+        return this;
+    }
+
+    public ItemModelSmithConfiguration modifyTextureName(Function<String, String> textureNameModifier) {
+        this.textureNameModifier = textureNameModifier;
         return this;
     }
 
