@@ -12,17 +12,12 @@ public class EmptyItemModelSmith extends ItemModelSmith{
     }
 
     @Override
-    public ItemModelBuilder act(ItemModelSmithData data, Supplier<? extends Item> registryObject, ItemModelModifier<ItemModelBuilder> modifier) {
+    public ItemModelSmithResult act(ItemModelSmithData data, Supplier<? extends Item> registryObject) {
         return null;
     }
 
     @Override
-    public ItemModelBuilder act(LodestoneItemModelProvider provider, Supplier<? extends Item> registryObject) {
-        return null;
-    }
-
-    @Override
-    public ItemModelBuilder act(ItemModelSmithData data, Supplier<? extends Item> registryObject) {
+    public ItemModelSmithResult act(LodestoneItemModelProvider provider, Supplier<? extends Item> registryObject) {
         return null;
     }
 }
