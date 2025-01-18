@@ -1,8 +1,8 @@
 package team.lodestar.lodestone.systems.datagen.itemsmith;
 
 import net.minecraft.world.item.Item;
-import net.neoforged.neoforge.client.model.generators.CustomLoaderBuilder;
 import net.neoforged.neoforge.client.model.generators.ItemModelBuilder;
+import net.neoforged.neoforge.client.model.generators.ModelFile;
 import net.neoforged.neoforge.client.model.generators.loaders.ItemLayerModelBuilder;
 import net.neoforged.neoforge.client.model.generators.loaders.SeparateTransformsModelBuilder;
 import team.lodestar.lodestone.systems.datagen.providers.LodestoneItemModelProvider;
@@ -30,6 +30,10 @@ public class ItemModelSmithResult {
 
     public ItemModelBuilder getBuilder() {
         return builder;
+    }
+
+    public ModelFile.ExistingModelFile childOf() {
+        return provider.getExistingFile(builder.getLocation());
     }
 
     public ItemLayerModelBuilder<ItemModelBuilder> addModelLayerData() {
