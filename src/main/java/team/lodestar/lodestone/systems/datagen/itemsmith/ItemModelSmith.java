@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
@@ -17,19 +16,13 @@ import java.util.function.Supplier;
 public class ItemModelSmith {
 
     private final ItemModelSupplier modelSupplier;
-    private final Consumer<ItemModelSmithResult> modifier;
 
     public ItemModelSmith(ItemModelSupplier modelSupplier) {
-        this(modelSupplier, null);
-    }
-
-    public ItemModelSmith(ItemModelSmith modelSmith, Consumer<ItemModelSmithResult> modifier) {
-        this(modelSmith.modelSupplier, modifier);
-    }
-
-    public ItemModelSmith(ItemModelSupplier modelSupplier, Consumer<ItemModelSmithResult> modifier) {
         this.modelSupplier = modelSupplier;
-        this.modifier = modifier;
+    }
+
+    public ItemModelSmithConfiguration configure() {
+        return new ItemModelSmithConfiguration(modelSupplier);
     }
 
     @SafeVarargs
@@ -46,23 +39,29 @@ public class ItemModelSmith {
         return result;
     }
 
-    public ItemModelSmithResult act(ItemModelSmithData data, Supplier<? extends Item> registryObject) {
-        data.consumer.accept(registryObject);
-        return act(data.provider, registryObject);
+    public ItemModelSmithResult act(ItemModelSmithData data, Supplier<? extends Item> itemSupplier) {
+        data.consumer.accept(itemSupplier);
+        return act(data.provider, itemSupplier);
     }
 
-    public ItemModelSmithResult act(LodestoneItemModelProvider provider, Supplier<? extends Item> registryObject) {
-        var item = registryObject.get();
+    public ItemModelSmithResult act(LodestoneItemModelProvider provider, Supplier<? extends Item> itemSupplier) {
+        var item = itemSupplier.get();
+        preDatagen(provider, item);
         ItemModelBuilder model = modelSupplier.act(item, provider);
         ItemModelSmithResult result = new ItemModelSmithResult(provider, item, model);
-        if (modifier != null) {
-            result.applyModifier(modifier);
-        }
+        postDatagen(result);
         return result;
+    }
+
+    protected void preDatagen(LodestoneItemModelProvider provider, Item item) {
+
+    }
+
+    protected void postDatagen(ItemModelSmithResult result) {
+
     }
 
     public interface ItemModelSupplier {
         ItemModelBuilder act(Item item, LodestoneItemModelProvider provider);
     }
-
 }

@@ -1,19 +1,13 @@
 package team.lodestar.lodestone.systems.datagen.providers;
 
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.data.CachedOutput;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemDisplayContext;
-import net.minecraft.world.item.Items;
 import net.neoforged.neoforge.client.model.generators.ItemModelBuilder;
 import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
-import team.lodestar.lodestone.systems.datagen.ItemModelSmithTypes;
-import team.lodestar.lodestone.systems.datagen.itemsmith.ItemModelSmithData;
 
-import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
 public abstract class LodestoneItemModelProvider extends ItemModelProvider {
@@ -34,7 +28,7 @@ public abstract class LodestoneItemModelProvider extends ItemModelProvider {
         return super.getBuilder(path);
     }
 
-    public void addModelNameModifier(Function<String, String> modelNameModifier) {
+    public void setModelNameModifier(Function<String, String> modelNameModifier) {
         this.modelNameModifier = modelNameModifier;
     }
 
@@ -58,8 +52,12 @@ public abstract class LodestoneItemModelProvider extends ItemModelProvider {
         return modLoc("block/" + LodestoneBlockStateProvider.getTexturePath() + path);
     }
 
-    public ItemModelBuilder createGenericModel(Item item, ResourceLocation modelType, ResourceLocation textureLocation) {
-        return withExistingParent(getItemName(item), modelType).texture("layer0", textureLocation);
+    public ItemModelBuilder createGenericModel(Item item, ResourceLocation modelType, ResourceLocation... textures) {
+        ItemModelBuilder itemModelBuilder = withExistingParent(getItemName(item), modelType);
+        for (int i = 0; i < textures.length; i++) {
+            itemModelBuilder.texture("layer" + i, textures[i]);
+        }
+        return itemModelBuilder;
     }
 
     public ResourceLocation getBlockTextureFromCache(String key) {
