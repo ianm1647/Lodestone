@@ -38,6 +38,9 @@ public abstract class LodestoneBlockStateProvider extends BlockStateProvider {
     }
 
     public void setTexturePath(String texturePath) {
+        if (!texturePath.endsWith("/")) {
+            texturePath += "/";
+        }
         LodestoneBlockStateProvider.texturePath = texturePath;
     }
 

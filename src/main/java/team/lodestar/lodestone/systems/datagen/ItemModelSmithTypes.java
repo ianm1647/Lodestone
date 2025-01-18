@@ -30,7 +30,7 @@ public class ItemModelSmithTypes {
 
     public static ItemModelSmith BLOCK_MODEL_ITEM = new ItemModelSmith(((item, provider) -> {
         String name = provider.getItemName(item);
-        return provider.getBuilder(name).parent(new ModelFile.UncheckedModelFile(provider.modLoc("block/" + name)));
+        return provider.getBuilder(name).parent(new ModelFile.UncheckedModelFile(provider.getBlockTexture("block/" + name)));
     }));
 
     public static ItemModelSmith CROSS_MODEL_ITEM = new ItemModelSmith(((item, provider) -> provider.createGenericModel(item, GENERATED, provider.getBlockTextureFromCache("cross"))));

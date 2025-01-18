@@ -38,6 +38,9 @@ public abstract class LodestoneItemModelProvider extends ItemModelProvider {
     }
 
     public void setTexturePath(String texturePath) {
+        if (!texturePath.endsWith("/")) {
+            texturePath += "/";
+        }
         this.texturePath = texturePath;
     }
 
@@ -55,15 +58,16 @@ public abstract class LodestoneItemModelProvider extends ItemModelProvider {
             texture = textureNameModifier.apply(texture);
             textureNameModifier = null;
         }
-        var texturePath = "item/" + getTexturePath();
-        if (!texturePath.endsWith("/")) {
-            texturePath += "/";
-        }
-        return modLoc(texturePath + texture);
+        return modLoc("item/" + getTexturePath() + texture);
     }
 
     public ResourceLocation getBlockTexture(String path) {
-        return modLoc("block/" + LodestoneBlockStateProvider.getTexturePath() + path);
+        String texture = path;
+        if (textureNameModifier != null) {
+            texture = textureNameModifier.apply(texture);
+            textureNameModifier = null;
+        }
+        return modLoc("block/" + LodestoneBlockStateProvider.getTexturePath() + texture);
     }
 
     public ItemModelBuilder createGenericModel(Item item, ResourceLocation modelType, ResourceLocation... textures) {
