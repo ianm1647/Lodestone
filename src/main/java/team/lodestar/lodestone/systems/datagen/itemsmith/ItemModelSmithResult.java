@@ -1,10 +1,12 @@
 package team.lodestar.lodestone.systems.datagen.itemsmith;
 
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.neoforged.neoforge.client.model.generators.ItemModelBuilder;
 import net.neoforged.neoforge.client.model.generators.ModelFile;
 import net.neoforged.neoforge.client.model.generators.loaders.ItemLayerModelBuilder;
 import net.neoforged.neoforge.client.model.generators.loaders.SeparateTransformsModelBuilder;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import team.lodestar.lodestone.systems.datagen.providers.LodestoneItemModelProvider;
 
 import java.util.function.Consumer;
@@ -32,8 +34,12 @@ public class ItemModelSmithResult {
         return builder;
     }
 
-    public ModelFile.ExistingModelFile childOf() {
-        return provider.getExistingFile(builder.getLocation());
+    public ItemModelBuilder parentedToThis(ExistingFileHelper existingFileHelper) {
+        return new ItemModelBuilder(builder.getLocation(), existingFileHelper).parent(builder);
+    }
+
+    public ItemModelBuilder parentedToThis(ExistingFileHelper existingFileHelper, String childName) {
+        return new ItemModelBuilder(builder.getLocation().withSuffix("_" + childName), existingFileHelper).parent(builder);
     }
 
     public ItemLayerModelBuilder<ItemModelBuilder> addModelLayerData() {
@@ -43,6 +49,7 @@ public class ItemModelSmithResult {
     public SeparateTransformsModelBuilder<ItemModelBuilder> addSeparateTransformData() {
         return builder.customLoader(SeparateTransformsModelBuilder::begin);
     }
+
     public ItemModelSmithResult applyModifier(Consumer<ItemModelSmithResult> modifier) {
         modifier.accept(this);
         return this;
