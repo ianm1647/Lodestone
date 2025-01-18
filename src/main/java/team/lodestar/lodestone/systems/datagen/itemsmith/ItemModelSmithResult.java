@@ -9,9 +9,9 @@ import team.lodestar.lodestone.systems.datagen.providers.LodestoneItemModelProvi
 import java.util.function.Consumer;
 
 public class ItemModelSmithResult {
-    public final LodestoneItemModelProvider provider;
-    public final Item item;
-    public final ItemModelBuilder builder;
+    private final LodestoneItemModelProvider provider;
+    private final Item item;
+    private final ItemModelBuilder builder;
 
     public ItemModelSmithResult(LodestoneItemModelProvider provider, Item item, ItemModelBuilder builder) {
         this.provider = provider;
@@ -19,12 +19,24 @@ public class ItemModelSmithResult {
         this.builder = builder;
     }
 
+    public LodestoneItemModelProvider getProvider() {
+        return provider;
+    }
+
+    public Item getItem() {
+        return item;
+    }
+
+    public ItemModelBuilder getBuilder() {
+        return builder;
+    }
+
     public ItemLayerModelBuilder<ItemModelBuilder> makeItemLayerBuilder() {
-        return ItemLayerModelBuilder.begin(builder, provider.existingFileHelper);
+        return ItemLayerModelBuilder.begin(getBuilder(), getProvider().existingFileHelper);
     }
 
     public SeparateTransformsModelBuilder<ItemModelBuilder> makeSeparateTransformBuilder() {
-        return SeparateTransformsModelBuilder.begin(builder, provider.existingFileHelper);
+        return SeparateTransformsModelBuilder.begin(getBuilder(), getProvider().existingFileHelper);
     }
 
     public ItemModelSmithResult applyModifier(Consumer<ItemModelSmithResult> modifier) {
