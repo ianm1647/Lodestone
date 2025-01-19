@@ -38,7 +38,7 @@ public abstract class LodestoneItemModelProvider extends ItemModelProvider {
     }
 
     public void setTexturePath(String texturePath) {
-        if (!texturePath.endsWith("/")) {
+        if (!texturePath.isEmpty() && !texturePath.endsWith("/")) {
             texturePath += "/";
         }
         this.texturePath = texturePath;
