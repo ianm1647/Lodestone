@@ -37,6 +37,6 @@ public class ItemModelSmithTypes {
     public static ItemModelSmith WALL_ITEM = new ItemModelSmith(((item, provider) -> provider.wallInventory(provider.getItemName(item), provider.getBlockTextureFromCache("wall"))));
     public static ItemModelSmith FENCE_ITEM = new ItemModelSmith(((item, provider) -> provider.fenceInventory(provider.getItemName(item), provider.getBlockTextureFromCache("texture"))));
 
-    public static ItemModelSmith BUTTON_ITEM = BLOCK_MODEL_ITEM.addTextureNameAffix("_inventory");
-    public static ItemModelSmith TRAPDOOR_ITEM = BLOCK_MODEL_ITEM.addTextureNameAffix("_bottom");
+    public static ItemModelSmith BUTTON_ITEM = BLOCK_MODEL_ITEM.addModelNameAffix("_inventory");
+    public static ItemModelSmith TRAPDOOR_ITEM = BLOCK_MODEL_ITEM.addModelNameAffix("_bottom");
 }
