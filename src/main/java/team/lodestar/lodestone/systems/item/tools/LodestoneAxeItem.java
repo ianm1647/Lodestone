@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LodestoneAxeItem extends AxeItem {
-    private Multimap<Attribute, AttributeModifier> attributes;
+    private ItemAttributeModifiers attributes;
 
     public LodestoneAxeItem(Tier material, int damage, float speed, Properties properties) {
         super(material, properties.durability(material.getUses()).attributes(createAttributes(material, damage + 6, speed - 3.2f)));
@@ -24,13 +24,17 @@ public class LodestoneAxeItem extends AxeItem {
 
     @Override
     public ItemAttributeModifiers getDefaultAttributeModifiers(ItemStack stack) {
-        ItemAttributeModifiers modifiers = super.getDefaultAttributeModifiers(stack);
-        ItemAttributeModifiers.Builder builder = createExtraAttributes();
-        List<ItemAttributeModifiers.Entry> entries = modifiers.modifiers();
-        for (ItemAttributeModifiers.Entry entry : entries) {
-            builder.add(entry.attribute(), entry.modifier(), entry.slot());
+        if (attributes == null) {
+            var builder  = createExtraAttributes();
+            ItemAttributeModifiers modifiers = super.getDefaultAttributeModifiers(stack);
+            List<ItemAttributeModifiers.Entry> entries = modifiers.modifiers();
+            for (ItemAttributeModifiers.Entry entry : entries) {
+                builder.add(entry.attribute(), entry.modifier(), entry.slot());
+            }
+            attributes = builder.build();
         }
-        return builder.build();
+
+        return attributes;
     }
 
     public ItemAttributeModifiers.Builder createExtraAttributes() {

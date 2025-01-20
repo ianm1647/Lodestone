@@ -1,13 +1,10 @@
 package team.lodestar.lodestone.systems.item;
 
-import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.Multimap;
 import net.minecraft.core.*;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
@@ -21,8 +18,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.common.ItemAbility;
 
-import java.util.*;
-
 /**
  * A simple copy of a sword, without actually being a sword.
  * Minecraft has some hardcoded instanceof SwordItem checks, which we use this to avoid.
@@ -31,7 +26,7 @@ import java.util.*;
 public class ModCombatItem extends TieredItem {
     private final float attackDamage;
     private final float attackSpeed;
-    private Multimap<Attribute, AttributeModifier> attributes;
+    private ItemAttributeModifiers attributes;
 
     public ModCombatItem(Tier tier, float attackDamage, float attackSpeed, Properties builderIn) {
         super(tier, builderIn);
@@ -42,13 +37,13 @@ public class ModCombatItem extends TieredItem {
     @Override
     public ItemAttributeModifiers getDefaultAttributeModifiers(ItemStack stack) {
         if (attributes == null) {
-            return createExtraAttributes()
+            attributes = createExtraAttributes()
                     .add(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_ID, attackDamage, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
                     .add(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_ID, attackSpeed, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
                     .build();
         }
 
-        return super.getDefaultAttributeModifiers(stack);
+        return attributes;
     }
 
     public ItemAttributeModifiers.Builder createExtraAttributes() {
