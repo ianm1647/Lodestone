@@ -2,22 +2,23 @@ package team.lodestar.lodestone.systems.attribute;
 
 import net.minecraft.*;
 import net.minecraft.network.chat.*;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.*;
 import net.minecraft.world.entity.ai.attributes.*;
 import net.minecraft.world.item.*;
-import org.jetbrains.annotations.*;
 
-public class LodestoneAttribute extends Attribute {
+import javax.annotation.*;
+
+public class LodestoneRangedAttribute extends RangedAttribute {
     private final ResourceLocation id;
     private final boolean isBase;
     private final boolean forcePercentage;
     private final boolean isNegativeGood;
 
-    public static LodestoneAttributeBuilder create(ResourceLocation id, double defaultValue) {
-        return new LodestoneAttributeBuilder(id, defaultValue);
+    public static LodestoneAttributeBuilder create(ResourceLocation id, double defaultValue, double min, double max) {
+        return new LodestoneAttributeBuilder(id, defaultValue, min, max);
     }
-    protected LodestoneAttribute(ResourceLocation id, double defaultValue, boolean isBase, boolean forcePercentage, boolean isNegativeGood) {
-        super("attribute.name." + id.getNamespace() + "." + id.getPath(), defaultValue);
+    protected LodestoneRangedAttribute(ResourceLocation id, double defaultValue, double min, double max, boolean isBase, boolean forcePercentage, boolean isNegativeGood) {
+        super("attribute.name." + id.getNamespace() + "." + id.getPath(), defaultValue, min, max);
         this.id = id;
         this.isBase = isBase;
         this.forcePercentage = forcePercentage;

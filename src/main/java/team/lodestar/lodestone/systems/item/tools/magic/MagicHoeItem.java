@@ -23,13 +23,11 @@ public class MagicHoeItem extends LodestoneHoeItem {
         this.magicDamage = magicDamage;
     }
 
-
     @Override
-    public List<ItemAttributeModifiers.Entry> createExtraAttributes() {
-        List<ItemAttributeModifiers.Entry> entries = new ArrayList<>();
-        var magic = new ItemAttributeModifiers.Entry(LodestoneAttributes.MAGIC_DAMAGE, new AttributeModifier(LodestoneLib.lodestonePath("magic_damage"), magicDamage, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND);
-        entries.add(magic);
-        return entries;
+    public ItemAttributeModifiers.Builder createExtraAttributes() {
+        var builder = ItemAttributeModifiers.builder();
+        builder.add(LodestoneAttributes.MAGIC_DAMAGE, new AttributeModifier(LodestoneAttributes.MAGIC_DAMAGE.getId(), magicDamage, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND);
+        return builder;
     }
 }
 
