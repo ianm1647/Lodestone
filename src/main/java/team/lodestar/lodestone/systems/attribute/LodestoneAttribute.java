@@ -11,22 +11,15 @@ public class LodestoneAttribute extends Attribute {
     private final ResourceLocation id;
     private final boolean isBase;
     private final boolean forcePercentage;
-    private final boolean isNegativeGood;
 
     public static LodestoneAttributeBuilder create(ResourceLocation id, double defaultValue) {
         return new LodestoneAttributeBuilder(id, defaultValue);
     }
-    protected LodestoneAttribute(ResourceLocation id, double defaultValue, boolean isBase, boolean forcePercentage, boolean isNegativeGood) {
+    protected LodestoneAttribute(ResourceLocation id, double defaultValue, boolean isBase, boolean forcePercentage) {
         super("attribute.name." + id.getNamespace() + "." + id.getPath(), defaultValue);
         this.id = id;
         this.isBase = isBase;
         this.forcePercentage = forcePercentage;
-        this.isNegativeGood = isNegativeGood;
-    }
-
-    @Override
-    public ChatFormatting getStyle(boolean isPositive) {
-        return sentiment.getStyle(isNegativeGood != isPositive);
     }
 
     @Override

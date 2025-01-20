@@ -14,7 +14,6 @@ public class LodestoneAttributeBuilder {
     public boolean syncable;
     public Attribute.Sentiment sentiment = Attribute.Sentiment.POSITIVE;
 
-
     public LodestoneAttributeBuilder(ResourceLocation id, double defaultValue) {
         this(id, defaultValue, 0, 0);
     }

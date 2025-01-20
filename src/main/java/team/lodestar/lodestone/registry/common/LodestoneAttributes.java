@@ -17,11 +17,11 @@ import static team.lodestar.lodestone.LodestoneLib.LODESTONE;
 public class LodestoneAttributes {
     public static final DeferredRegister<Attribute> ATTRIBUTES = DeferredRegister.create(BuiltInRegistries.ATTRIBUTE, LODESTONE);
     public static final DeferredHolder<Attribute, Attribute> MAGIC_RESISTANCE = registerAttribute(ATTRIBUTES,
-            LodestoneRangedAttribute.create(LodestoneLib.lodestonePath("magic_resistance"), 1.0D, 0.0D, 2048.0D).setAsBaseAttribute().setSyncable(true));
+            LodestoneRangedAttribute.create(LodestoneLib.lodestonePath("magic_resistance"), 1.0D, 0.0D, 2048.0D).setSyncable(true));
     public static final DeferredHolder<Attribute, Attribute> MAGIC_PROFICIENCY = registerAttribute(ATTRIBUTES,
             LodestoneRangedAttribute.create(LodestoneLib.lodestonePath("magic_proficiency"), 1.0D, 0.0D, 2048.0D).setSyncable(true));
     public static final DeferredHolder<Attribute, Attribute> MAGIC_DAMAGE = registerAttribute(ATTRIBUTES,
-            LodestoneRangedAttribute.create(LodestoneLib.lodestonePath("magic_damage"), 0.0D, 0.0D, 2048.0D).setSyncable(true));
+            LodestoneRangedAttribute.create(LodestoneLib.lodestonePath("magic_damage"), 0.0D, 0.0D, 2048.0D).setAsBaseAttribute().setSyncable(true));
 
     public static DeferredHolder<Attribute, Attribute> registerAttribute(DeferredRegister<Attribute> registry, LodestoneAttributeBuilder builder) {
         return registry.register(builder.id.getPath(), builder::build);

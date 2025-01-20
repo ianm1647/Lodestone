@@ -12,22 +12,15 @@ public class LodestoneRangedAttribute extends RangedAttribute {
     private final ResourceLocation id;
     private final boolean isBase;
     private final boolean forcePercentage;
-    private final boolean isNegativeGood;
 
     public static LodestoneAttributeBuilder create(ResourceLocation id, double defaultValue, double min, double max) {
         return new LodestoneAttributeBuilder(id, defaultValue, min, max);
     }
-    protected LodestoneRangedAttribute(ResourceLocation id, double defaultValue, double min, double max, boolean isBase, boolean forcePercentage, boolean isNegativeGood) {
+    protected LodestoneRangedAttribute(ResourceLocation id, double defaultValue, double min, double max, boolean isBase, boolean forcePercentage) {
         super("attribute.name." + id.getNamespace() + "." + id.getPath(), defaultValue, min, max);
         this.id = id;
         this.isBase = isBase;
         this.forcePercentage = forcePercentage;
-        this.isNegativeGood = isNegativeGood;
-    }
-
-    @Override
-    public ChatFormatting getStyle(boolean isPositive) {
-        return sentiment.getStyle(isNegativeGood != isPositive);
     }
 
     @Override
