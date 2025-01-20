@@ -56,7 +56,7 @@ public class LodestoneAttributeEventHandler {
                 if (magicDamage != null) {
                     if (magicDamage.getValue() > 0 && !target.isDeadOrDying()) {
                         float magicDamageAmount = (float) magicDamage.getValue();
-                        if (attacker instanceof Player player && damageType.is(LodestoneDamageTypeTags.IGNORES_MAGIC_ATTACK_COOLDOWN_SCALAR)) {
+                        if (attacker instanceof Player player && !damageType.is(LodestoneDamageTypeTags.IGNORES_MAGIC_ATTACK_COOLDOWN_SCALAR)) {
                             magicDamageAmount *= player.getAttackStrengthScale(0);
                         }
                         var magic = DamageTypeHelper.create(DamageTypes.MAGIC, attacker);
