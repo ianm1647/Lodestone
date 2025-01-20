@@ -33,10 +33,15 @@ public class ItemModelSmithTypes {
         return provider.getBuilder(name).parent(new ModelFile.UncheckedModelFile(provider.modLoc("block/" + name)));
     }));
 
+    public static Function<String, ItemModelSmith> AFFIXED_BLOCK_MODEL_ITEM = Util.memoize((affix) -> new ItemModelSmith(((item, provider) -> {
+        String name = provider.getItemName(item);
+        return provider.getBuilder(name).parent(new ModelFile.UncheckedModelFile(provider.modLoc("block/" + name + affix)));
+    })));
+
     public static ItemModelSmith CROSS_MODEL_ITEM = new ItemModelSmith(((item, provider) -> provider.createGenericModel(item, GENERATED, provider.getBlockTextureFromCache("cross"))));
     public static ItemModelSmith WALL_ITEM = new ItemModelSmith(((item, provider) -> provider.wallInventory(provider.getItemName(item), provider.getBlockTextureFromCache("wall"))));
     public static ItemModelSmith FENCE_ITEM = new ItemModelSmith(((item, provider) -> provider.fenceInventory(provider.getItemName(item), provider.getBlockTextureFromCache("texture"))));
 
-    public static ItemModelSmith BUTTON_ITEM = BLOCK_MODEL_ITEM.addModelNameAffix("_inventory");
-    public static ItemModelSmith TRAPDOOR_ITEM = BLOCK_MODEL_ITEM.addModelNameAffix("_bottom");
+    public static ItemModelSmith BUTTON_ITEM = AFFIXED_BLOCK_MODEL_ITEM.apply("_inventory");
+    public static ItemModelSmith TRAPDOOR_ITEM = AFFIXED_BLOCK_MODEL_ITEM.apply("_bottom");
 }
