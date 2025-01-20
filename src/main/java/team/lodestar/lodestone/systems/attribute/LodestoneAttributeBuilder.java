@@ -12,7 +12,7 @@ public class LodestoneAttributeBuilder {
     public boolean forcePercentage;
     public boolean isNegativeGood;
     public boolean syncable;
-    public Attribute.Sentiment sentiment;
+    public Attribute.Sentiment sentiment = Attribute.Sentiment.POSITIVE;
 
 
     public LodestoneAttributeBuilder(ResourceLocation id, double defaultValue) {
@@ -33,11 +33,6 @@ public class LodestoneAttributeBuilder {
 
     public LodestoneAttributeBuilder forcePercentageDisplay() {
         this.forcePercentage = true;
-        return this;
-    }
-
-    public LodestoneAttributeBuilder negativeIsGood() {
-        this.isNegativeGood = true;
         return this;
     }
 
