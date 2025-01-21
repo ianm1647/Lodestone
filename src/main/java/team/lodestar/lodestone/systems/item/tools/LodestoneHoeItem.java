@@ -2,41 +2,26 @@ package team.lodestar.lodestone.systems.item.tools;
 
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.ai.attributes.Attribute;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.ai.attributes.*;
 import net.minecraft.world.item.HoeItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
+import team.lodestar.lodestone.systems.item.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class LodestoneHoeItem extends HoeItem {
-    private ItemAttributeModifiers attributes;
 
-    public LodestoneHoeItem(Tier material, int damage, float speed, Properties properties) {
-        super(material, properties.durability(material.getUses()).attributes(createAttributes(material, damage - 2, speed)));
-    }
-
-    @Override
-    public ItemAttributeModifiers getDefaultAttributeModifiers(ItemStack stack) {
-        if (attributes == null) {
-            var builder  = createExtraAttributes();
-            ItemAttributeModifiers modifiers = super.getDefaultAttributeModifiers(stack);
-            List<ItemAttributeModifiers.Entry> entries = modifiers.modifiers();
-            for (ItemAttributeModifiers.Entry entry : entries) {
-                builder.add(entry.attribute(), entry.modifier(), entry.slot());
-            }
-            attributes = builder.build();
-        }
-
-        return attributes;
-    }
-
-    public ItemAttributeModifiers.Builder createExtraAttributes() {
-        return ItemAttributeModifiers.builder();
+    public LodestoneHoeItem(Tier tier, float attackDamage, float attackSpeed, LodestoneItemProperties properties) {
+        super(tier, properties);
+        properties.mergeAttributes(
+                ItemAttributeModifiers.builder()
+                        .add(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_ID, tier.getAttackDamageBonus() + attackDamage-2, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
+                        .add(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_ID, tier.getSpeed() + attackSpeed, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
+                        .build());
     }
 }
 

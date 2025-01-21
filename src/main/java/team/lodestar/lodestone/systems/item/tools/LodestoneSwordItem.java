@@ -11,34 +11,19 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
+import team.lodestar.lodestone.systems.item.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class LodestoneSwordItem extends SwordItem {
 
-    private ItemAttributeModifiers attributes;
-
-    public LodestoneSwordItem(Tier material, int damage, float speed, Properties properties) {
-        super(material, properties.durability(material.getUses()).attributes(createAttributes(material, damage + 3, speed - 2.4f)));
-    }
-
-    @Override
-    public ItemAttributeModifiers getDefaultAttributeModifiers(ItemStack stack) {
-        if (attributes == null) {
-            var builder  = createExtraAttributes();
-            ItemAttributeModifiers modifiers = super.getDefaultAttributeModifiers(stack);
-            List<ItemAttributeModifiers.Entry> entries = modifiers.modifiers();
-            for (ItemAttributeModifiers.Entry entry : entries) {
-                builder.add(entry.attribute(), entry.modifier(), entry.slot());
-            }
-            attributes = builder.build();
-        }
-
-        return attributes;
-    }
-
-    public ItemAttributeModifiers.Builder createExtraAttributes() {
-        return ItemAttributeModifiers.builder();
+    public LodestoneSwordItem(Tier tier, float attackDamage, float attackSpeed, LodestoneItemProperties properties) {
+        super(tier, properties);
+        properties.mergeAttributes(
+                ItemAttributeModifiers.builder()
+                        .add(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_ID, tier.getAttackDamageBonus() + attackDamage + 3, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
+                        .add(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_ID, tier.getSpeed() + attackSpeed - 2.4f, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
+                        .build());
     }
 }
