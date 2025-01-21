@@ -1,4 +1,4 @@
-#version 150
+#version 330 core
 
 uniform sampler2D Sampler0;
 
@@ -13,5 +13,5 @@ in vec4 vertexColor;
 out vec4 fragColor;
 
 void main() {
-    fragColor = vec4(1.0, 0.0, 0.0, 1.0);
+    fragColor = vertexColor;
 }
