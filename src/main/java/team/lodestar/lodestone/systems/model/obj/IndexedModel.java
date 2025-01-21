@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
+import org.joml.Matrix4f;
 import team.lodestar.lodestone.systems.rendering.IVertexBuffer;
 import team.lodestar.lodestone.systems.model.obj.data.*;
 import team.lodestar.lodestone.systems.model.obj.modifier.*;
@@ -43,11 +44,11 @@ public abstract class IndexedModel {
         }
     }
 
-    public void renderInstanced(PoseStack poseStack, RenderType renderType, int instances) {
-        this.createMeshBuffer(poseStack);
+    public void renderInstanced(PoseStack poseStack, Matrix4f frustrumMatrix, Matrix4f projectionMatrix, RenderType renderType, int instances) {
+        this.createMeshBuffer(poseStack, renderType);
         this.modelBuffer.bind();
         renderType.setupRenderState();
-        IVertexBuffer.cast(this.modelBuffer).drawWithShaderInstanced(poseStack.last().pose(), RenderSystem.getProjectionMatrix(), RenderSystem.getShader(), instances);
+        IVertexBuffer.cast(this.modelBuffer).drawWithShaderInstanced(frustrumMatrix, projectionMatrix, RenderSystem.getShader(), instances);
         renderType.clearRenderState();
         VertexBuffer.unbind();
     }
@@ -90,6 +91,7 @@ public abstract class IndexedModel {
                 .filter(mesh -> mesh.indices.size() == mode.primitiveLength)
                 .forEach(mesh -> this.bakedIndices.addAll(mesh.indices));
 
+        // TODO: Use triangulation modifier
         for (IndexedMesh mesh : meshes) {
             if (mesh.indices.size() != mode.primitiveLength) {
                 if (mesh.indices.size() == 4 && triangulate) {
@@ -109,26 +111,28 @@ public abstract class IndexedModel {
         }
     }
 
-    public void createMeshBuffer(PoseStack poseStack) {
-        if (this.modelBuffer != null) {
-            return;
+    public void createMeshBuffer(PoseStack poseStack, RenderType renderType) {
+        if (this.modelBuffer == null) {
+            this.modelBuffer = new VertexBuffer(VertexBuffer.Usage.DYNAMIC);
         }
-
-        this.modelBuffer = new VertexBuffer(VertexBuffer.Usage.STATIC);
         this.modelBuffer.bind();
-        MeshData meshData = this.drawMesh(poseStack, Tesselator.getInstance());
-        this.modelBuffer.upload(meshData);
+        this.createMesh(poseStack, Tesselator.getInstance(), renderType);
+        this.modelBuffer.upload(this.meshData);
         VertexBuffer.unbind();
     }
 
-    public MeshData drawMesh(PoseStack poseStack, Tesselator tesselator) {
-        BufferBuilder bufferBuilder = tesselator.begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION);
+    public void createMesh(PoseStack poseStack, Tesselator tesselator, RenderType renderType) {
+        BufferBuilder bufferBuilder = tesselator.begin(renderType.mode(), renderType.format());
         for (IndexedMesh mesh : this.meshes) {
             for (Vertex vertex : mesh.getVertices(this)) {
-                vertex.supplyVertexData(bufferBuilder, DefaultVertexFormat.POSITION, poseStack);
+                vertex.supplyVertexData(bufferBuilder, renderType.format(), poseStack);
             }
         }
-        return bufferBuilder.buildOrThrow();
+        this.meshData = bufferBuilder.buildOrThrow();
+    }
+
+    public VertexBuffer getModelBuffer() {
+        return this.modelBuffer;
     }
 
     public void cleanup() {
