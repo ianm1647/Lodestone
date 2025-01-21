@@ -52,6 +52,16 @@ public class ItemEventHandler {
             getEventResponders(attacker).forEach(lookup -> lookup.run((eventResponderItem, stack) -> eventResponderItem.outgoingDamageEvent(event, attacker, target, stack)));
         }
     }
+    public static void triggerHurtResponses(LivingDamageEvent.Post event) {
+        if (event.getNewDamage() <= 0) return;
+        var source = event.getSource();
+        var target = event.getEntity();
+        var attacker = source.getEntity() instanceof LivingEntity livingAttacker ? livingAttacker : target.getLastAttacker();
+        getEventResponders(target).forEach(lookup -> lookup.run((eventResponderItem, stack) -> eventResponderItem.finalizedIncomingDamageEvent(event, attacker, target, stack)));
+        if (attacker != null) {
+            getEventResponders(attacker).forEach(lookup -> lookup.run((eventResponderItem, stack) -> eventResponderItem.finalizedOutgoingDamageEvent(event, attacker, target, stack)));
+        }
+    }
 
     public static void addAttributeTooltips(AddAttributeTooltipsEvent event) {
         final ItemStack stack = event.getStack();
@@ -73,6 +83,7 @@ public class ItemEventHandler {
     /**
      * An interface containing various methods which are triggered alongside various forge events.
      * Implement on your item for the methods to be called.
+     * Does not necessarily have to be bound to an itemstack.
      */
     public interface IEventResponder {
 
@@ -87,6 +98,12 @@ public class ItemEventHandler {
         }
 
         default void outgoingDamageEvent(LivingDamageEvent.Pre event, LivingEntity attacker, LivingEntity target, ItemStack stack) {
+        }
+
+        default void finalizedIncomingDamageEvent(LivingDamageEvent.Post event, LivingEntity attacker, LivingEntity target, ItemStack stack) {
+        }
+
+        default void finalizedOutgoingDamageEvent(LivingDamageEvent.Post event, LivingEntity attacker, LivingEntity target, ItemStack stack) {
         }
 
         default void incomingDeathEvent(LivingDeathEvent event, LivingEntity attacker, LivingEntity target, ItemStack stack) {
