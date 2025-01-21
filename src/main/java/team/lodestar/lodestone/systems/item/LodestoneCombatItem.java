@@ -24,12 +24,11 @@ import net.neoforged.neoforge.common.ItemAbility;
 public class LodestoneCombatItem extends TieredItem {
 
     public LodestoneCombatItem(Tier tier, float attackDamage, float attackSpeed, LodestoneItemProperties properties) {
-        super(tier, properties);
-        properties.mergeAttributes(
+        super(tier, properties.mergeAttributes(
                 ItemAttributeModifiers.builder()
                         .add(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_ID, tier.getAttackDamageBonus() + attackDamage, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
                         .add(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_ID, tier.getSpeed() + attackSpeed, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
-                        .build());
+                        .build()));
     }
 
 

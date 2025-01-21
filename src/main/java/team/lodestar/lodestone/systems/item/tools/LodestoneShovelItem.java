@@ -19,11 +19,10 @@ import java.util.List;
 public class LodestoneShovelItem extends ShovelItem {
 
     public LodestoneShovelItem(Tier tier, float attackDamage, float attackSpeed, LodestoneItemProperties properties) {
-        super(tier, properties);
-        properties.mergeAttributes(
+        super(tier, properties.mergeAttributes(
                 ItemAttributeModifiers.builder()
                         .add(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_ID, tier.getAttackDamageBonus() + attackDamage + 1.5f, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
                         .add(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_ID, tier.getSpeed() + attackSpeed - 3f, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
-                        .build());
+                        .build()));
     }
 }
