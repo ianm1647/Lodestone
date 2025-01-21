@@ -16,6 +16,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.common.ItemAbility;
 
+import static net.neoforged.neoforge.common.ItemAbilities.SWORD_DIG;
+
 /**
  * A copy of a sword, without actually being a sword.
  * Minecraft has some hardcoded instanceof SwordItem checks, which we use this to avoid.
@@ -49,6 +51,6 @@ public class LodestoneCombatItem extends TieredItem {
 
     @Override
     public boolean canPerformAction(ItemStack stack, net.neoforged.neoforge.common.ItemAbility itemAbility) {
-        return net.neoforged.neoforge.common.ItemAbilities.DEFAULT_SWORD_ACTIONS.contains(itemAbility);
+        return itemAbility.equals(SWORD_DIG);
     }
 }
