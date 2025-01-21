@@ -25,6 +25,10 @@ public class LodestoneItemProperties extends Item.Properties {
         this.tab = tab;
     }
 
+    public LodestoneItemProperties() {
+        this.tab = null;
+    }
+
     @SuppressWarnings("DataFlowIssue")
     public LodestoneItemProperties mergeAttributes(ItemAttributeModifiers attributes) {
         if (components != null && components.build().has(DataComponents.ATTRIBUTE_MODIFIERS)) {
@@ -98,6 +102,9 @@ public class LodestoneItemProperties extends Item.Properties {
 
     public static void addToTabSorting(ResourceLocation itemId, Item.Properties properties) {
         if (properties instanceof LodestoneItemProperties lodestoneItemProperties) {
+            if (lodestoneItemProperties.tab == null) {
+                return;
+            }
             TAB_SORTING.computeIfAbsent(lodestoneItemProperties.tab, (key) -> new ArrayList<>()).add(itemId);
         }
     }
