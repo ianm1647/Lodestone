@@ -34,7 +34,7 @@ public class LodestoneRangedAttribute extends RangedAttribute {
         if (forcePercentage) {
             return Component.translatable("neoforge.value.percent", FORMAT.format(value * 100));
         }
-        super.toValueComponent(op, value, flag);
+        return super.toValueComponent(op, value, flag);
     }
 
 }
