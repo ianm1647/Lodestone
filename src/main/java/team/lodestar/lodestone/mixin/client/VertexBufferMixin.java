@@ -1,6 +1,5 @@
 package team.lodestar.lodestone.mixin.client;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.VertexBuffer;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.Minecraft;
@@ -12,6 +11,7 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import team.lodestar.lodestone.LodestoneLib;
 import team.lodestar.lodestone.systems.rendering.IVertexBuffer;
 import team.lodestar.lodestone.systems.rendering.LodestoneRenderSystem;
 
@@ -24,7 +24,7 @@ import static org.lwjgl.opengl.GL31.*;
 @Mixin(VertexBuffer.class)
 public abstract class VertexBufferMixin implements IVertexBuffer {
     @Unique
-    private Map<String, Integer> extraVBOs = new HashMap<>();
+    private Map<Integer, Integer> extraVBOs = new HashMap<>();
     @Override
     public void drawInstanced(int instances) {
         LodestoneRenderSystem.wrap(() -> {
@@ -43,9 +43,9 @@ public abstract class VertexBufferMixin implements IVertexBuffer {
     }
 
     @Override
-    public void addAttributeVBO(String name, int index, FloatBuffer buffer, VertexBuffer.Usage usage, Runnable setup) {
+    public void addAttributeVBO(int binding, FloatBuffer buffer, VertexBuffer.Usage usage, Runnable setup) {
         this.bind();
-        int vbo = this.extraVBOs.computeIfAbsent(name, binding -> glGenBuffers());
+        int vbo = this.extraVBOs.computeIfAbsent(binding, v -> glGenBuffers());
         glBindBuffer(GL_ARRAY_BUFFER, vbo);
         glBufferData(GL_ARRAY_BUFFER, buffer, usage.id);
         setup.run();
@@ -53,7 +53,7 @@ public abstract class VertexBufferMixin implements IVertexBuffer {
 
     @Inject(method = "close", at = @At("HEAD"))
     public void close(CallbackInfo ci) {
-        this.extraVBOs.forEach((k, v) -> glDeleteBuffers(v));
+        this.extraVBOs.forEach((binding, vbo) -> glDeleteBuffers(vbo));
     }
 
     @Shadow
