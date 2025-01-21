@@ -113,13 +113,13 @@ public class ItemEventHandler {
 
         public final ResourceLocation id;
         public final Function<LivingEntity, Collection<ItemStack>> stackFunction;
-        public final Function<ItemStack, IEventResponder> mapperFunction;
+        public final BiFunction<LivingEntity, ItemStack, IEventResponder> mapperFunction;
 
         public EventResponderSource(ResourceLocation id, Function<LivingEntity, Collection<ItemStack>> stackFunction) {
-            this(id, stackFunction, stack -> stack.getItem() instanceof IEventResponder eventResponderItem ? eventResponderItem : null);
+            this(id, stackFunction, (entity, stack) -> stack.getItem() instanceof IEventResponder eventResponderItem ? eventResponderItem : null);
         }
 
-        public EventResponderSource(ResourceLocation id, Function<LivingEntity, Collection<ItemStack>> stackFunction, Function<ItemStack, IEventResponder> mapperFunction) {
+        public EventResponderSource(ResourceLocation id, Function<LivingEntity, Collection<ItemStack>> stackFunction, BiFunction<LivingEntity, ItemStack, IEventResponder> mapperFunction) {
             this.id = id;
             this.stackFunction = stackFunction;
             this.mapperFunction = mapperFunction;
@@ -129,7 +129,7 @@ public class ItemEventHandler {
             Collection<ItemStack> sourced = stackFunction.apply(entity);
             ArrayList<Pair<IEventResponder, ItemStack>> result = new ArrayList<>();
             for (ItemStack stack : sourced) {
-                if (mapperFunction.apply(stack) instanceof IEventResponder responderItem) {
+                if (mapperFunction.apply(entity, stack) instanceof IEventResponder responderItem) {
                     result.add(Pair.of(responderItem, stack));
                 }
             }
