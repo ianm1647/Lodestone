@@ -1,6 +1,6 @@
 package team.lodestar.lodestone.systems.postprocess;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import com.google.common.collect.ImmutableList;
 import net.minecraft.client.renderer.EffectInstance;
 import org.joml.Matrix4f;
 import team.lodestar.lodestone.LodestoneLib;
@@ -90,5 +90,9 @@ public abstract class MultiInstancePostProcessor<I extends DynamicShaderFxInstan
     protected void setDataBufferUniform(EffectInstance effectInstance, String bufferName, String countName) {
         dataBuffer.apply(effectInstance, bufferName);
         effectInstance.safeGetUniform(countName).set(instances.size());
+    }
+
+    public ImmutableList<DynamicShaderFxInstance> getInstances() {
+        return ImmutableList.copyOf(instances);
     }
 }
