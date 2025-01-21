@@ -16,17 +16,15 @@ import team.lodestar.lodestone.systems.rendering.IVertexBuffer;
 import team.lodestar.lodestone.systems.rendering.LodestoneRenderSystem;
 
 import java.nio.FloatBuffer;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.lwjgl.opengl.GL31.*;
 
 @Mixin(VertexBuffer.class)
 public abstract class VertexBufferMixin implements IVertexBuffer {
     @Unique
-    private int nextAttributeIndex;
-    @Unique
-    private List<Integer> extraVBOs = new ArrayList<>();
+    private Map<String, Integer> extraVBOs = new HashMap<>();
     @Override
     public void drawInstanced(int instances) {
         LodestoneRenderSystem.wrap(() -> {
@@ -39,23 +37,15 @@ public abstract class VertexBufferMixin implements IVertexBuffer {
         LodestoneRenderSystem.wrap(() -> {
             shader.setDefaultUniforms(this.mode, modelViewMatrix, projectionMatrix, Minecraft.getInstance().getWindow());
             shader.apply();
-            //glEnableVertexAttribArray(1);
             this.drawInstanced(instances);
-            //glDisableVertexAttribArray(1);
             shader.clear();
         });
     }
 
     @Override
-    public int getNextAttributeIndex() {
-        return this.format.getElements().size() + nextAttributeIndex++;
-    }
-
-    @Override
-    public void addAttributeVBO(int index, FloatBuffer buffer, VertexBuffer.Usage usage, Runnable setup) {
+    public void addAttributeVBO(String name, int index, FloatBuffer buffer, VertexBuffer.Usage usage, Runnable setup) {
         this.bind();
-        int vbo = glGenBuffers();
-        this.extraVBOs.add(vbo);
+        int vbo = this.extraVBOs.computeIfAbsent(name, binding -> glGenBuffers());
         glBindBuffer(GL_ARRAY_BUFFER, vbo);
         glBufferData(GL_ARRAY_BUFFER, buffer, usage.id);
         setup.run();
@@ -63,7 +53,7 @@ public abstract class VertexBufferMixin implements IVertexBuffer {
 
     @Inject(method = "close", at = @At("HEAD"))
     public void close(CallbackInfo ci) {
-        this.extraVBOs.forEach(RenderSystem::glDeleteBuffers);
+        this.extraVBOs.forEach((k, v) -> glDeleteBuffers(v));
     }
 
     @Shadow

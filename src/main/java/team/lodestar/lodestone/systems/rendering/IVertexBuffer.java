@@ -12,6 +12,5 @@ public interface IVertexBuffer {
     }
     void drawInstanced(int instances);
     void drawWithShaderInstanced(Matrix4f modelViewMatrix, Matrix4f projectionMatrix, ShaderInstance shader, int instances);
-    int getNextAttributeIndex();
-    void addAttributeVBO(int index, FloatBuffer buffer, VertexBuffer.Usage usage, Runnable setup);
+    void addAttributeVBO(String name, int index, FloatBuffer buffer, VertexBuffer.Usage usage, Runnable setup);
 }
