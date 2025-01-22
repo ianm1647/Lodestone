@@ -86,7 +86,8 @@ public class LodestoneRenderTypes extends RenderStateShard {
 
     /**
      * Render Functions. You can create Render Types by statically applying these to your texture. Alternatively, use {@link #GENERIC} if none of the presets suit your needs.
-     * For Static Definitions use {@link RenderTypeProvider#apply(RenderTypeToken)}, otherwise use {@link RenderTypeProvider#applyAndCache(RenderTypeToken)}
+     * Use {@link RenderTypeProvider#apply(RenderTypeToken)} to create a render type.
+     * Render Types are cached using the texture, Shader Uniform Handler, and Render Type Modifier as keys.
      */
     public static final RenderTypeProvider TEXTURE = new RenderTypeProvider((token) ->
             createGenericRenderType("texture",
@@ -217,7 +218,6 @@ public class LodestoneRenderTypes extends RenderStateShard {
     public static class LodestoneCompositeStateBuilder extends RenderType.CompositeState.CompositeStateBuilder {
 
         protected VertexFormat.Mode modeOverride;
-        protected RenderType.CompositeState stateOverride;
         LodestoneCompositeStateBuilder() {
             super();
         }
@@ -228,13 +228,10 @@ public class LodestoneRenderTypes extends RenderStateShard {
         }
 
         public LodestoneCompositeStateBuilder copyState(RenderType.CompositeState state) {
-            this.stateOverride = state;
+            for (RenderStateShard renderStateShard : state.states) {
+                setStateShards(renderStateShard);
+            }
             return this;
-        }
-
-        @Override
-        public RenderType.CompositeState createCompositeState(RenderType.OutlineProperty outlineState) {
-            return Objects.requireNonNullElseGet(stateOverride, () -> super.createCompositeState(outlineState));
         }
 
         public LodestoneCompositeStateBuilder setStateShards(Object... objects) {
