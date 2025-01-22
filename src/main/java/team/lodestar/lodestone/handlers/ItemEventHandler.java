@@ -43,7 +43,6 @@ public class ItemEventHandler {
     }
 
     public static void triggerHurtResponses(LivingDamageEvent.Pre event) {
-        if (event.getNewDamage() <= 0) return;
         var source = event.getSource();
         var target = event.getEntity();
         var attacker = source.getEntity() instanceof LivingEntity livingAttacker ? livingAttacker : target.getLastAttacker();
@@ -53,7 +52,6 @@ public class ItemEventHandler {
         }
     }
     public static void triggerHurtResponses(LivingDamageEvent.Post event) {
-        if (event.getNewDamage() <= 0) return;
         var source = event.getSource();
         var target = event.getEntity();
         var attacker = source.getEntity() instanceof LivingEntity livingAttacker ? livingAttacker : target.getLastAttacker();
