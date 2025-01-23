@@ -1,15 +1,19 @@
 package team.lodestar.lodestone.systems.model.obj.modifier;
 
 import team.lodestar.lodestone.systems.model.obj.IndexedModel;
+import team.lodestar.lodestone.systems.model.obj.ObjParser;
 import team.lodestar.lodestone.systems.model.obj.data.IndexedMesh;
 
-public abstract class ModelModifier<T extends ModiferSettings> {
+public abstract class ModelModifier {
 
-    public T settings;
+    /**
+     * Apply the modification to the model before it is built.
+     * @param parsedModel The model that is being built.
+     */
+    public void applyEarly(ObjParser.Builder parsedModel) {
 
-    public ModelModifier(T settings) {
-        this.settings = settings;
     }
+
     /**
      * Apply the modification to the whole {@link IndexedModel}.
      * @param model The model to apply the modification to.

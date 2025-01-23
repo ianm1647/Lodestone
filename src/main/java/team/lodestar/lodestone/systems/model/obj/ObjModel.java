@@ -25,11 +25,18 @@ public class ObjModel extends IndexedModel {
         this.bakeIndices(VertexFormat.Mode.TRIANGLES, true);
     }
 
+    public void applyEarlyModifiers(ObjParser.Builder parsedModel) {
+        if (earlyModifiers != null) {
+            earlyModifiers.forEach(modifier -> modifier.applyEarly(parsedModel));
+        }
+    }
+
     public static class Builder implements ModifierQueue {
         private final ResourceLocation modelId;
         private VertexFormat.Mode bakeMode;
         private final boolean cacheModifications = false;
-        private List<ModelModifier<?>> modifiers;
+        private List<ModelModifier> earlyModifiers;
+        private List<ModelModifier> modifiers;
 
         private Builder(ResourceLocation modelId) {
             this.modelId = modelId;
@@ -50,12 +57,18 @@ public class ObjModel extends IndexedModel {
         }
 
         @Override
-        public void queueModifier(ModelModifier<?> modifier) {
+        public void queueEarlyModifier(ModelModifier modifier) {
+            this.earlyModifiers.add(modifier);
+        }
+
+        @Override
+        public void queueModifier(ModelModifier modifier) {
             this.modifiers.add(modifier);
         }
 
         public ObjModel build() {
             ObjModel model = new ObjModel(modelId);
+            model.earlyModifiers = this.earlyModifiers;
             model.modifiers = this.modifiers;
             return model;
         }

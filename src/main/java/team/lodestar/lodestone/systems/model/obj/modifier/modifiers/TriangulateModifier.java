@@ -9,20 +9,8 @@ import team.lodestar.lodestone.systems.model.obj.modifier.ModelModifier;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TriangulateModifier extends ModelModifier<TriangulateSettings> {
-    protected List<IndexedMesh> newMeshes;
-    public TriangulateModifier(TriangulateSettings settings) {
-        super(settings);
-        this.newMeshes = new ArrayList<>();
-    }
-
-    public static TriangulateModifier of(TriangulateSettings.QuadMethod quadMethod, TriangulateSettings.NgonMethod ngonMethod) {
-        return new TriangulateModifier(new TriangulateSettings(quadMethod, ngonMethod));
-    }
-
-    public TriangulateModifier() {
-        this(new TriangulateSettings(TriangulateSettings.QuadMethod.ShortestDiagonal, TriangulateSettings.NgonMethod.Clip));
-    }
+public class TriangulateModifier extends ModelModifier {
+    protected List<IndexedMesh> newMeshes = new ArrayList<>();
 
     @Override
     public void apply(IndexedModel model) {
@@ -50,14 +38,11 @@ public class TriangulateModifier extends ModelModifier<TriangulateSettings> {
     public static class Quad extends TriangulateModifier {
         private final TriangulateModifier parent;
         public Quad(TriangulateModifier parent) {
-            super(parent.settings);
             this.parent = parent;
         }
 
         @Override
         public void apply(IndexedModel model, IndexedMesh mesh) {
-            TriangulateSettings.QuadMethod method = this.settings.quadMethod;
-
             List<Vertex> vertices = mesh.getVertices(model);
             Vertex v0 = vertices.get(0);
             Vertex v1 = vertices.get(1);
@@ -67,7 +52,8 @@ public class TriangulateModifier extends ModelModifier<TriangulateSettings> {
             float d1 = this.getDistance(v0, v2);
             float d2 = this.getDistance(v1, v3);
 
-            boolean f = (this.settings.quadMethod == TriangulateSettings.QuadMethod.ShortestDiagonal) ? d1 > d2 : d1 < d2;
+            boolean shortestDiagonal = true; // TODO: Figure out something else other than a settings class
+            boolean f = shortestDiagonal ? d1 > d2 : d1 < d2;
 
             if (f) {
                 this.splitMesh(model, mesh, 0, 1, 3, 1, 2, 3);
@@ -108,13 +94,11 @@ public class TriangulateModifier extends ModelModifier<TriangulateSettings> {
     public static class Ngon extends TriangulateModifier {
         private final TriangulateModifier parent;
         public Ngon(TriangulateModifier parent) {
-            super(parent.settings);
             this.parent = parent;
         }
 
         @Override
         public void apply(IndexedModel model, IndexedMesh mesh) {
-            TriangulateSettings.NgonMethod method = this.settings.ngonMethod;
             //TODO: Implement Ngon triangulation
         }
     }

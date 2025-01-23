@@ -17,7 +17,8 @@ public abstract class IndexedModel {
     protected List<Vertex> vertices;
     protected List<IndexedMesh> meshes;
     protected List<Integer> bakedIndices;
-    protected List<ModelModifier<?>> modifiers;
+    public List<ModelModifier> earlyModifiers;
+    protected List<ModelModifier> modifiers;
     protected ResourceLocation modelId;
     protected VertexBuffer modelBuffer;
     protected MeshData meshData;
