@@ -52,6 +52,7 @@ public class ObjModel extends IndexedModel {
 
         public Builder withModifiers(Consumer<ModifierQueue> modifierQueue) {
             this.modifiers = new ArrayList<>();
+            this.earlyModifiers = new ArrayList<>();
             modifierQueue.accept(this);
             return this;
         }
