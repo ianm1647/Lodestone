@@ -11,13 +11,13 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import team.lodestar.lodestone.LodestoneLib;
 import team.lodestar.lodestone.systems.rendering.IVertexBuffer;
 import team.lodestar.lodestone.systems.rendering.LodestoneRenderSystem;
 
 import java.nio.FloatBuffer;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import static org.lwjgl.opengl.GL31.*;
 
@@ -43,12 +43,12 @@ public abstract class VertexBufferMixin implements IVertexBuffer {
     }
 
     @Override
-    public void addAttributeVBO(int binding, FloatBuffer buffer, VertexBuffer.Usage usage, Runnable setup) {
+    public void addAttributeVBO(int binding, FloatBuffer buffer, VertexBuffer.Usage usage, Consumer<Integer> setup) {
         this.bind();
         int vbo = this.extraVBOs.computeIfAbsent(binding, v -> glGenBuffers());
         glBindBuffer(GL_ARRAY_BUFFER, vbo);
         glBufferData(GL_ARRAY_BUFFER, buffer, usage.id);
-        setup.run();
+        setup.accept(binding);
     }
 
     @Inject(method = "close", at = @At("HEAD"))
