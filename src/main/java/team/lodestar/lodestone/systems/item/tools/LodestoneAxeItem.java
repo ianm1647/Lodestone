@@ -11,38 +11,19 @@ import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
+import team.lodestar.lodestone.systems.item.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class LodestoneAxeItem extends AxeItem {
-    private Multimap<Attribute, AttributeModifier> attributes;
 
-    public LodestoneAxeItem(Tier material, int damage, float speed, Properties properties) {
-        super(material, properties.durability(material.getUses()).attributes(createAttributes(material, damage + 6, speed - 3.2f)));
-    }
-
-
-    @Override
-    public ItemAttributeModifiers getDefaultAttributeModifiers(ItemStack stack) {
-        ItemAttributeModifiers modifiers = super.getDefaultAttributeModifiers(stack);
-        ItemAttributeModifiers.Builder builder = ItemAttributeModifiers.builder();
-
-        List<ItemAttributeModifiers.Entry> entries = modifiers.modifiers();
-        for (ItemAttributeModifiers.Entry entry : entries) {
-            builder.add(entry.attribute(), entry.modifier(), entry.slot());
-        }
-
-        List<ItemAttributeModifiers.Entry> extraEntries = createExtraAttributes();
-        for (ItemAttributeModifiers.Entry entry : extraEntries) {
-            builder.add(entry.attribute(), entry.modifier(), entry.slot());
-        }
-
-        return builder.build();
-    }
-
-    public List<ItemAttributeModifiers.Entry> createExtraAttributes() {
-        return new ArrayList<>();
+    public LodestoneAxeItem(Tier tier, float attackDamage, float attackSpeed, LodestoneItemProperties properties) {
+        super(tier, properties.mergeAttributes(
+                ItemAttributeModifiers.builder()
+                        .add(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_ID, tier.getAttackDamageBonus() + attackDamage+6, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
+                        .add(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_ID, attackSpeed-3.2f, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
+                        .build()));
     }
 }
 

@@ -84,7 +84,8 @@ public class LodestoneWorldParticleRenderType implements ParticleRenderType {
     }
 
     private static LodestoneWorldParticleRenderType addDepthFade(LodestoneWorldParticleRenderType original) {
-        final LodestoneRenderType renderType = LodestoneRenderTypes.copyAndStore(original, original.renderType, original.equals(LUMITRANSPARENT) ? ShaderUniformHandler.LUMITRANSPARENT_DEPTH_FADE : ShaderUniformHandler.DEPTH_FADE);
+        final LodestoneRenderType renderType = LodestoneRenderTypes.copyAndStore(original,
+                original.renderType, original.equals(LUMITRANSPARENT) ? ShaderUniformHandler.LUMITRANSPARENT_DEPTH_FADE : ShaderUniformHandler.DEPTH_FADE);
         return new LodestoneWorldParticleRenderType(renderType, original.shader, original.texture, original.blendFunction);
     }
 }

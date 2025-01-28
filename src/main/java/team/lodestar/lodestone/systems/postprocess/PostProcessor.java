@@ -6,7 +6,6 @@ import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.shaders.Uniform;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.EffectInstance;
@@ -58,7 +57,6 @@ public abstract class PostProcessor {
     /**
      * Being updated every frame before calling applyPostProcess() by PostProcessHandler
      */
-    public static PoseStack viewModelStack;
     public static Matrix4f viewModelMatrix;
 
     private boolean initialized = false;

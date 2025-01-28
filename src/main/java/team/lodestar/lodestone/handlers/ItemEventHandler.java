@@ -5,17 +5,15 @@ import net.minecraft.resources.*;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.item.*;
 import net.neoforged.neoforge.client.event.*;
-import net.neoforged.neoforge.common.*;
 import net.neoforged.neoforge.event.*;
 import net.neoforged.neoforge.event.entity.living.*;
 import team.lodestar.lodestone.*;
 
 import java.util.*;
 import java.util.function.*;
-import java.util.stream.*;
 
 /**
- * A handler for firing {@link IEventResponderItem} events
+ * A handler for firing {@link IEventResponder} events
  */
 public class ItemEventHandler {
 
@@ -45,7 +43,6 @@ public class ItemEventHandler {
     }
 
     public static void triggerHurtResponses(LivingDamageEvent.Pre event) {
-        if (event.getNewDamage() <= 0) return;
         var source = event.getSource();
         var target = event.getEntity();
         var attacker = source.getEntity() instanceof LivingEntity livingAttacker ? livingAttacker : target.getLastAttacker();
@@ -54,10 +51,19 @@ public class ItemEventHandler {
             getEventResponders(attacker).forEach(lookup -> lookup.run((eventResponderItem, stack) -> eventResponderItem.outgoingDamageEvent(event, attacker, target, stack)));
         }
     }
+    public static void triggerHurtResponses(LivingDamageEvent.Post event) {
+        var source = event.getSource();
+        var target = event.getEntity();
+        var attacker = source.getEntity() instanceof LivingEntity livingAttacker ? livingAttacker : target.getLastAttacker();
+        getEventResponders(target).forEach(lookup -> lookup.run((eventResponderItem, stack) -> eventResponderItem.finalizedIncomingDamageEvent(event, attacker, target, stack)));
+        if (attacker != null) {
+            getEventResponders(attacker).forEach(lookup -> lookup.run((eventResponderItem, stack) -> eventResponderItem.finalizedOutgoingDamageEvent(event, attacker, target, stack)));
+        }
+    }
 
     public static void addAttributeTooltips(AddAttributeTooltipsEvent event) {
         final ItemStack stack = event.getStack();
-        if (stack.getItem() instanceof IEventResponderItem eventResponderItem) {
+        if (stack.getItem() instanceof IEventResponder eventResponderItem) {
             eventResponderItem.modifyAttributeTooltipEvent(event);
         }
     }
@@ -75,8 +81,9 @@ public class ItemEventHandler {
     /**
      * An interface containing various methods which are triggered alongside various forge events.
      * Implement on your item for the methods to be called.
+     * Does not necessarily have to be bound to an itemstack.
      */
-    public interface IEventResponderItem {
+    public interface IEventResponder {
 
         default void modifyAttributeTooltipEvent(AddAttributeTooltipsEvent event) {
 
@@ -91,6 +98,12 @@ public class ItemEventHandler {
         default void outgoingDamageEvent(LivingDamageEvent.Pre event, LivingEntity attacker, LivingEntity target, ItemStack stack) {
         }
 
+        default void finalizedIncomingDamageEvent(LivingDamageEvent.Post event, LivingEntity attacker, LivingEntity target, ItemStack stack) {
+        }
+
+        default void finalizedOutgoingDamageEvent(LivingDamageEvent.Post event, LivingEntity attacker, LivingEntity target, ItemStack stack) {
+        }
+
         default void incomingDeathEvent(LivingDeathEvent event, LivingEntity attacker, LivingEntity target, ItemStack stack) {
         }
 
@@ -98,13 +111,13 @@ public class ItemEventHandler {
         }
     }
 
-    public record EventResponderLookupResult(EventResponderSource source, ArrayList<Pair<IEventResponderItem, ItemStack>> result) {
+    public record EventResponderLookupResult(EventResponderSource source, ArrayList<Pair<IEventResponder, ItemStack>> result) {
 
-        public void run(BiConsumer<IEventResponderItem, ItemStack> consumer) {
-            run(IEventResponderItem.class, consumer);
+        public void run(BiConsumer<IEventResponder, ItemStack> consumer) {
+            run(IEventResponder.class, consumer);
         }
-        public <T extends IEventResponderItem> void run(Class<T> type, BiConsumer<T, ItemStack> consumer) {
-            for (Pair<IEventResponderItem, ItemStack> pair : result) {
+        public <T extends IEventResponder> void run(Class<T> type, BiConsumer<T, ItemStack> consumer) {
+            for (Pair<IEventResponder, ItemStack> pair : result) {
                 if (type.isInstance(pair.getFirst())) {
                     consumer.accept(type.cast(pair.getFirst()), pair.getSecond());
                 }
@@ -115,17 +128,23 @@ public class ItemEventHandler {
 
         public final ResourceLocation id;
         public final Function<LivingEntity, Collection<ItemStack>> stackFunction;
+        public final BiFunction<LivingEntity, ItemStack, IEventResponder> mapperFunction;
 
         public EventResponderSource(ResourceLocation id, Function<LivingEntity, Collection<ItemStack>> stackFunction) {
+            this(id, stackFunction, (entity, stack) -> stack.getItem() instanceof IEventResponder eventResponderItem ? eventResponderItem : null);
+        }
+
+        public EventResponderSource(ResourceLocation id, Function<LivingEntity, Collection<ItemStack>> stackFunction, BiFunction<LivingEntity, ItemStack, IEventResponder> mapperFunction) {
             this.id = id;
             this.stackFunction = stackFunction;
+            this.mapperFunction = mapperFunction;
         }
 
         public final EventResponderLookupResult getEventResponders(LivingEntity entity) {
             Collection<ItemStack> sourced = stackFunction.apply(entity);
-            ArrayList<Pair<IEventResponderItem, ItemStack>> result = new ArrayList<>();
+            ArrayList<Pair<IEventResponder, ItemStack>> result = new ArrayList<>();
             for (ItemStack stack : sourced) {
-                if (stack.getItem() instanceof IEventResponderItem responderItem) {
+                if (mapperFunction.apply(entity, stack) instanceof IEventResponder responderItem) {
                     result.add(Pair.of(responderItem, stack));
                 }
             }

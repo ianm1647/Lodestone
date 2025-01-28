@@ -1,8 +1,6 @@
 package team.lodestar.lodestone.systems.worldevent;
 
-import io.netty.buffer.Unpooled;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
@@ -30,6 +28,10 @@ public abstract class WorldEventInstance {
         if (type == null) throw new IllegalArgumentException("World event type cannot be null");
         this.uuid = UUID.randomUUID();
         this.type = type;
+    }
+
+    public void start(Level level) {
+        this.level = level;
     }
 
     public abstract void tick(Level level);
@@ -98,11 +100,6 @@ public abstract class WorldEventInstance {
         if (!level.isClientSide && type.isClientSynced()) {
             sync(this);
         }
-    }
-
-    @ApiStatus.Internal
-    public void start(Level level) {
-        this.level = level;
     }
 
     // Update World Event Data Server -> Client

@@ -14,19 +14,19 @@ public class DamageTypeHelper {
         return create(level, damageType, null, null);
     }
 
-    public static DamageSource create(ResourceKey<DamageType> damageType, @Nullable Entity source) {
+    public static DamageSource create(ResourceKey<DamageType> damageType, Entity source) {
         return create(source.level(), damageType, source);
     }
 
     public static DamageSource create(Level level, ResourceKey<DamageType> damageType, @Nullable Entity source) {
-        return create(level, damageType, null, source);
+        return create(level, damageType, source, source);
     }
 
-    public static DamageSource create(ResourceKey<DamageType> damageType, @Nullable Entity projectile, Entity source) {
-        return create(source.level(), damageType, projectile, source);
+    public static DamageSource create(ResourceKey<DamageType> damageType, @Nullable Entity direct, Entity source) {
+        return create(source.level(), damageType, direct, source);
     }
 
-    public static DamageSource create(Level level, ResourceKey<DamageType> damageType, @Nullable Entity projectile, @Nullable Entity source) {
-        return new DamageSource(level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(damageType), projectile, source);
+    public static DamageSource create(Level level, ResourceKey<DamageType> damageType, @Nullable Entity direct, @Nullable Entity source) {
+        return new DamageSource(level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(damageType), direct, source);
     }
 }

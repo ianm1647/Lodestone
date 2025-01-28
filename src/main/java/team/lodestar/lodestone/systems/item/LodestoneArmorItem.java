@@ -19,8 +19,8 @@ import java.util.List;
 public abstract class LodestoneArmorItem extends ArmorItem {
     protected Multimap<Attribute, AttributeModifier> attributes;
 
-    public LodestoneArmorItem(Holder<ArmorMaterial> pMaterial, Type pType, Properties pProperties) {
-        super(pMaterial, pType, pProperties);
+    public LodestoneArmorItem(Holder<ArmorMaterial> pMaterial, Type pType, int durabilityFactor, Properties pProperties) {
+        super(pMaterial, pType, pProperties.durability(pType.getDurability(durabilityFactor)));
     }
 
     @Override

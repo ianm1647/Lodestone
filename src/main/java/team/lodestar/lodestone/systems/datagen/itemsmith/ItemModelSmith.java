@@ -1,96 +1,89 @@
 package team.lodestar.lodestone.systems.datagen.itemsmith;
 
 import net.minecraft.world.item.Item;
-import net.neoforged.neoforge.client.model.generators.CustomLoaderBuilder;
 import net.neoforged.neoforge.client.model.generators.ItemModelBuilder;
-import net.neoforged.neoforge.client.model.generators.ModelBuilder;
-import net.neoforged.neoforge.client.model.generators.loaders.ItemLayerModelBuilder;
-import net.neoforged.neoforge.client.model.generators.loaders.SeparateTransformsModelBuilder;
 import team.lodestar.lodestone.systems.datagen.providers.LodestoneItemModelProvider;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
  * A class responsible for generating item models when used with an ItemModelProvider
  */
-public class ItemModelSmith extends AbstractItemModelSmith {
+public class ItemModelSmith {
 
-    public final ItemModelSupplier modelSupplier;
-    public final ItemModelModifier<ItemModelBuilder> modifier;
+    private final ItemModelSupplier modelSupplier;
 
     public ItemModelSmith(ItemModelSupplier modelSupplier) {
-        this(modelSupplier, null);
-    }
-    public ItemModelSmith(ItemModelSupplier modelSupplier, ItemModelModifier<ItemModelBuilder> modifier) {
         this.modelSupplier = modelSupplier;
-        this.modifier = modifier;
+    }
+
+    public ItemModelSmithConfiguration modifyResult(Consumer<ItemModelSmithResult> modifier) {
+        return configure().modifyResult(modifier);
+    }
+
+    public ItemModelSmithConfiguration addModelNameAffix(String affix) {
+        return configure().addModelNameAffix(affix);
+    }
+
+    public ItemModelSmithConfiguration modifyModelName(Function<String, String> modelNameModifier) {
+        return configure().modifyModelName(modelNameModifier);
+    }
+
+    public ItemModelSmithConfiguration addTextureNameAffix(String affix) {
+        return configure().addTextureNameAffix(affix);
+    }
+
+    public ItemModelSmithConfiguration modifyTextureName(Function<String, String> textureNameModifier) {
+        return configure().modifyTextureName(textureNameModifier);
+    }
+
+    protected ItemModelSmithConfiguration configure() {
+        return new ItemModelSmithConfiguration(modelSupplier);
     }
 
     @SafeVarargs
-    public final List<ItemModelBuilder> act(ItemModelSmithData data, Supplier<? extends Item>... items) {
+    public final List<ItemModelSmithResult> act(ItemModelSmithData data, Supplier<? extends Item>... items) {
         return act(data, Arrays.stream(items).toList());
     }
 
-    public List<ItemModelBuilder> act(ItemModelSmithData data, Collection<Supplier<? extends Item>> items) {
-        return items.stream().peek(data.consumer).map(s -> act(data, s)).toList();
-    }
-
-    private ItemModelBuilder act(ItemModelSmithData data, Supplier<? extends Item> registryObject) {
-        return act(data.provider, registryObject);
-    }
- 
-    public ItemModelBuilder act(LodestoneItemModelProvider provider, Supplier<? extends Item> registryObject) {
-        Item item = registryObject.get();
-        ItemModelBuilder model = modelSupplier.act(item, provider);
-        if (modifier != null) {
-            modifier.act(model, item, provider);
-            return model;
+    public final List<ItemModelSmithResult> act(ItemModelSmithData data, Collection<Supplier<? extends Item>> items) {
+        var copy = new ArrayList<>(items);
+        List<ItemModelSmithResult> result = new ArrayList<>();
+        for (Supplier<? extends Item> item : copy) {
+            result.add(act(data, item));
         }
-        return model;
+        return result;
     }
 
-    @SafeVarargs
-    public final List<ItemModelBuilder> act(ItemModelSmithData data, ItemModelModifier<ItemModelBuilder> modifier, Supplier<? extends Item>... items) {
-        return act(data, modifier, Arrays.stream(items).toList());
+    public ItemModelSmithResult act(ItemModelSmithData data, Supplier<? extends Item> itemSupplier) {
+        data.consumer.accept(itemSupplier);
+        return act(data.provider, itemSupplier);
     }
 
-    public List<ItemModelBuilder> act(ItemModelSmithData data, ItemModelModifier<ItemModelBuilder> modifier, Collection<Supplier<? extends Item>> items) {
-        return items.stream().peek(data.consumer).map(s -> act(data, modifier, s)).toList();
-    }
-
-    private ItemModelBuilder act(ItemModelSmithData data, ItemModelModifier<ItemModelBuilder> modifier, Supplier<? extends Item> registryObject) {
-        return act(data.provider, registryObject, modifier);
-    }
-
-    public ItemModelBuilder act(LodestoneItemModelProvider provider, Supplier<? extends Item> registryObject, ItemModelModifier<ItemModelBuilder> modifier) {
-        Item item = registryObject.get();
+    public ItemModelSmithResult act(LodestoneItemModelProvider provider, Supplier<? extends Item> itemSupplier) {
+        var item = itemSupplier.get();
+        preDatagen(provider, item);
         ItemModelBuilder model = modelSupplier.act(item, provider);
-        modifier.act(model, item, provider);
-        return model;
+        ItemModelSmithResult result = new ItemModelSmithResult(provider, item, model);
+        postDatagen(result);
+        return result;
+    }
+
+    protected void preDatagen(LodestoneItemModelProvider provider, Item item) {
+
+    }
+
+    protected void postDatagen(ItemModelSmithResult result) {
+
     }
 
     public interface ItemModelSupplier {
         ItemModelBuilder act(Item item, LodestoneItemModelProvider provider);
-    }
-
-    public interface ItemModelModifier<T extends ModelBuilder<T>> {
-        void act(T builder, Item item, LodestoneItemModelProvider provider);
-
-    }
-    public interface ItemModelModifierTemplate<T extends ModelBuilder<T>, K extends CustomLoaderBuilder<T>> {
-        ItemModelModifierTemplate<ItemModelBuilder, ItemLayerModelBuilder<ItemModelBuilder>> FACE_DATA = (c) -> (b, i, p) -> {
-            var faceBuilder = ItemLayerModelBuilder.begin(b, p.existingFileHelper);
-            c.accept(faceBuilder);
-        };
-        ItemModelModifierTemplate<ItemModelBuilder, SeparateTransformsModelBuilder<ItemModelBuilder>> SEPARATE_TRANSFORMS = (c) -> (b, i, p) -> {
-            var faceBuilder = SeparateTransformsModelBuilder.begin(b, p.existingFileHelper);
-            c.accept(faceBuilder);
-        };
-
-        ItemModelModifier<T> apply(Consumer<K> behavior);
     }
 }

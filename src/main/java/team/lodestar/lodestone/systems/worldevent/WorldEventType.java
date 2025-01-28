@@ -2,6 +2,8 @@ package team.lodestar.lodestone.systems.worldevent;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.fml.loading.FMLEnvironment;
 import team.lodestar.lodestone.registry.client.LodestoneWorldEventRenderers;
 
 import javax.annotation.Nullable;
@@ -99,7 +101,9 @@ public class WorldEventType {
          */
         public WorldEventType build() {
             WorldEventType type = new WorldEventType(this.id, this.supplier, this.clientSynced);
-            LodestoneWorldEventRenderers.registerRenderer(type, this.renderer);
+            if (FMLEnvironment.dist.equals(Dist.CLIENT)) {
+                LodestoneWorldEventRenderers.registerRenderer(type, this.renderer);
+            }
             return type;
         }
     }

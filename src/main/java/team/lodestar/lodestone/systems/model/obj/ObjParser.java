@@ -138,8 +138,33 @@ public class ObjParser extends LodestoneParser<ObjModel> {
         }
 
         public void build() {
+            this.model.applyEarlyModifiers(this);
             this.indexedVertices.forEach(indexedVertex -> this.model.vertices.add(new Vertex(indexedVertex, this)));
             this.model.meshes = meshes;
+        }
+
+        public List<Vector3f> getPositions() {
+            return positions;
+        }
+
+        public List<Vector3f> getNormals() {
+            return normals;
+        }
+
+        public List<Vector2f> getUvs() {
+            return uvs;
+        }
+
+        public List<IndexedMesh> getMeshes() {
+            return meshes;
+        }
+
+        public List<IndexedVertex> getIndexedVertices() {
+            return indexedVertices;
+        }
+
+        public ObjModel getModel() {
+            return model;
         }
     }
 }

@@ -44,7 +44,7 @@ public class BlockStateSmithTypes {
     /**
      * Generates a tall grass block model and blockstate
      */
-    public static BlockStateSmith<Block> TALL_CROSS_MODEL_BLOCK = new BlockStateSmith<>(Block.class, ItemModelSmithTypes.AFFIXED_BLOCK_TEXTURE_MODEL.apply("_top"), (block, provider) -> {
+    public static BlockStateSmith<Block> TALL_CROSS_MODEL_BLOCK = new BlockStateSmith<>(Block.class, ItemModelSmithTypes.BLOCK_TEXTURE_ITEM.addTextureNameAffix("_top"), (block, provider) -> {
         String name = provider.getBlockName(block);
         provider.getVariantBuilder(block).forAllStates(s -> {
             final String affix = s.getValue(DoublePlantBlock.HALF).equals(DoubleBlockHalf.LOWER) ? "_bottom" : "_top";
@@ -196,7 +196,7 @@ public class BlockStateSmithTypes {
     /**
      * Generates a wall torch block model and state. Standing torch not included.
      */
-    public static BlockStateSmith<WallTorchBlock> WALL_TORCH_BLOCK = new BlockStateSmith<>(WallTorchBlock.class, ItemModelSmithTypes.NO_MODEL, (block, provider) -> {
+    public static BlockStateSmith<WallTorchBlock> WALL_TORCH_BLOCK = new BlockStateSmith<>(WallTorchBlock.class, ItemModelSmithTypes.NO_DATAGEN, (block, provider) -> {
         String name = provider.getBlockName(block);
         String textureName = name.replace("wall_", "");
         ModelFile torchModel = provider.models().torchWall(provider.getBlockName(block), provider.getBlockTexture(textureName));
