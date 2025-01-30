@@ -174,7 +174,7 @@ public abstract class PostProcessor {
      */
     public abstract void afterProcess();
 
-    public final void setActive(boolean active) {
+    public void setActive(boolean active) {
         this.isActive = active;
 
         if (!active)
