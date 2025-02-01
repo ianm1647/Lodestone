@@ -52,7 +52,7 @@ public class TrailPointBuilder {
     public TrailPointBuilder tickTrailPoints() {
         int trailLength = this.trailLength.get();
         trailPoints.forEach(TrailPoint::tick);
-        trailPoints.removeIf(p -> p.getTimeActive() > trailLength);
+        trailPoints.removeIf(p -> p.getAge() > trailLength);
         return this;
     }
 

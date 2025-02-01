@@ -4,12 +4,12 @@ import net.minecraft.world.phys.Vec3;
 import org.joml.Vector4f;
 
 public class TrailPoint {
-    private final Vec3 position;
-    private int timeActive;
+    private Vec3 position;
+    private int age;
 
-    public TrailPoint(Vec3 position, int timeActive) {
+    public TrailPoint(Vec3 position, int age) {
         this.position = position;
-        this.timeActive = timeActive;
+        this.age = age;
     }
 
     public TrailPoint(Vec3 position) {
@@ -25,16 +25,24 @@ public class TrailPoint {
         return position;
     }
 
-    public int getTimeActive() {
-        return timeActive;
+    public void setPosition(Vec3 position) {
+        this.position = position;
+    }
+
+    public void move(Vec3 offset) {
+        setPosition(getPosition().add(offset));
+    }
+
+    public int getAge() {
+        return age;
     }
 
     public TrailPoint lerp(TrailPoint trailPoint, float delta) {
         Vec3 position = getPosition();
-        return new TrailPoint(position.lerp(trailPoint.position, delta), timeActive);
+        return new TrailPoint(position.lerp(trailPoint.position, delta), age);
     }
 
     public void tick() {
-        timeActive++;
+        age++;
     }
 }
