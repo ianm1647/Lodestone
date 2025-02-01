@@ -10,7 +10,6 @@ in ivec2 UV2;
 uniform sampler2D Sampler2;
 
 uniform mat4 ModelViewMat;
-uniform mat3 IViewRotMat;
 uniform mat4 ProjMat;
 uniform int FogShape;
 

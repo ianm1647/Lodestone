@@ -5,7 +5,7 @@ import org.joml.Vector4f;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
+import java.util.function.*;
 import java.util.stream.Collectors;
 
 public class TrailPointBuilder {
@@ -50,9 +50,14 @@ public class TrailPointBuilder {
     }
 
     public TrailPointBuilder tickTrailPoints() {
-        int trailLength = this.trailLength.get();
+        int length = trailLength.get();
         trailPoints.forEach(TrailPoint::tick);
-        trailPoints.removeIf(p -> p.getTimeActive() > trailLength);
+        trailPoints.removeIf(p -> p.getAge() > length);
+        return this;
+    }
+
+    public TrailPointBuilder run(Consumer<TrailPoint> consumer) {
+        trailPoints.forEach(consumer);
         return this;
     }
 
